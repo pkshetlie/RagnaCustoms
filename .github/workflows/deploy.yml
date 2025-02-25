@@ -47,9 +47,20 @@ jobs:
               with:
                   node-version: '20'
 
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  extensions: curl, mbstring, xml, zip
+                  ini-values: post_max_size=100M, memory_limit=512M
+                  coverage: none
+
+            - name: Install Composer Dependencies
+              run: composer install --optimize-autoloader
+
             - name: Install Node Dependencies and Build
               run: |
-                  npm install
+                  npm install --legacy-peer-deps
                   npm run build # équivalent de "yarn encore production"
 
             - name: Deploy via SSH
@@ -61,10 +72,29 @@ jobs:
                   port: 22
                   script: |
                       cd /var/www/html/ragnacustoms.com/beta
-                      git pull origin beta
-                      cp -R public/build /var/www/html/ragnacustoms.com/www/public # Copier les fichiers buildés depuis "public/build"
+                      git pull origin beta                 
                       composer update --no-dev --optimize-autoloader
+
+            - name: Setup SSH
+              uses: webfactory/ssh-agent@v0.5.3
+              with:
+                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+            - name: Deploy the built files to the server
+              env:
+                SERVER_IP: ${{ secrets.SSH_HOST }}
+              run: |
+                rsync -avz --delete public/build/ deployuser@$SERVER_IP:/var/www/html/ragnacustoms.com/www/public/build
+
+            - name: Deploy via SSH
+              uses: appleboy/ssh-action@v0.1.9
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  port: 22
+                  script: |
+                      cd /var/www/html/ragnacustoms.com/beta
                       php bin/console cache:clear --env=prod
                       php bin/console cache:warmup --env=prod
                       php bin/console doctrine:migrations:migrate --no-interaction
- 
