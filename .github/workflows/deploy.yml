@@ -49,7 +49,7 @@ jobs:
                   port: 22
                   script: |
                       cd /var/www/html/ragnacustoms.com/beta
-                      git pull origin dev
+                      git pull origin beta
                       composer install --no-dev --optimize-autoloader
                       php bin/console cache:clear --env=dev
                       php bin/console cache:warmup --env=dev
