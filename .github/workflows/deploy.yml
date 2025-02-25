@@ -31,6 +31,8 @@ jobs:
                         php bin/console cache:clear --env=prod
                         php bin/console cache:warmup --env=prod
                         php bin/console doctrine:migrations:migrate --no-interaction
+
+
     deploy-beta:
         name: Deploy to Beta
         runs-on: ubuntu-latest
@@ -39,6 +41,16 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '20'
+
+            - name: Install Node Dependencies and Build
+              run: |
+                  npm install
+                  npm run build # équivalent de "yarn encore production"
 
             - name: Deploy via SSH
               uses: appleboy/ssh-action@v0.1.9
@@ -50,6 +62,7 @@ jobs:
                   script: |
                       cd /var/www/html/ragnacustoms.com/beta
                       git pull origin beta
+                      cp -R public/build /var/www/html/ragnacustoms.com/www/public # Copier les fichiers buildés depuis "public/build"
                       composer update --no-dev --optimize-autoloader
                       php bin/console cache:clear --env=prod
                       php bin/console cache:warmup --env=prod
