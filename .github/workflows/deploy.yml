@@ -61,7 +61,7 @@ jobs:
             - name: Install Node Dependencies and Build
               run: |
                   npm install --legacy-peer-deps
-                  npm run build # équivalent de "yarn encore production"
+                  npm run build 
 
             - name: Deploy via SSH
               uses: appleboy/ssh-action@v0.1.9
@@ -75,6 +75,16 @@ jobs:
                       git pull origin beta                 
                       composer update --no-dev --optimize-autoloader
 
+            # Étape 2 : Configurer l'environnement SSH
+            - name: Créer le répertoire SSH et ajouter la clé hôte
+              env:
+                  SERVER_IP: ${{ secrets.SSH_HOST }}
+              run: |
+                  mkdir -p ~/.ssh
+                  chmod 700 ~/.ssh
+                  ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+                  chmod 644 ~/.ssh/known_hosts
+
             - name: Setup SSH
               uses: webfactory/ssh-agent@v0.5.3
               with:
@@ -84,7 +94,7 @@ jobs:
               env:
                 SERVER_IP: ${{ secrets.SSH_HOST }}
               run: |
-                rsync -avz --delete public/build/ deployuser@$SERVER_IP:/var/www/html/ragnacustoms.com/www/public/build
+                rsync -avz --delete public/build/ deployuser@$SERVER_IP:/var/www/html/ragnacustoms.com/beta/public/build
 
             - name: Deploy via SSH
               uses: appleboy/ssh-action@v0.1.9
