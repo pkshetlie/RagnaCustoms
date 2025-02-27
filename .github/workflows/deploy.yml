@@ -11,7 +11,7 @@ jobs:
     deploy-production:
         name: Deploy to Prod
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/master' # Exécuter uniquement pour la branche beta
+        if: github.ref == 'refs/heads/master'
 
         steps:
             -   name: Checkout repository
@@ -47,7 +47,7 @@ jobs:
                     port: 22
                     script: |
                         cd /var/www/html/ragnacustoms.com/www
-                        git pull origin beta                 
+                        git pull origin master                 
                         composer update --no-dev --optimize-autoloader
 
             -   name: Créer le répertoire SSH et ajouter la clé hôte
