@@ -73,6 +73,7 @@ security:
         - { path: ^/rest-api,       roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/admin, roles: ROLE_MODERATOR }
         - { path: ^/ranking-song/, roles: ROLE_MODERATOR }
+        - { path: ^/account, roles: ROLE_USER }
         - { path: ^/user/downloads, roles: ROLE_USER }
         - { path: ^/playlists, roles: ROLE_USER }
         - { path: ^/recently-played, roles: ROLE_USER }

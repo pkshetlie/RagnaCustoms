@@ -130,7 +130,7 @@ class UserController extends AbstractController
         ], 200);
     }
 
-    #[Route(path: '/recently-played/', name: 'recently_played')]
+    #[Route(path: '/account/recently-played/', name: 'recently_played')]
     public function recentlyPlayed(
         Request $request,
         PaginationService $paginationService,
@@ -313,7 +313,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/user/app-and-premium', name: 'user_applications')]
+    #[Route(path: '/account/app-and-premium', name: 'user_applications')]
     public function ApplicationsAndPremium(Request $request, UtilisateurRepository $userRepo): Response
     {
         $user = $this->getUser();
@@ -390,7 +390,7 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route(path: '/user', name: 'user')]
+    #[Route(path: '/account', name: 'user')]
     public function index(
         Request $request,
         ManagerRegistry $doctrine,
@@ -543,7 +543,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/user/downloads', name: 'app_downloads_list')]
+    #[Route(path: '/account/downloads', name: 'app_downloads_list')]
     public function downloads(
         Request $request,
         PaginationService $paginationService,
@@ -563,7 +563,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/user/downloads/clear', name: 'app_downloads_list_clear')]
+    #[Route(path: '/account/downloads/clear', name: 'app_downloads_list_clear')]
     public function downloadsClear(EntityManagerInterface $entityManager): Response
     {
         $entityManager->createQuery('DELETE FROM App\Entity\DownloadCounter d  WHERE d.user = :user')

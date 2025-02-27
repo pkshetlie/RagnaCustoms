@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class FriendRequestController extends AbstractController
 {
-    #[Route('/friend/request/{id}', name: 'app_friend_request')]
+    #[Route('/account/friend/request/{id}', name: 'app_friend_request')]
     public function request(Utilisateur $requestedUser, FriendRepository $friendRepository): Response
     {
         if (!$this->isGranted('ROLE_USER') || $this->getUser()->getId() === $requestedUser->getId()) {
@@ -40,7 +40,7 @@ class FriendRequestController extends AbstractController
         ]);
     }
 
-    #[Route('/friend/remove/{id}', name: 'app_friend_request_remove')]
+    #[Route('/account/friend/remove/{id}', name: 'app_friend_request_remove')]
     public function remove(Utilisateur $requestedUser, FriendRepository $friendRepository): Response
     {
         if (!$this->isGranted('ROLE_USER') || $this->getUser()->getId() === $requestedUser->getId()) {
@@ -81,7 +81,7 @@ class FriendRequestController extends AbstractController
         ]);
     }
 
-    #[Route('/friend/accept/{id}', name: 'app_friend_request_accept')]
+    #[Route('/account/friend/accept/{id}', name: 'app_friend_request_accept')]
     public function accept(Friend $friend, FriendRepository $friendRepository): Response
     {
         if (!$this->isGranted('ROLE_USER') || $this->getUser()->getId() !== $friend->getFriend()->getId()) {
@@ -96,7 +96,7 @@ class FriendRequestController extends AbstractController
        return $this->redirectToRoute('app_friend_list');
     }
 
-    #[Route('/friend/refuse/{id}', name: 'app_friend_request_refuse')]
+    #[Route('/account/friend/refuse/{id}', name: 'app_friend_request_refuse')]
     public function refused(Friend $friend, FriendRepository $friendRepository): Response
     {
         if (!$this->isGranted('ROLE_USER') || ($this->getUser() !== $friend->getUser() && $this->getUser() !== $friend->getFriend())) {
@@ -119,7 +119,7 @@ class FriendRequestController extends AbstractController
         return $this->redirectToRoute('app_friend_list');
     }
 
-    #[Route('/friend/list', name: 'app_friend_list')]
+    #[Route('/account/friend/list', name: 'app_friend_list')]
     public function list(
         Request $request,
         FriendRepository $friendRepository,

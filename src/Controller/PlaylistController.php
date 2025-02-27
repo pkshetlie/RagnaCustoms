@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PlaylistController extends AbstractController
 {
-    #[Route(path: '/playlists', name: 'playlist')]
+    #[Route(path: '/account/playlists', name: 'playlist')]
     public function index(
         Request $request,
         ManagerRegistry $doctrine,

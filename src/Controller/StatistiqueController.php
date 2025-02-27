@@ -23,8 +23,8 @@ class StatistiqueController extends AbstractController
     public function byScore(Score $score, StatisticService $statisticService): JsonResponse
     {
         return new JsonResponse([
-            'success'  => true,
-            'datasets' => $statisticService->getScatterDataSetsByScore($score)
+            'success' => true,
+            'datasets' => $statisticService->getScatterDataSetsByScore($score),
         ]);
     }
 
@@ -32,8 +32,8 @@ class StatistiqueController extends AbstractController
     public function byScoreHistory(ScoreHistory $scoreHistory, StatisticService $statisticService): JsonResponse
     {
         return new JsonResponse([
-            'success'  => true,
-            'datasets' => $statisticService->getScatterDataSetsByScorehistory($scoreHistory)
+            'success' => true,
+            'datasets' => $statisticService->getScatterDataSetsByScorehistory($scoreHistory),
         ]);
     }
 
@@ -42,7 +42,7 @@ class StatistiqueController extends AbstractController
     {
         /** @var Utilisateur $user */
         $user = $this->getUser();
-        $histories = $user->getScoreHistories()->filter(function (ScoreHistory $scoreHistory) use ($song) {
+        $histories = $user->getScoreHistories()->filter(function(ScoreHistory $scoreHistory) use ($song) {
             return $scoreHistory->getSongDifficulty()->getSong() === $song;
         });
 
@@ -50,23 +50,24 @@ class StatistiqueController extends AbstractController
 
         /** @var ScoreHistory $history */
         foreach ($histories as $history) {
-            $page[] = ([
-                'Song'            => $history->getSongDifficulty(),
-                'Plateform'       => $history->getPlateform(),
-                'Date'            => $history->getCreatedAt()->format('Y-m-d H:i'),
-                'Distance'        => $history->getScoreDisplay(),
-                'Score'           => $history->getRawPP(),
-                'Half combo'      => $history->getComboBlue(),
-                'Full combo'      => $history->getComboYellow(),
-                'Hit'             => $history->getHit(),
-                'Missed'          => $history->getMissed(),
-                'Hit Delta Times' => json_encode($statisticService->getFullDatasetByScorehistory($history))
-            ]);
+            $page[] = [
+                'Song' => $history->getSongDifficulty(),
+                'Plateform' => $history->getPlateform(),
+                'Date' => $history->getCreatedAt()->format('Y-m-d H:i'),
+                'Distance' => $history->getScoreDisplay(),
+                'Score' => $history->getRawPP(),
+                'Half combo' => $history->getComboBlue(),
+                'Full combo' => $history->getComboYellow(),
+                'Hit' => $history->getHit(),
+                'Missed' => $history->getMissed(),
+                'Perfect percentage' => $history->getPercentageOfPerfects(),
+                'Hit Delta Times' => json_encode($statisticService->getFullDatasetByScorehistory($history)),
+            ];
         }
         $response = new StreamedResponse();
         $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="' . $song->getSlug() . '.csv"');
-        $response->setCallback(function () use ($page) {
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$song->getSlug().'.csv"');
+        $response->setCallback(function() use ($page) {
             $output = fopen('php://output', 'w');
 
             // Écrire l'en-tête CSV
@@ -85,11 +86,13 @@ class StatistiqueController extends AbstractController
 
     #[Route('/stats/pp-chart/{leaderboard}/{id}', name: 'app_stat_pp_chart')]
     public function ppChartBySongDiff(
-        Request $request, string $leaderboard, SongDifficulty $diff, 
-        UtilisateurRepository $utilisateurRepository, 
-        SongService $songSerivce, StatisticService $statisticService
-    ): JsonResponse
-    {
+        Request $request,
+        string $leaderboard,
+        SongDifficulty $diff,
+        UtilisateurRepository $utilisateurRepository,
+        SongService $songSerivce,
+        StatisticService $statisticService
+    ): JsonResponse {
         if (!$diff->isRanked() && !$this->isGranted('ROLE_MODERATOR')) {
             return new JsonResponse(['success' => false]);
         }
@@ -106,25 +109,35 @@ class StatistiqueController extends AbstractController
         $isVR = $leaderboard == 'vr';
         $isOKOD = !$isVR && $leaderboard == 'okod';
         $showAvgLines = $this->isGranted('ROLE_MODERATOR');
+
         return new JsonResponse([
-            'success'  => true,
-            'datasets' => $statisticService->getPPChartDataSetsBySongDiff($diff, $highlightUser, $isVR, $isOKOD, $showAvgLines, $recalculatePPScores)
+            'success' => true,
+            'datasets' => $statisticService->getPPChartDataSetsBySongDiff(
+                $diff,
+                $highlightUser,
+                $isVR,
+                $isOKOD,
+                $showAvgLines,
+                $recalculatePPScores
+            ),
         ]);
     }
 
     #[Route('/stats/pp-histogram/{leaderboard}/{id}', name: 'app_stat_pp_histogram')]
     public function ppHistogramByUser(
-        string $leaderboard, Utilisateur $user, StatisticService $statisticService
-    ): JsonResponse
-    {
+        string $leaderboard,
+        Utilisateur $user,
+        StatisticService $statisticService
+    ): JsonResponse {
         if (!$user->getIsPublic()) {
             return new JsonResponse(['success' => false]);
         }
         $isVR = $leaderboard == 'vr';
         $isOKOD = !$isVR && $leaderboard == 'okod';
+
         return new JsonResponse([
-            'success'  => true,
-            'datasets' => $statisticService->getPPHistogramDataSet($user, $isVR, $isOKOD)
+            'success' => true,
+            'datasets' => $statisticService->getPPHistogramDataSet($user, $isVR, $isOKOD),
         ]);
     }
 
@@ -135,9 +148,10 @@ class StatistiqueController extends AbstractController
         $letter = '';
         while ($column > 0) {
             $column--;
-            $letter = chr($column % 26 + 65) . $letter;
+            $letter = chr($column % 26 + 65).$letter;
             $column = intval($column / 26);
         }
+
         return $letter;
     }
 

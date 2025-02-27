@@ -644,6 +644,7 @@ textarea {
   }
 
 }
+
 #playlist_show {
   &.placeholder{
 
@@ -755,4 +756,99 @@ tr td:last-child {
 
 .swal2-actions button:hover {
   background-color: #555 !important;
+}
+
+
+.event-card {
+  border-radius: 5px;
+  background: #202020;
+  border: 1px solid #464646;
+  vertical-align: middle;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  position: relative;
+  min-height:200px;
+
+  a {
+    font-size: 40px;
+    text-decoration: none;
+    display: block;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+    color:#464646;
+    line-height:200px;
+  }
+
+  .header {
+    background: #414141;
+    position: relative;
+    display: table-cell;
+
+    .placeholder {
+      border: 1px solid #565656;
+      background: #202020;
+      border-radius: 5px;
+      width: 20%;
+      padding-top: 6%;
+      text-align: center;
+    }
+
+    .preview {
+      width: 20%;
+      font-size: 18px;
+      font-weight: 700;
+      color: #8a8a8a;
+      font-family: "Catamaran", sans-serif;
+
+      img {
+        border-radius: 5px;
+        width: 100%;
+      }
+    }
+  }
+
+  .content {
+    padding: 10px 10px 0 10px;
+
+    .title {
+      color: $warning;
+      font-size: 16px!important;
+      line-height: 18px;
+      font-weight: bold;
+      display: -webkit-box;
+      -webkit-line-clamp: 1; /* Limite à 3 lignes */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis; /* Ajoute des "..." à la fin */
+
+    }
+
+    .description {
+      text-align: left;
+      display: -webkit-box;
+      -webkit-line-clamp: 3; /* Limite à 3 lignes */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis; /* Ajoute des "..." à la fin */
+      height:63px;
+      font-size:14px;
+      p {
+        padding: 0;
+        margin: 0;
+      }
+    }
+    .featuring-songs {
+      font-size:14px;
+      text-align: left;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Limite à 3 lignes */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis; /* Ajoute des "..." à la fin */
+      height:42px;
+      color: #8a8a8a;
+    }
+  }
+
 }

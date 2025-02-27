@@ -56,6 +56,11 @@
     <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') == 'playlist' %}activated{% endif %}">
         <i class="fas fa-list"></i> <a href="{{ url('playlist') }}">{{ "My playlists"|trans }}</a>
     </li>
+
+    <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') == 'app_crud_event_index' %}activated{% endif %}">
+
+        <i class="fas fa-calendar"></i> <a href="{{ url('app_crud_event_index') }}" disabled="disabled">{{ "My custom events"|trans }} </a> <span class="fas fa-gavel text-warning" title="require Premium Tier 3"></span>
+    </li>
     <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') == 'notifications_setting' %}activated{% endif %}">
         <i class="fas fa-envelope"></i> <a href="{{ url('notifications_setting') }}">{{ "Emails & Notifications"|trans }}</a>
     </li>

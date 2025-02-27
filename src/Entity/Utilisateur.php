@@ -195,6 +195,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Changelog::class, mappedBy: 'readBy')]
     private Collection $changelogs;
 
+    /**
+     * @var Collection<int, Event>
+     */
+    #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'players')]
+    private Collection $participatingEvents;
+
+    /**
+     * @var Collection<int, Event>
+     */
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Event::class)]
+    private Collection $ownedEvents;
+
     public function __construct()
     {
         $this->votes = new ArrayCollection();
@@ -216,6 +228,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->friends = new ArrayCollection();
         $this->songsMapped = new ArrayCollection();
         $this->changelogs = new ArrayCollection();
+        $this->participatingEvents = new ArrayCollection();
+        $this->ownedEvents = new ArrayCollection();
     }
 
     public function __toString()
@@ -1733,6 +1747,63 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->changelogs->removeElement($changelog)) {
             $changelog->removeReadBy($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getParticipatingEvents(): Collection
+    {
+        return $this->participatingEvents;
+    }
+
+    public function addEvent(Event $event): static
+    {
+        if (!$this->participatingEvents->contains($event)) {
+            $this->participatingEvents->add($event);
+            $event->addPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): static
+    {
+        if ($this->participatingEvents->removeElement($event)) {
+            $event->removePlayer($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getOwnedEvents(): Collection
+    {
+        return $this->ownedEvents;
+    }
+
+    public function addOwnedEvent(Event $ownedEvent): static
+    {
+        if (!$this->ownedEvents->contains($ownedEvent)) {
+            $this->ownedEvents->add($ownedEvent);
+            $ownedEvent->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOwnedEvent(Event $ownedEvent): static
+    {
+        if ($this->ownedEvents->removeElement($ownedEvent)) {
+            // set the owning side to null (unless already changed)
+            if ($ownedEvent->getOwner() === $this) {
+                $ownedEvent->setOwner(null);
+            }
         }
 
         return $this;

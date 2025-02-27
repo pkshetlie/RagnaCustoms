@@ -77,10 +77,17 @@ class SongDifficulty
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $wanadevHash;
 
+    /**
+     * @var Collection<int, Event>
+     */
+    #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'songDifficulties')]
+    private Collection $events;
+
     public function __construct()
     {
         $this->scores = new ArrayCollection();
         $this->scoreHistories = new ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     public function __toString()
@@ -344,6 +351,33 @@ class SongDifficulty
             return $file;
         }
         return '';
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): static
+    {
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+            $event->addSongDifficulty($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): static
+    {
+        if ($this->events->removeElement($event)) {
+            $event->removeSongDifficulty($this);
+        }
+
+        return $this;
     }
 
 }

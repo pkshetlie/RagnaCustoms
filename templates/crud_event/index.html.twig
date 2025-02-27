@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}My playlists{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+{% block body %}
+<div class="container-fluid">
+
+    <div class="row mt-3">
+        <div class="col-md-2">
+            {% include 'user/partial/_left_part_user.html.twig' %}
+        </div>
+        <div class="col-md-10">
+            <h2>{{ "All your playlists"|trans }}</h2>
+            <div class="row">
+                <div class="col-md-3 mb-5">
+                    {% include 'crud_event/partial/card_plus.html.twig' %}
+                </div>
+
+        {% for event in events %}
+            {% include 'crud_event/partial/card.html.twig' %}
+        {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -28,7 +28,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UploadSongController extends AbstractController
 {
-    #[Route(path: '/upload/song/new', name: 'new_song')]
+    #[Route(path: '/account/upload/song/new', name: 'new_song')]
     public function new(
         Request $request,
         TranslatorInterface $translator,
@@ -51,7 +51,7 @@ class UploadSongController extends AbstractController
         return $this->edit($request, $song, $doctrine, $translator, $songService, $scoreService);
     }
 
-    #[Route(path: '/upload/song/edit/{id}', name: 'edit_song')]
+    #[Route(path: '/account/upload/song/edit/{id}', name: 'edit_song')]
     public function edit(
         Request $request,
         Song $song,
@@ -313,7 +313,7 @@ class UploadSongController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/upload/song/delete/{id}', name: 'delete_song')]
+    #[Route(path: '/account/upload/song/delete/{id}', name: 'delete_song')]
     public function delete(
         Song $song,
         EntityManagerInterface $em,
@@ -330,7 +330,7 @@ class UploadSongController extends AbstractController
         }
     }
 
-    #[Route(path: '/upload/song/toggle/{id}', name: 'upload_song_toggle')]
+    #[Route(path: '/account/upload/song/toggle/{id}', name: 'upload_song_toggle')]
     public function toggleSong(Request $request, Song $song, SongRepository $songRepository)
     {
         if (!$song->getMappers()->contains($this->getUser())) {
@@ -353,7 +353,7 @@ class UploadSongController extends AbstractController
         return new JsonResponse(['success' => true]);
     }
 
-    #[Route(path: '/upload/song', name: 'upload_song')]
+    #[Route(path: '/account/upload/song', name: 'upload_song')]
     public function index(
         Request $request,
         SongRepository $songRepository,
@@ -492,7 +492,7 @@ class UploadSongController extends AbstractController
         }
     }
 
-    #[Route(path: '/upload/song/new-multi', name: 'new_song_multi')]
+    #[Route(path: '/account/upload/song/new-multi', name: 'new_song_multi')]
     public function indexV2(
         Request $request,
         TranslatorInterface $translator,
@@ -503,7 +503,7 @@ class UploadSongController extends AbstractController
         return $this->render('upload_song/index_multi.html.twig');
     }
 
-    #[Route(path: '/upload/bundle/song/add', name: 'bundle_song')]
+    #[Route(path: '/account/upload/bundle/song/add', name: 'bundle_song')]
     public function bundleUpload(
         Request $request,
         SongService $songService,

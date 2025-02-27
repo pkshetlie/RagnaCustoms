@@ -44,7 +44,7 @@ class NotificationController extends AbstractController
         ]);
     }
 
-    #[Route('/notifications/setting', name: 'notifications_setting')]
+    #[Route('/account/notifications/setting', name: 'notifications_setting')]
     public function notificationSetting(
         Request $request,
         TranslatorInterface $translator,
