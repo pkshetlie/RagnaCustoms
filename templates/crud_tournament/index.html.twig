@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 
-{% block title %}My playlists{% endblock %}
+{% block title %}Custom tournaments{% endblock %}
 {% block stylesheets %}
     {{ parent() }}
 {% endblock %}
@@ -13,14 +13,15 @@
             {% include 'user/partial/_left_part_user.html.twig' %}
         </div>
         <div class="col-md-10">
-            <h2>{{ "All your playlists"|trans }}</h2>
+            <h2>{{ "Custom tournaments"|trans }}</h2>
+            <p></p>
             <div class="row">
                 <div class="col-md-3 mb-5">
-                    {% include 'crud_event/partial/card_plus.html.twig' %}
+                    {% include 'crud_tournament/partial/card_plus.html.twig' %}
                 </div>
 
-        {% for event in events %}
-            {% include 'crud_event/partial/card.html.twig' %}
+        {% for tournament in tournaments %}
+{#            {% include 'crud_tournament/partial/card.html.twig' %}#}
         {% endfor %}
             </div>
         </div>

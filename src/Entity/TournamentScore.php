@@ -2,23 +2,24 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\WanadevApiController;
-use App\Repository\CustomEventScoreRepository;
+use App\Repository\TournamentScoreRepository;
 use App\Service\StatisticService;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity(repositoryClass: CustomEventScoreRepository::class)]
-class CustomEventScore
+#[ORM\Entity(repositoryClass: TournamentScoreRepository::class)]
+class TournamentScore
 {
     use TimestampableEntity;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\ManyToOne(inversedBy: 'tournamentScore')]
+    private ?Tournament $tournament = null;
+
     #[ORM\Column(type: 'integer', nullable: true)]
     private $comboBlue;
     #[ORM\Column(type: 'integer', nullable: true)]
@@ -47,11 +48,9 @@ class CustomEventScore
     private $score;
     #[ORM\Column(type: 'text', nullable: true)]
     private $session;
-    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     #[ORM\ManyToOne(targetEntity: SongDifficulty::class, inversedBy: 'scores')]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private $songDifficulty;
-    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'scores')]
     #[ORM\JoinColumn(nullable: false)]
     private $user;
@@ -59,6 +58,9 @@ class CustomEventScore
     private $userRagnarock;
     #[ORM\Column(type: 'float', nullable: true)]
     private $weightedPP;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $playedAt = null;
 
     public function getId(): ?int
     {
@@ -101,7 +103,7 @@ class CustomEventScore
 
     public function getTimeAgo(): string
     {
-        return StatisticService::dateDisplay($this->createdAt);
+        return StatisticService::dateDisplay($this->getPlayedAt());
     }
 
     /**
@@ -336,17 +338,19 @@ class CustomEventScore
 
     public function getTimeAgoShort()
     {
-        return StatisticService::dateDisplayedShort($this->createdAt);
+        return StatisticService::dateDisplayedShort($this->getPlayedAt());
+    }
+
+    public function getWeightPercentage(): float
+    {
+        return $this->getRawPP() > 0 ? (100 * $this->getWeightedPP() / $this->getRawPP()) : 0;
     }
 
     public function getPlateformIcon()
     {
-        return $this->isVr() ? 'fa-vr-cardboard' : 'fa-gamepad';
+        return in_array($this->getPlateform(),WanadevApiController::VR_PLATEFORM) ? 'fa-vr-cardboard' : 'fa-gamepad';
     }
 
-    /**
-     * @deprecated use WanadevApiController::VR_PLATEFORM list instead
-     */
     public function isVR(): bool
     {
         return in_array($this->getPlateform(),WanadevApiController::VR_PLATEFORM);
@@ -388,6 +392,35 @@ class CustomEventScore
     public function setSongDifficulty(?SongDifficulty $SongDifficulty): self
     {
         $this->songDifficulty = $SongDifficulty;
+
+        return $this;
+    }
+
+    public function isOKODO(): bool
+    {
+        return in_array($this->plateform, WanadevApiController::OKOD_PLATEFORM);
+    }
+
+    public function getPlayedAt(): ?\DateTimeImmutable
+    {
+        return $this->playedAt;
+    }
+
+    public function setPlayedAt(\DateTimeImmutable $playedAt): static
+    {
+        $this->playedAt = $playedAt;
+
+        return $this;
+    }
+
+    public function getTournament(): ?Tournament
+    {
+        return $this->tournament;
+    }
+
+    public function setTournament(?Tournament $tournament): static
+    {
+        $this->tournament = $tournament;
 
         return $this;
     }

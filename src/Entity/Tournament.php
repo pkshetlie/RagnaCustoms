@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Repository\EventRepository;
+use App\Repository\TournamentRepository;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,8 +10,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity(repositoryClass: EventRepository::class)]
-class Event
+#[ORM\Entity(repositoryClass: TournamentRepository::class)]
+class Tournament
 {
     use TimestampableEntity;
     #[ORM\Id]
@@ -41,7 +41,7 @@ class Event
     private ?\DateTimeImmutable $endAt = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $scoreMath = null;
+    private ?string $scoreMath = '{pp}';
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $priceDescription = null;
@@ -50,18 +50,12 @@ class Event
     private ?int $maxPlayers = null;
 
     /**
-     * @var Collection<int, ScoreEvent>
+     * @var Collection<int, TournamentScore>
      */
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: ScoreEvent::class)]
-    private Collection $scoreEvents;
+    #[ORM\OneToMany(mappedBy: 'Tournament', targetEntity: TournamentScore::class, orphanRemoval: true)]
+    private Collection $tournamentScores;
 
-    /**
-     * @var Collection<int, Utilisateur>
-     */
-    #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'events')]
-    #[ORM\Column(nullable: true)]
-    private Collection $players;
-
+  
     #[ORM\Column(length: 255)]
     private ?string $state = null;
 
@@ -72,18 +66,24 @@ class Event
     /**
      * @var Collection<int, SongDifficulty>
      */
-    #[ORM\ManyToMany(targetEntity: SongDifficulty::class, inversedBy: 'events')]
+    #[ORM\ManyToMany(targetEntity: SongDifficulty::class, inversedBy: 'tournaments')]
     #[ORM\Column(nullable: true)]
     private Collection $songDifficulties;
 
-    #[ORM\ManyToOne(inversedBy: 'ownedEvents')]
+    #[ORM\ManyToOne(inversedBy: 'ownedTournaments')]
     private ?Utilisateur $owner = null;
+
+    /**
+     * @var Collection<int, TournamentPlayer>
+     */
+    #[ORM\OneToMany(mappedBy: 'tournament', targetEntity: TournamentPlayer::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $tournamentPlayers;
 
     public function __construct()
     {
-        $this->scoreEvents = new ArrayCollection();
-        $this->players = new ArrayCollection();
+        $this->tournamentScores = new ArrayCollection();
         $this->songDifficulties = new ArrayCollection();
+        $this->tournamentPlayers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -212,55 +212,31 @@ class Event
     }
 
     /**
-     * @return Collection<int, ScoreEvent>
+     * @return Collection<int, TournamentScore>
      */
-    public function getScoreEvents(): Collection
+    public function getTournamentScores(): Collection
     {
-        return $this->scoreEvents;
+        return $this->tournamentScores;
     }
 
-    public function addScoreEvent(ScoreEvent $scoreEvent): static
+    public function addScoreTournament(TournamentScore $scoreTournament): static
     {
-        if (!$this->scoreEvents->contains($scoreEvent)) {
-            $this->scoreEvents->add($scoreEvent);
-            $scoreEvent->setEvent($this);
+        if (!$this->tournamentScores->contains($scoreTournament)) {
+            $this->tournamentScores->add($scoreTournament);
+            $scoreTournament->setTournament($this);
         }
 
         return $this;
     }
 
-    public function removeScoreEvent(ScoreEvent $scoreEvent): static
+    public function removeScoreTournament(TournamentScore $scoreTournament): static
     {
-        if ($this->scoreEvents->removeElement($scoreEvent)) {
+        if ($this->tournamentScores->removeElement($scoreTournament)) {
             // set the owning side to null (unless already changed)
-            if ($scoreEvent->getEvent() === $this) {
-                $scoreEvent->setEvent(null);
+            if ($scoreTournament->getTournament() === $this) {
+                $scoreTournament->setTournament(null);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Utilisateur>
-     */
-    public function getPlayers(): Collection
-    {
-        return $this->players;
-    }
-
-    public function addPlayer(Utilisateur $player): static
-    {
-        if (!$this->players->contains($player)) {
-            $this->players->add($player);
-        }
-
-        return $this;
-    }
-
-    public function removePlayer(Utilisateur $player): static
-    {
-        $this->players->removeElement($player);
 
         return $this;
     }
@@ -321,6 +297,36 @@ class Event
     public function setOwner(?Utilisateur $owner): static
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TournamentPlayer>
+     */
+    public function getTournamentPlayers(): Collection
+    {
+        return $this->tournamentPlayers;
+    }
+
+    public function addTournamentPlayer(TournamentPlayer $tournamentPlayer): static
+    {
+        if (!$this->tournamentPlayers->contains($tournamentPlayer)) {
+            $this->tournamentPlayers->add($tournamentPlayer);
+            $tournamentPlayer->setTournament($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTournamentPlayer(TournamentPlayer $tournamentPlayer): static
+    {
+        if ($this->tournamentPlayers->removeElement($tournamentPlayer)) {
+            // set the owning side to null (unless already changed)
+            if ($tournamentPlayer->getTournament() === $this) {
+                $tournamentPlayer->setTournament(null);
+            }
+        }
 
         return $this;
     }

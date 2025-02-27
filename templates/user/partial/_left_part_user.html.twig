@@ -41,6 +41,12 @@
 </div>
 <hr/>
 <ul class="user-menu list-group list-group-flush no-bg">
+    <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') == 'user' %}activated{% endif %}">
+        <i class="fas fa-cogs"></i> <a href="{{ url('user') }}">Account settings</a>
+    </li>
+    <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') == 'notifications_setting' %}activated{% endif %}">
+        <i class="fas fa-envelope"></i> <a href="{{ url('notifications_setting') }}">{{ "Emails & Notifications"|trans }}</a>
+    </li>
     <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') == 'recently_played' %}activated{% endif %}">
         <i class="fas fa-music"></i> <a href="{{ url('recently_played') }}">Recently played</a>
     </li>
@@ -57,14 +63,8 @@
         <i class="fas fa-list"></i> <a href="{{ url('playlist') }}">{{ "My playlists"|trans }}</a>
     </li>
 
-    <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') == 'app_crud_event_index' %}activated{% endif %}">
+    <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') starts with 'app_crud_tournament' %}activated{% endif %}">
+        <i class="fas fa-calendar"></i> <a href="{{ url('app_crud_tournament_index') }}" disabled="disabled">{{ "My custom tournament"|trans }} </a> <span class="fas fa-gavel text-warning" title="require Premium Tier 3"></span>
+    </li>
 
-        <i class="fas fa-calendar"></i> <a href="{{ url('app_crud_event_index') }}" disabled="disabled">{{ "My custom events"|trans }} </a> <span class="fas fa-gavel text-warning" title="require Premium Tier 3"></span>
-    </li>
-    <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') == 'notifications_setting' %}activated{% endif %}">
-        <i class="fas fa-envelope"></i> <a href="{{ url('notifications_setting') }}">{{ "Emails & Notifications"|trans }}</a>
-    </li>
-    <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') == 'user' %}activated{% endif %}">
-        <i class="fas fa-cogs"></i> <a href="{{ url('user') }}">Account settings</a>
-    </li>
 </ul>

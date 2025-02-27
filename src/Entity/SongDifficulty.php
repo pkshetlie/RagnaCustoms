@@ -78,9 +78,9 @@ class SongDifficulty
     private $wanadevHash;
 
     /**
-     * @var Collection<int, Event>
+     * @var Collection<int, Tournament>
      */
-    #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'songDifficulties')]
+    #[ORM\ManyToMany(targetEntity: Tournament::class, mappedBy: 'songDifficulties')]
     private Collection $events;
 
     public function __construct()
@@ -92,7 +92,7 @@ class SongDifficulty
 
     public function __toString()
     {
-        return $this->getSong()->getName() . " Level " . $this->getDifficultyRank()->getLevel();
+        return $this->getSong()->getName() . ", ".$this->getSong()->getAuthorName()." (by ".$this->getSong()->getMappersNames().") lvl " . $this->getDifficultyRank()->getLevel();
     }
 
     public function getSong(): ?Song
@@ -354,14 +354,14 @@ class SongDifficulty
     }
 
     /**
-     * @return Collection<int, Event>
+     * @return Collection<int, Tournament>
      */
     public function getEvents(): Collection
     {
         return $this->events;
     }
 
-    public function addEvent(Event $event): static
+    public function addEvent(Tournament $event): static
     {
         if (!$this->events->contains($event)) {
             $this->events->add($event);
@@ -371,7 +371,7 @@ class SongDifficulty
         return $this;
     }
 
-    public function removeEvent(Event $event): static
+    public function removeEvent(Tournament $event): static
     {
         if ($this->events->removeElement($event)) {
             $event->removeSongDifficulty($this);

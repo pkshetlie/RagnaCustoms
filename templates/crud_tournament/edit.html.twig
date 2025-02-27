@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Event{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row mt-3">
+            <div class="col-md-2">
+                {% include 'user/partial/_left_part_user.html.twig' %}
+            </div>
+            <div class="col-md-10">
+                <h1>{% if tournament.id is null %}Create{% else %}Edit{% endif %} Custom Tournament</h1>
+
+                {{ include('crud_tournament/_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

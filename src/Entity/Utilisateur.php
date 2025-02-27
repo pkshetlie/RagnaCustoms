@@ -167,12 +167,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ipAddress = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: CustomEvent::class, orphanRemoval: true)]
-    private Collection $customEvents;
-
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: CustomEventParticipation::class, orphanRemoval: true)]
-    private Collection $customEventParticipations;
-
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Friend::class, orphanRemoval: true)]
     private Collection $friendRequests;
 
@@ -196,16 +190,22 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $changelogs;
 
     /**
-     * @var Collection<int, Event>
+     * @var Collection<int, Tournament>
      */
-    #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'players')]
+    #[ORM\ManyToMany(targetEntity: Tournament::class, mappedBy: 'players')]
     private Collection $participatingEvents;
 
     /**
-     * @var Collection<int, Event>
+     * @var Collection<int, Tournament>
      */
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Event::class)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Tournament::class)]
     private Collection $ownedEvents;
+
+    /**
+     * @var Collection<int, TournamentPlayer>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: TournamentPlayer::class)]
+    private Collection $tournamentPlayers;
 
     public function __construct()
     {
@@ -222,14 +222,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->followedMappers = new ArrayCollection();
         $this->followers = new ArrayCollection();
         $this->notifications = new ArrayCollection();
-        $this->customEvents = new ArrayCollection();
-        $this->customEventParticipations = new ArrayCollection();
         $this->friendRequests = new ArrayCollection();
         $this->friends = new ArrayCollection();
         $this->songsMapped = new ArrayCollection();
         $this->changelogs = new ArrayCollection();
         $this->participatingEvents = new ArrayCollection();
         $this->ownedEvents = new ArrayCollection();
+        $this->tournamentPlayers = new ArrayCollection();
     }
 
     public function __toString()
@@ -1510,66 +1509,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, CustomEvent>
-     */
-    public function getCustomEvents(): Collection
-    {
-        return $this->customEvents;
-    }
-
-    public function addCustomEvent(CustomEvent $customEvent): static
-    {
-        if (!$this->customEvents->contains($customEvent)) {
-            $this->customEvents->add($customEvent);
-            $customEvent->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCustomEvent(CustomEvent $customEvent): static
-    {
-        if ($this->customEvents->removeElement($customEvent)) {
-            // set the owning side to null (unless already changed)
-            if ($customEvent->getUser() === $this) {
-                $customEvent->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, CustomEventParticipation>
-     */
-    public function getCustomEventParticipations(): Collection
-    {
-        return $this->customEventParticipations;
-    }
-
-    public function addCustomEventParticipation(CustomEventParticipation $customEventParticipation): static
-    {
-        if (!$this->customEventParticipations->contains($customEventParticipation)) {
-            $this->customEventParticipations->add($customEventParticipation);
-            $customEventParticipation->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCustomEventParticipation(CustomEventParticipation $customEventParticipation): static
-    {
-        if ($this->customEventParticipations->removeElement($customEventParticipation)) {
-            // set the owning side to null (unless already changed)
-            if ($customEventParticipation->getUser() === $this) {
-                $customEventParticipation->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function addFriendRequest(Friend $friendRequest): static
     {
         if (!$this->friendRequests->contains($friendRequest)) {
@@ -1753,14 +1692,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Event>
+     * @return Collection<int, Tournament>
      */
     public function getParticipatingEvents(): Collection
     {
         return $this->participatingEvents;
     }
 
-    public function addEvent(Event $event): static
+    public function addEvent(Tournament $event): static
     {
         if (!$this->participatingEvents->contains($event)) {
             $this->participatingEvents->add($event);
@@ -1770,7 +1709,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeEvent(Event $event): static
+    public function removeEvent(Tournament $event): static
     {
         if ($this->participatingEvents->removeElement($event)) {
             $event->removePlayer($this);
@@ -1780,14 +1719,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Event>
+     * @return Collection<int, Tournament>
      */
     public function getOwnedEvents(): Collection
     {
         return $this->ownedEvents;
     }
 
-    public function addOwnedEvent(Event $ownedEvent): static
+    public function addOwnedEvent(Tournament $ownedEvent): static
     {
         if (!$this->ownedEvents->contains($ownedEvent)) {
             $this->ownedEvents->add($ownedEvent);
@@ -1797,12 +1736,42 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeOwnedEvent(Event $ownedEvent): static
+    public function removeOwnedEvent(Tournament $ownedEvent): static
     {
         if ($this->ownedEvents->removeElement($ownedEvent)) {
             // set the owning side to null (unless already changed)
             if ($ownedEvent->getOwner() === $this) {
                 $ownedEvent->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TournamentPlayer>
+     */
+    public function getTournamentPlayers(): Collection
+    {
+        return $this->tournamentPlayers;
+    }
+
+    public function addTournamentPlayer(TournamentPlayer $tournamentPlayer): static
+    {
+        if (!$this->tournamentPlayers->contains($tournamentPlayer)) {
+            $this->tournamentPlayers->add($tournamentPlayer);
+            $tournamentPlayer->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTournamentPlayer(TournamentPlayer $tournamentPlayer): static
+    {
+        if ($this->tournamentPlayers->removeElement($tournamentPlayer)) {
+            // set the owning side to null (unless already changed)
+            if ($tournamentPlayer->getUser() === $this) {
+                $tournamentPlayer->setUser(null);
             }
         }
 

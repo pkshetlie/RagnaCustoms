@@ -1,0 +1,35 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.label) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_row(form.banner) }}
+    </div>
+    <div class="col-md-6">
+        {{ form_row(form.description) }}
+    </div>
+    <div class="col-md-6">
+        {{ form_row(form.priceDescription) }}
+    </div>
+    <div class="col-12"><hr/></div>
+    <div class="col-md-3">{{ form_row(form.registrationStartAt) }}</div>
+    <div class="col-md-3">{{ form_row(form.registrationEndAt) }}</div>
+    <div class="col-md-3">{{ form_row(form.startAt) }}</div>
+    <div class="col-md-3">{{ form_row(form.endAt) }}</div>
+    <div class="col-12"><hr/></div>
+    <div class="col-md-6">{{ form_row(form.songDifficulties) }}</div>
+
+    <div class="col-12"><hr/></div>
+
+    <div class="col-md-3">{{ form_row(form.maxPlayers) }}</div>
+    <div class="col-md-3">{{ form_row(form.state) }}</div>
+
+    {{ form_widget(form) }}
+    <div class="col-12"><hr/></div>
+    <div class="col-12"><button class="btn btn-primary" type="submit">{{ button_label|default('Save') }}</button></div>
+
+
+</div>
+{{ form_end(form) }}
