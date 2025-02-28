@@ -34,7 +34,7 @@ class ChangelogController extends AbstractController
     }
 
     #[Route('/changelog/mark-as-read/{id}', name: 'changelog_mark_as_read', methods: ['POST'])]
-    public function markAsRead(int $id, EntityManagerInterface $em): JsonResponse
+    public function markAsRead(string $id, EntityManagerInterface $em): JsonResponse
     {
         /** @var ?Utilisateur $user */
         $user = $this->getUser();

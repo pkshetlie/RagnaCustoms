@@ -80,14 +80,14 @@ class SongDifficulty
     /**
      * @var Collection<int, Tournament>
      */
-    #[ORM\ManyToMany(targetEntity: Tournament::class, mappedBy: 'songDifficulties')]
-    private Collection $events;
+    #[ORM\ManyToMany(targetEntity: Tournament::class, inversedBy: 'songDifficulties')]
+    private Collection $tournaments;
 
     public function __construct()
     {
         $this->scores = new ArrayCollection();
         $this->scoreHistories = new ArrayCollection();
-        $this->events = new ArrayCollection();
+        $this->tournaments = new ArrayCollection();
     }
 
     public function __toString()
@@ -356,24 +356,24 @@ class SongDifficulty
     /**
      * @return Collection<int, Tournament>
      */
-    public function getEvents(): Collection
+    public function getTournaments(): Collection
     {
-        return $this->events;
+        return $this->tournaments;
     }
 
-    public function addEvent(Tournament $event): static
+    public function addTournament(Tournament $event): static
     {
-        if (!$this->events->contains($event)) {
-            $this->events->add($event);
+        if (!$this->tournaments->contains($event)) {
+            $this->tournaments->add($event);
             $event->addSongDifficulty($this);
         }
 
         return $this;
     }
 
-    public function removeEvent(Tournament $event): static
+    public function removeTournament(Tournament $event): static
     {
-        if ($this->events->removeElement($event)) {
+        if ($this->tournaments->removeElement($event)) {
             $event->removeSongDifficulty($this);
         }
 
