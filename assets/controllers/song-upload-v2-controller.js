@@ -14,7 +14,7 @@ export default class extends Controller {
     connect() {
         $("[data-toggle='tooltip'],[title]").tooltip();
         Dropzone.autoDiscover = false;
-        let myDropzone = new Dropzone("#my-form",{url:"/upload/bundle/song/add"});
+        let myDropzone = new Dropzone("#my-form",{url:"/account/upload/bundle/song/add"});
         myDropzone.on("addedfile", file => {
         });
         myDropzone.on("success", (file) => {

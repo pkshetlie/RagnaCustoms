@@ -28,7 +28,7 @@ export default class extends Controller {
             let song = $(this).data('song');
             let checked = $(this).is(':checked');
             $.ajax({
-                url: '/upload/song/toggle/'+song,
+                url: '/account/upload/song/toggle/'+song,
                 data:{
                     song: song,
                     checked : checked

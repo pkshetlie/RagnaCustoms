@@ -77,4 +77,4 @@ security:
         - { path: ^/user/downloads, roles: ROLE_USER }
         - { path: ^/playlists, roles: ROLE_USER }
         - { path: ^/recently-played, roles: ROLE_USER }
-        - { path: ^/upload/song$, roles: ROLE_USER }
+        - { path: ^/account/upload/song$, roles: ROLE_USER }
