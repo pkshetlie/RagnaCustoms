@@ -77,11 +77,11 @@ class SongDifficulty
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $wanadevHash;
 
-    /**
-     * @var Collection<int, Tournament>
-     */
-    #[ORM\ManyToMany(targetEntity: Tournament::class, inversedBy: 'songDifficulties')]
-    private Collection $tournaments;
+    // /**
+    //  * @var Collection<int, Tournament>
+    //  */
+    // #[ORM\ManyToMany(targetEntity: Tournament::class, inversedBy: 'songDifficulties')]
+    // private Collection $tournaments;
 
     public function __construct()
     {

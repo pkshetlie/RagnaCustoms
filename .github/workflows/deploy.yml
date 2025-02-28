@@ -47,6 +47,7 @@ jobs:
                     port: 22
                     script: |
                         cd /var/www/html/ragnacustoms.com/www
+                        git stash                 
                         git pull origin master                 
                         composer update --no-dev --optimize-autoloader
 
