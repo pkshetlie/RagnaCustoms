@@ -11,6 +11,7 @@ use App\Service\DiscordService;
 use App\Service\NotificationService;
 use App\Service\SongService;
 use App\Service\VoteService;
+use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,8 +25,12 @@ class VotesController extends AbstractController
 {
 
     #[Route(path: '/upvote/{id}', name: '_upvote')]
-    public function toggleUpVote(VoteService $voteService, Song $song, TranslatorInterface $translator, NotificationService $notificationService)
-    {
+    public function toggleUpVote(
+        VoteService $voteService,
+        Song $song,
+        TranslatorInterface $translator,
+        NotificationService $notificationService
+    ) {
         if (!$song->isAvailable()) {
             $this->addFlash('danger', $translator->trans("Song not available for vote"));
         } elseif (!$this->isGranted('ROLE_USER')) {
@@ -33,24 +38,46 @@ class VotesController extends AbstractController
         } elseif (!$voteService->canUpDownVote($song, $this->getUser())) {
             $this->addFlash('danger', $translator->trans("Play the song first"));
         } else {
+            $lastVote = $voteService->getLast($song, $this->getUser());
+            $now = new DateTime();
+            $interval = $lastVote?->getUpdatedAt()->diff($now);
+
             $voteService->toggleUpVote($song, $this->getUser());
 
-            foreach($song->getMappers() AS $mapper){
-                if($mapper->hasNotificationPreference(ENotification::Mapper_new_feedback)){
-                    $UserSongVoteCounter = $song->isVoteCounterBy($this->getUser());
-                    if(!$UserSongVoteCounter){break;}
-                    $notificationService->send($mapper,'You got '.($UserSongVoteCounter->getVotesIndc() ? 'an Up-': 'a Down-').'vote on <a href="'.$this->generateUrl('song_detail', ['slug'=>$song->getSlug()]).'">'.htmlentities($song->getName())."</a>");
+            if (!$interval || $interval->i > 10 || $interval->h !== 0) {
+                foreach ($song->getMappers() as $mapper) {
+                    if ($mapper->hasNotificationPreference(ENotification::Mapper_new_feedback)) {
+                        $userSongVoteCounter = $song->isVoteCounterBy($this->getUser());
+
+                        if (!$userSongVoteCounter) {
+                            break;
+                        }
+                        if ($userSongVoteCounter->getVotesIndc() === null) {
+                            break;
+                        }
+                        $message = 'You got '.($userSongVoteCounter->getVotesIndc() ? 'an Up-' : 'a Down-').'vote on <a href="'.$this->generateUrl('song_detail',['slug' => $song->getSlug()]).'">'.htmlentities($song->getName())."</a>";
+                            $notificationService->send(
+                                $mapper,
+                                $message
+                            );
+                        }
+
                 }
             }
         }
+
         return new JsonResponse(
             ['result' => $this->renderView('songs/partial/downupvote.html.twig', ['song' => $song,])]
         );
     }
 
     #[Route(path: '/downvote/{id}', name: '_downvote')]
-    public function toggleDownVote(VoteService $voteService, Song $song, TranslatorInterface $translator, NotificationService $notificationService)
-    {
+    public function toggleDownVote(
+        VoteService $voteService,
+        Song $song,
+        TranslatorInterface $translator,
+        NotificationService $notificationService
+    ) {
         if (!$song->isAvailable()) {
             $this->addFlash('danger', $translator->trans("Song not available for vote"));
         } elseif (!$this->isGranted('ROLE_USER')) {
@@ -58,13 +85,34 @@ class VotesController extends AbstractController
         } elseif (!$voteService->canUpDownVote($song, $this->getUser())) {
             $this->addFlash('danger', $translator->trans("Play the song first"));
         } else {
+            $lastVote = $voteService->getLast($song, $this->getUser());
+            $now = new DateTime();
+            $interval = $lastVote?->getUpdatedAt()->diff($now);
+
             $voteService->toggleDownVote($song, $this->getUser());
 
-            foreach($song->getMappers() AS $mapper){
-                if($mapper->hasNotificationPreference(ENotification::Mapper_new_feedback)){
-                    $UserSongVoteCounter = $song->isVoteCounterBy($this->getUser());
-                    if(!$UserSongVoteCounter){break;}
-                    $notificationService->send($mapper,'You got '.($UserSongVoteCounter->getVotesIndc() ? 'an Up-': 'a Down-').'vote on <a href="'.$this->generateUrl('song_detail', ['slug'=>$song->getSlug()]).'">'.htmlentities($song->getName())."</a>");
+            if (!$interval || $interval->i > 10 || $interval->h !== 0) {
+                foreach ($song->getMappers() as $mapper) {
+                    if ($mapper->hasNotificationPreference(ENotification::Mapper_new_feedback)) {
+                        $userSongVoteCounter = $song->isVoteCounterBy($this->getUser());
+
+                        if (!$userSongVoteCounter) {
+                            break;
+                        }
+
+                        if ($userSongVoteCounter->getVotesIndc() === null) {
+                            break;
+                        }
+
+                        $notificationService->send(
+                            $mapper,
+                            'You got '.($userSongVoteCounter->getVotesIndc(
+                            ) ? 'an Up-' : 'a Down-').'vote on <a href="'.$this->generateUrl(
+                                'song_detail',
+                                ['slug' => $song->getSlug()]
+                            ).'">'.htmlentities($song->getName())."</a>"
+                        );
+                    }
                 }
             }
         }
@@ -74,8 +122,12 @@ class VotesController extends AbstractController
     }
 
     #[Route(path: '/dismiss/{id}', name: '_dismiss')]
-    public function dismissVote(VoteService $voteService, SongService $songService, Song $song, TranslatorInterface $translator): JsonResponse
-    {
+    public function dismissVote(
+        VoteService $voteService,
+        SongService $songService,
+        Song $song,
+        TranslatorInterface $translator
+    ): JsonResponse {
         if (!$song->isAvailable()) {
             $this->addFlash('danger', $translator->trans("Song not available for vote"));
         } elseif (!$this->isGranted('ROLE_USER')) {
@@ -85,15 +137,21 @@ class VotesController extends AbstractController
         } else {
             $voteService->dismissVote($song, $this->getUser());
         }
-        return new JsonResponse(['result' => $this->renderView('songs/partial/vote_it_box.html.twig', 
-            ['songs' => $songService->getLastPlayedToVote($this->getUser())])]);
+
+        return new JsonResponse([
+            'result' => $this->renderView(
+                'songs/partial/vote_it_box.html.twig',
+                ['songs' => $songService->getLastPlayedToVote($this->getUser())]
+            ),
+        ]);
     }
 
     /**
-     * @param  Request  $request
-     * @param  Song  $song
-     * @param  VoteRepository  $voteRepository
-     * @param  TranslatorInterface  $translator
+     * @param Request $request
+     * @param Song $song
+     * @param VoteRepository $voteRepository
+     * @param TranslatorInterface $translator
+     *
      * @return Response
      */
     #[Route(path: '/review/{id}', name: '_review')]
@@ -121,8 +179,8 @@ class VotesController extends AbstractController
                 "errorMessage" => $translator->trans("You need an account!"),
                 "response" => $this->renderView('songs/partial/detail_vote.html.twig', [
                     "song" => $song,
-                    'message' => $translator->trans("You need an account!")
-                ])
+                    'message' => $translator->trans("You need an account!"),
+                ]),
             ]);
         }
 
@@ -149,14 +207,14 @@ class VotesController extends AbstractController
                 "errorMessage" => $translator->trans("You need an account!"),
                 "response" => $this->renderView('songs/partial/detail_vote.html.twig', [
                     "song" => $song,
-                    'message' => $translator->trans("You can't review a custom song you've submitted")
-                ])
+                    'message' => $translator->trans("You can't review a custom song you've submitted"),
+                ]),
             ]);
         }
 
         $vote = $voteRepository->findOneBy([
             'song' => $song,
-            'user' => $this->getUser()
+            'user' => $this->getUser(),
         ]);
 
         if ($vote == null) {
@@ -170,8 +228,8 @@ class VotesController extends AbstractController
             'action' => $this->generateUrl('song_vote_review', ['id' => $song->getId()]),
             "attr" => [
                 "class" => "form ajax-form",
-                "data-url" => $this->generateUrl("song_vote_review", ['id' => $song->getId()])
-            ]
+                "data-url" => $this->generateUrl("song_vote_review", ['id' => $song->getId()]),
+            ],
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -189,9 +247,15 @@ class VotesController extends AbstractController
             if ($vote->getFeedback() != null && !empty($vote->getFeedback()) && $vote->getFeedback(
                 ) !== $voteBefore->getFeedback()) {
                 $discordService->sendFeedback($vote);
-                foreach($song->getMappers() AS $mapper){
-                    if($mapper->hasNotificationPreference(ENotification::Mapper_new_feedback)){
-                        $notificationService->send($mapper,'You got a review on <a href="'.$this->generateUrl('song_detail', ['slug'=>$song->getSlug()]).'">'.htmlentities($song->getName())."</a>");
+                foreach ($song->getMappers() as $mapper) {
+                    if ($mapper->hasNotificationPreference(ENotification::Mapper_new_feedback)) {
+                        $notificationService->send(
+                            $mapper,
+                            'You got a review on <a href="'.$this->generateUrl(
+                                'song_detail',
+                                ['slug' => $song->getSlug()]
+                            ).'">'.htmlentities($song->getName())."</a>"
+                        );
                     }
                 }
 
@@ -205,10 +269,11 @@ class VotesController extends AbstractController
                 "errorMessage" => false,
                 "response" => $this->renderView("songs/partial/vote_small.html.twig", [
                     'song' => $song,
-                    "vote" => $vote
+                    "vote" => $vote,
                 ]),
             ]);
         }
+
         return new JsonResponse([
             "error" => false,
             "errorMessage" => false,

@@ -181,6 +181,7 @@ class Song
         $votes = $this->voteCounters->filter(function (VoteCounter $voteCounter) use ($user) {
             return $voteCounter->getUser() === $user;
         });
+
         return $votes->isEmpty() ? null : $votes->first();
     }
 
