@@ -87,7 +87,7 @@ class SongDifficulty
     {
         $this->scores = new ArrayCollection();
         $this->scoreHistories = new ArrayCollection();
-        $this->tournaments = new ArrayCollection();
+        // $this->tournaments = new ArrayCollection();
     }
 
     public function __toString()

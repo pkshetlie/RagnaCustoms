@@ -62,9 +62,9 @@
     <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') == 'playlist' %}activated{% endif %}">
         <i class="fas fa-list"></i> <a href="{{ url('playlist') }}">{{ "My playlists"|trans }}</a>
     </li>
-
+{% if is_granted('ROLE_ADMIN') %}
     <li class="list-group-item no-bg pl-0 {% if app.request.get('_route') starts with 'app_crud_tournament' %}activated{% endif %}">
         <i class="fas fa-calendar"></i> <a href="{{ url('app_crud_tournament_index') }}" disabled="disabled">{{ "My custom tournament"|trans }} </a> <span class="fas fa-gavel text-warning" title="require Premium Tier 3"></span>
     </li>
-
+{% endif %}
 </ul>

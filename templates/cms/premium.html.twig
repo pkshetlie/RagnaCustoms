@@ -106,13 +106,15 @@
                 <td>✔️</td>
                 <td>✔️</td>
               </tr>
+              {% if is_granted('ROLE_ADMIN') %}
               <tr>
-                <td><strong>Custom event creation (soon)</strong></td>
+                <td><strong>Custom tournament creation</strong></td>
                 <td>❌</td>
                 <td>❌</td>
                 <td>❌</td>
                 <td>✔️</td>
               </tr>
+              {% endif %}
               <tr>
                 <td><strong>Price per month</strong></td>
                 <td>0€</td>
