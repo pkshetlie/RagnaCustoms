@@ -74,7 +74,38 @@ class UploadSongController extends AbstractController
             ) : $this->generateUrl('new_song'),
         ]);
 
-        if ($this->isGranted('ROLE_PREMIUM_LVL2')) {
+        if ($this->isGranted('ROLE_PREMIUM_LVL3')) {
+            $form
+                ->add('programmationDate', DateTimeType::class, [
+                    'label' => '<i data-toggle="tooltip" title="premium feature" class="fas fa-gavel text-warning" ></i> Publishing date',
+                    'widget' => 'single_text',
+                    'required' => true,
+                    'input' => "datetime",
+                    "empty_data" => '',
+                    'label_html' => true,
+                    'help' => "Sorry for now it's based on UTC+1 (french time) ",
+                ])
+                ->add("zipFile", FileType::class, [
+                    "mapped" => false,
+                    "required" => $song->getId() == null,
+                    "help" => "Upload a .zip file (max 30Mo) containing all the files for the map.",
+                    "constraints" => [
+                        new File([
+                            'maxSize' => '30m',
+                            'maxSizeMessage' => 'You can upload up to 30Mo with a premium account Tier 3',
+                        ], '30m'),
+                    ],
+                ])
+                ->add('publishingType', ChoiceType::class, [
+                    'choices' => [
+                        'Public' => 1,
+                        'Private link' => 2,
+                        'WIP' => 0,
+                        'Unpublished' => 3,
+                    ],
+                    'mapped' => false
+                ]);
+        } elseif ($this->isGranted('ROLE_PREMIUM_LVL2')) {
             $form
                 ->add('programmationDate', DateTimeType::class, [
                     'label' => '<i data-toggle="tooltip" title="premium feature" class="fas fa-gavel text-warning" ></i> Publishing date',
@@ -512,6 +543,7 @@ class UploadSongController extends AbstractController
             $song = new Song();
             $song->addMapper($this->getUser());
             $song->setActive(true);
+            $song->setLastDateUpload(new \DateTime());
             $songService->processFileWithoutForm($request, $song);
         } catch (Exception $e) {
             return new Response($e->getMessage(), 500);

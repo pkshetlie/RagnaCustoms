@@ -59,7 +59,7 @@
             <i class='far fa-clock text-warning' data-toggle="tooltip" title="Publishing on {{ song.programmationDate|date('Y-m-d H:i') }}"></i>
         {% else %}
         {{ song.published and song.available ?
-        "<i class='fas fa-check text-success'></i>" :
+        ("<i class='fas fa-check text-success' title='Published on "~ song.programmationDate|date('Y-m-d H:i')~"'></i>")|raw :
         (song.isPrivate ?
         ("<i
             data-toggle='tooltip'
@@ -94,7 +94,7 @@
                data-success-action="remove"
                data-remove-selector="#song-{{ song.id }}"
                data-url="{{ url('delete_song',{id:song.id}) }}"
-               data-confirm-message="{{ "Are you sure? You won't be able to recover this map after you delete it."|trans }}"
+               data-confirm-message="{{ "you are going to delete \""~song.name~"\" You won't be able to recover this map after you delete it."|trans }}"
                class="text-danger confirm mt-2 ml-2 ajax-link">
                 <i class="fas fa-trash"></i>
             </a>

@@ -57,19 +57,23 @@
                   <a data-no-swup="true" href="ragnac://install/{{ song.privateLink }}"
                      class="btn btn-block mr-1 btn-success"><i class="fas fa-download"></i> {{ "1 click"|trans }}</a>
                 {% else %}
-                <a data-no-swup="true" href="ragnac://install/{{ song.id }}"
-                   class="btn btn-block mr-1 btn-success"><i class="fas fa-download"></i> {{ "1 click"|trans }}</a>
+                  <a data-no-swup="true" href="ragnac://install/{{ song.id }}"
+                     class="btn btn-block mr-1 btn-success"><i class="fas fa-download"></i> {{ "1 click"|trans }}</a>
                 {% endif %}
               </div>
               <div class="d-inline-block">
                 {% if song.private %}
-                  <a data-no-swup="true" href="{{ url('song_direct_download',{id: song.privateLink}) }}" data-toggle="tooltips" title="{{ songService.getZipSize(song) }}"
-                     class="btn btn-block ml-1 btn-info text-uppercase"><i class="fas fa-download"></i> {{ "Zip"|trans }}
+                  <a data-no-swup="true" href="{{ url('song_direct_download',{id: song.privateLink}) }}"
+                     data-toggle="tooltips" title="{{ songService.getZipSize(song) }}"
+                     class="btn btn-block ml-1 btn-info text-uppercase"><i
+                        class="fas fa-download"></i> {{ "Zip"|trans }}
                   </a>
                 {% else %}
-                <a data-no-swup="true" href="{{ url('song_direct_download',{id: song.id}) }}" data-toggle="tooltips" title="{{ songService.getZipSize(song) }}"
-                   class="btn btn-block ml-1 btn-info text-uppercase"><i class="fas fa-download"></i> {{ "Zip"|trans }}
-                </a>
+                  <a data-no-swup="true" href="{{ url('song_direct_download',{id: song.id}) }}" data-toggle="tooltips"
+                     title="{{ songService.getZipSize(song) }}"
+                     class="btn btn-block ml-1 btn-info text-uppercase"><i
+                        class="fas fa-download"></i> {{ "Zip"|trans }}
+                  </a>
                 {% endif %}
               </div>
             </div>
@@ -83,6 +87,20 @@
               {% include 'songs/partial/artists.html.twig' with {song : song} %}
             </h2>
             <div class="tags">
+              {% if song.hasBestPlatform(0) %}
+                <span class="btn btn-sm btn-tag">
+                <i class="fas fa-vr-cardboard "
+                   data-toggle="tooltip"
+                   title="Mapped for VR"></i>
+                  </span>
+              {% endif %}
+              {% if song.hasBestPlatform(1) %}
+                <span class="btn btn-sm btn-tag">
+                  <i class="fas fa-gamepad"
+                     data-toggle="tooltip"
+                     title="Mapped for Vikings on Tour"></i>
+                </span>
+              {% endif %}
               {% for category in song.categoryTags %}
                 <a class='btn btn-sm btn-tag'
                    href="{{ url('song_library',{search:'genre:'~category.label}) }}">{{ category.label }}</a>
@@ -264,9 +282,10 @@
                       {% endif %}
                       {% if level.difficulty.isRanked %}
                         <span class="flex-fill justify-content-end row text-danger">
-                          <i title="{{ "Show PP chart"|trans }}" 
-                            data-toggle="modal" data-target="#PPChartView" data-diff="{{ level.difficulty.id }}" data-user="{{ is_granted('ROLE_USER') ? app.user.id : '' }}" data-leaderboard="vr"
-                            class="fa-chart-simple fas pp-chart" style="cursor: pointer">
+                          <i title="{{ "Show PP chart"|trans }}"
+                             data-toggle="modal" data-target="#PPChartView" data-diff="{{ level.difficulty.id }}"
+                             data-user="{{ is_granted('ROLE_USER') ? app.user.id : '' }}" data-leaderboard="vr"
+                             class="fa-chart-simple fas pp-chart" style="cursor: pointer">
                           </i>
                         </span>
                       {% endif %}
@@ -334,13 +353,14 @@
                         <div class="row col-12">
                           {% if is_granted('ROLE_USER') %}
                             <span
-                              class="text-danger">{{ "Your position: %position%"|trans|replace({"%position%":scoreService.leaderboardPositionWithOrdinalSuffix(app.user,level['difficulty'],'-', false)}) }}</span>
+                                class="text-danger">{{ "Your position: %position%"|trans|replace({"%position%":scoreService.leaderboardPositionWithOrdinalSuffix(app.user,level['difficulty'],'-', false)}) }}</span>
                           {% endif %}
                           {% if level.difficulty.isRanked %}
                             <span class="flex-fill justify-content-end row text-danger">
-                              <i title="{{ "Show PP chart"|trans }}" 
-                                data-toggle="modal" data-target="#PPChartView" data-diff="{{ level.difficulty.id }}" data-user="{{ is_granted('ROLE_USER') ? app.user.id : '' }}" data-leaderboard="flat"
-                                class="fa-chart-simple fas pp-chart" style="cursor: pointer">
+                              <i title="{{ "Show PP chart"|trans }}"
+                                 data-toggle="modal" data-target="#PPChartView" data-diff="{{ level.difficulty.id }}"
+                                 data-user="{{ is_granted('ROLE_USER') ? app.user.id : '' }}" data-leaderboard="flat"
+                                 class="fa-chart-simple fas pp-chart" style="cursor: pointer">
                               </i>
                             </span>
                           {% endif %}
@@ -390,13 +410,14 @@
                         <div class="row col-12">
                           {% if is_granted('ROLE_USER') %}
                             <span
-                              class="text-danger">{{ "Your position: %position%"|trans|replace({"%position%":scoreService.leaderboardPositionWithOrdinalSuffix(app.user,level['difficulty'],'-', false, true)}) }}</span>
+                                class="text-danger">{{ "Your position: %position%"|trans|replace({"%position%":scoreService.leaderboardPositionWithOrdinalSuffix(app.user,level['difficulty'],'-', false, true)}) }}</span>
                           {% endif %}
                           {% if level.difficulty.isRanked %}
                             <span class="flex-fill justify-content-end row text-danger">
-                              <i title="{{ "Show PP chart"|trans }}" 
-                                data-toggle="modal" data-target="#PPChartView" data-diff="{{ level.difficulty.id }}" data-user="{{ is_granted('ROLE_USER') ? app.user.id : '' }}" data-leaderboard="okod"
-                                class="fa-chart-simple fas pp-chart" style="cursor: pointer">
+                              <i title="{{ "Show PP chart"|trans }}"
+                                 data-toggle="modal" data-target="#PPChartView" data-diff="{{ level.difficulty.id }}"
+                                 data-user="{{ is_granted('ROLE_USER') ? app.user.id : '' }}" data-leaderboard="okod"
+                                 class="fa-chart-simple fas pp-chart" style="cursor: pointer">
                               </i>
                             </span>
                           {% endif %}

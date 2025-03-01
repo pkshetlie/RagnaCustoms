@@ -28,7 +28,7 @@ class StatisticService
     public static function dateDisplay(?DateTimeInterface $date = null): string
     {
         if (!$date) {
-            return 'soon';
+            return 'no date';
         }
 
         $difference = $date->diff(new DateTime(), true);
