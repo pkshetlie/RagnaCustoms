@@ -304,7 +304,6 @@ function loadForm(modalform, content) {
       processData: false,
       contentType: false,
       success: function (data) {
-        console.log(data);
         if (data.goto !== undefined && data.goto !== false) {
           window.location.href = data.goto;
         }
@@ -363,7 +362,6 @@ $(function () {
         const changelog = data[index];
         const content = '<div class="text-left">' + changelog.description + '</div>';
 
-        console.log(index, data.length, index < data.length - 1)
         Swal.fire({
           customClass: {
             popup: 'swal2-popup',

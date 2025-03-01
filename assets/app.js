@@ -15,7 +15,6 @@ function clearTootips() {
 
 function selectPills(hash) {
     let regex = /-flat$/;
-    console.log('NOT flat', $("a[href=\"#" + hash + "\"]").not('.active'));
 
 }
 

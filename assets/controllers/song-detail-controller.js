@@ -8,6 +8,7 @@ import Chart from "chart.js/auto";
 require('../js/base');
 require('../js/plugins/ajax_link');
 require('../js/plugins/rating');
+require('../js/plugins/playlist');
 
 
 export default class extends Controller {

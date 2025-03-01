@@ -69,7 +69,6 @@ function loadForm(modalform, content) {
 $(document).on('click', ".ajax-modal-form", function () {
     let t = $(this);
     $(t.data('modal')).modal('show');
-    console.log('coucou');
     $.ajax({
         url: t.attr('href'),
         success: function (data) {

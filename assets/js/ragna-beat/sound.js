@@ -18,7 +18,6 @@ export class FireAndForgetSound {
             request.onload = () => {
                 context.decodeAudioData(request.response, (buffer) => {
                     if (!buffer) {
-                        console.log(`Sound decoding error: ${ this.url }`);
                         reject(new Error(`Sound decoding error: ${ this.url }`));
                         return;
                     }
@@ -27,7 +26,6 @@ export class FireAndForgetSound {
                 });
             };
             request.onerror = (err) => {
-                console.log('Sound XMLHttpRequest error:', err);
                 reject(err);
             };
             request.send();

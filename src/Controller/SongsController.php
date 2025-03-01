@@ -52,13 +52,6 @@ class SongsController extends AbstractController
         return $this->redirectToRoute("song_detail", ['slug' => $song->getSlug()], 301);
     }
 
-    /**
-     * @param Request $request
-     * @param Song $song
-     * @param TranslatorInterface $translator
-     *
-     * @return JsonResponse
-     */
     #[Route(path: '/song/playlist/{id}', name: 'song_playlist')]
     public function formPlaylist(
         Request $request,
@@ -94,11 +87,13 @@ class SongsController extends AbstractController
 
         $form->handleRequest($request);
         $em = $doctrine->getManager();
+
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Playlist $playlist */
             $playlist = $form->get('playlist')->getData();
             if ($playlist == null) {
                 $label = trim($form->get('newPlaylist')->getData());
+
                 if ($label == null || empty($label)) {
                     return new JsonResponse([
                         "error" => true,
@@ -107,12 +102,14 @@ class SongsController extends AbstractController
 
                     ]);
                 }
+
                 $playlist = new Playlist();
                 $playlist->setLabel($label);
                 $this->getUser()->addPlaylist($playlist);
                 $playlist->setUser($this->getUser());
                 $em->persist($playlist);
             }
+
             foreach ($playlist->getSongs() as $psong) {
                 if ($song->getId() === $psong->getId()) {
                     return new JsonResponse([
@@ -122,6 +119,7 @@ class SongsController extends AbstractController
                     ]);
                 }
             }
+
             $playlist->addSong($song);
             $em->flush();
 

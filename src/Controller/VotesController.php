@@ -52,9 +52,11 @@ class VotesController extends AbstractController
                         if (!$userSongVoteCounter) {
                             break;
                         }
+
                         if ($userSongVoteCounter->getVotesIndc() === null) {
                             break;
                         }
+
                         $message = 'You got '.($userSongVoteCounter->getVotesIndc() ? 'an Up-' : 'a Down-').'vote on <a href="'.$this->generateUrl('song_detail',['slug' => $song->getSlug()]).'">'.htmlentities($song->getName())."</a>";
                             $notificationService->send(
                                 $mapper,

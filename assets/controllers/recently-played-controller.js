@@ -145,7 +145,6 @@ export default class extends Controller {
                     chart.data.datasets = [];
                     for (var i = 1; response.datasets.datasets[0].data.length >= i; i++) {
                         chart.data.labels.push("Session " + i);
-                        console.log( "Session " + i)
                     }
                     chart.data.datasets = response.datasets.datasets;
                     chart.update();

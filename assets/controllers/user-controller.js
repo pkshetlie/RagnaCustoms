@@ -44,7 +44,6 @@ export default class extends Controller {
         //     });
         // });
         $(".reset-api-key").on('click', function () {
-            console.log("furet")
             if (confirm('You are going to change your api key, are you sure to continue ? ')) {
                 $.ajax({
                     type: "POST",
