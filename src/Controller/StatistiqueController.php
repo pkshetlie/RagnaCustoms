@@ -71,7 +71,7 @@ class StatistiqueController extends AbstractController
             $output = fopen('php://output', 'w');
 
             // Écrire l'en-tête CSV
-            fputcsv($output, array_keys($page[0]));
+            fputcsv($output, array_keys($page[0]), ';');
 
             // Écrire les lignes de données
             foreach ($page as $row) {
