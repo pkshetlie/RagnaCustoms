@@ -946,7 +946,9 @@ table tr {
 #song-detail {
   .author{
     a{
-      max-width: 290px;
+      line-height: 2rem;
+      height: 28px;
+      max-width: 450px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
