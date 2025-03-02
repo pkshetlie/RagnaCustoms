@@ -39,7 +39,7 @@ class SongPublishCommand extends Command
 
         /** @var Song $song */
         foreach ($songs as $song) {
-            if ($song->getLastDateUpload() === null) {
+            if (!$song->isNotificationDone()) {
                 $this->songService->sendNewNotification($song);
             }
 

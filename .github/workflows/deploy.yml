@@ -47,6 +47,8 @@ jobs:
                     port: 22
                     script: |
                         cd /var/www/html/ragnacustoms.com/www
+                        chown -R deployuser:www-data /var/www/html/ragnacustoms.com/www
+                        chmod -R g+rw /var/www/html/ragnacustoms.com/www/var
                         git stash                 
                         git pull origin master                 
                         composer update --no-dev --optimize-autoloader
