@@ -75,7 +75,7 @@ class StatistiqueController extends AbstractController
 
             // Écrire les lignes de données
             foreach ($page as $row) {
-                fputcsv($output, $row);
+                fputcsv($output, $row, ';');
             }
 
             fclose($output);
