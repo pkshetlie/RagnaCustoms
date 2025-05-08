@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Entity\Song;
-use App\Entity\SongRequest;
 use App\Entity\Vote;
 
 readonly class DiscordService

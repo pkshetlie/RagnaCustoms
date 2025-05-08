@@ -45,8 +45,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private $country;
     #[ORM\Column(type: 'integer', nullable: true)]
     private $credits;
-    #[ORM\ManyToMany(targetEntity: SongRequest::class, mappedBy: 'mapperOnIt')]
-    private $currentlyMapped;
     #[ORM\Column(type: 'string', unique: true, nullable: true)]
     private $discordEmail;
     #[ORM\Column(type: 'string', unique: true, nullable: true)]
@@ -113,11 +111,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(targetEntity: RankedScores::class, mappedBy: 'user')]
     private Collection $rankedScores;
-
-    #[ORM\OneToMany(targetEntity: SongRequestVote::class, mappedBy: 'user', orphanRemoval: true)]
-    private $songRequestVotes;
-    #[ORM\OneToMany(targetEntity: SongRequest::class, mappedBy: 'requestedBy', orphanRemoval: true)]
-    private $songRequests;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $steamCommunityId;
@@ -215,9 +208,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->rankedScores = new ArrayCollection();
         $this->scoreHistories = new ArrayCollection();
         $this->playlists = new ArrayCollection();
-        $this->songRequests = new ArrayCollection();
         $this->currentlyMapped = new ArrayCollection();
-        $this->songRequestVotes = new ArrayCollection();
         $this->voteCounter = new ArrayCollection();
         $this->followedMappers = new ArrayCollection();
         $this->followers = new ArrayCollection();
@@ -615,86 +606,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         // TODO: Implement @method string getUserIdentifier()
     }
 
-    /**
-     * @return Collection|SongRequest[]
-     */
-    public function getSongRequests(): Collection
-    {
-        return $this->songRequests;
-    }
-
-    /**
-     * @return Collection|SongRequest[]
-     */
-    public function getOpenSongRequests(): Collection
-    {
-        return $this->songRequests->filter(function (Songrequest $songrequest) {
-            return $songrequest->getState() == SongRequest::STATE_ASKED;
-        });
-    }
-
-    /**
-     * @return ?SongRequest
-     */
-    public function getSongRequestInProgress(): ?SongRequest
-    {
-        foreach ($this->getCurrentlyMapped() as $request) {
-            if ($request->getState() == SongRequest::STATE_IN_PROGRESS) {
-                return $request;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return Collection|SongRequest[]
-     */
-    public function getCurrentlyMapped(): Collection
-    {
-        return $this->currentlyMapped;
-    }
-
-    public function addSongRequest(SongRequest $songRequest): self
-    {
-        if (!$this->songRequests->contains($songRequest)) {
-            $songRequest->setRequestedBy($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSongRequest(SongRequest $songRequest): self
-    {
-        if ($this->songRequests->removeElement($songRequest)) {
-            // set the owning side to null (unless already changed)
-            if ($songRequest->getRequestedBy() === $this) {
-                $songRequest->setRequestedBy(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function addCurrentlyMapped(SongRequest $currentlyMapped): self
-    {
-        if (!$this->currentlyMapped->contains($currentlyMapped)) {
-            $this->currentlyMapped[] = $currentlyMapped;
-            $currentlyMapped->addMapperOnIt($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCurrentlyMapped(SongRequest $currentlyMapped): self
-    {
-        if ($this->currentlyMapped->removeElement($currentlyMapped)) {
-            $currentlyMapped->removeMapperOnIt($this);
-        }
-
-        return $this;
-    }
-
     public function getIsPatreon(): ?bool
     {
         return $this->isPatreon;
@@ -705,48 +616,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->isPatreon = $isPatreon;
 
         return $this;
-    }
-
-    public function addSongRequestVote(SongRequestVote $songRequestVote): self
-    {
-        if (!$this->songRequestVotes->contains($songRequestVote)) {
-            $this->songRequestVotes[] = $songRequestVote;
-            $songRequestVote->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSongRequestVote(SongRequestVote $songRequestVote): self
-    {
-        if ($this->songRequestVotes->removeElement($songRequestVote)) {
-            // set the owning side to null (unless already changed)
-            if ($songRequestVote->getUser() === $this) {
-                $songRequestVote->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param SongRequest $songRequest
-     *
-     * @return bool
-     */
-    public function getWantedToo(SongRequest $songRequest): bool
-    {
-        return $this->getSongRequestVotes()->filter(function (SongRequestVote $songRequestVote) use ($songRequest) {
-                return $songRequest === $songRequestVote->getSongRequest();
-            })->count() > 0;
-    }
-
-    /**
-     * @return Collection|SongRequestVote[]
-     */
-    public function getSongRequestVotes(): Collection
-    {
-        return $this->songRequestVotes;
     }
 
     public function getAvgRating()

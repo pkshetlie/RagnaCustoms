@@ -9,7 +9,6 @@ use App\Entity\Score;
 use App\Entity\Song;
 use App\Entity\SongDifficulty;
 use App\Entity\SongHash;
-use App\Entity\SongRequest;
 use App\Entity\Utilisateur;
 use App\Entity\Vote;
 use App\Entity\VoteCounter;
@@ -47,18 +46,6 @@ class SongService
         private readonly SongRepository $songRepository,
         private readonly Security $security
     ) {
-    }
-
-    public function emailRequestDone(SongRequest $songRequest, Song $song)
-    {
-        $email = (new Email())->from('contact@ragnacustoms.com')->to(
-            $songRequest->getRequestedBy()->getEmail()
-        )->subject('Your Map request '.$song->getName().' was done');
-        $email->html(
-            "Your Map request ".$song->getName(
-            )." was done, you  can download it at https://ragnacustoms.com/song/detail/".$song->getId()
-        );
-        $this->mailer->send($email);
     }
 
     public function newFeedbackForMapper(Vote $feedback)

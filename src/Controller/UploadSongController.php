@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Song;
-use App\Entity\SongRequest;
 use App\Form\SongType;
 use App\Repository\SongRepository;
 use App\Service\DiscordService;
@@ -282,7 +281,6 @@ class UploadSongController extends AbstractController
                 }
 
                 if ($songService->processFile($form, $song, $isWip)) {
-                    /** @var ?SongRequest $song_request */
                     $doctrine->getManager()->flush();
                     if($song->isPrivate()) {
                         $this->addFlash(
