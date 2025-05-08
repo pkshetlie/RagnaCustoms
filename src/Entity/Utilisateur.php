@@ -566,23 +566,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getOverlay(): ?Overlay
-    {
-        return $this->overlay;
-    }
-
-    public function setOverlay(Overlay $overlay): self
-    {
-        // set the owning side of the relation if necessary
-        if ($overlay->getUser() !== $this) {
-            $overlay->setUser($this);
-        }
-
-        $this->overlay = $overlay;
-
-        return $this;
-    }
-
     public function addScoreHistory(ScoreHistory $scoreHistory): self
     {
         if (!$this->scoreHistories->contains($scoreHistory)) {

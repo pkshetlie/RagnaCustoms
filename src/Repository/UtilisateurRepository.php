@@ -34,6 +34,17 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
     }
 
     /**
+     * Vérifie si un email existe déjà dans la base de données
+     * 
+     * @param string $email L'email à vérifier
+     * @return bool True si l'email existe déjà, false sinon
+     */
+    public function emailExists(string $email): bool
+    {
+        return null !== $this->findOneBy(['email' => $email]);
+    }
+
+    /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newEncodedPassword): void

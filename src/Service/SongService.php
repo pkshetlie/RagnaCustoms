@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\DifficultyRank;
 use App\Entity\FollowMapper;
 use App\Entity\Notification;
-use App\Entity\Overlay;
 use App\Entity\Score;
 use App\Entity\Song;
 use App\Entity\SongDifficulty;
@@ -157,7 +156,7 @@ class SongService
         $sz = 'BKMGTP';
         $factor = floor((strlen($size) - 1) / 3);
 
-        return sprintf("%.2f", $size / pow(1024, $factor)).@$sz[$factor];
+        return sprintf("%.2f", $size / pow(1024, $factor)).@$sz[(int)$factor];
     }
 
     public function getAdventCalendar()
@@ -351,13 +350,6 @@ class SongService
         $previousDiffs = [];
 
         foreach ($song->getSongDifficulties() as $difficulty) {
-            $overlays = $this->em->getRepository(Overlay::class)->findBy(["difficulty" => $difficulty]);
-
-            /** @var Overlay $overlay */
-            foreach ($overlays as $overlay) {
-                $overlay->setDifficulty(null);
-            }
-
             $previousDiffs[$difficulty->getId()] = $difficulty;
         }
 

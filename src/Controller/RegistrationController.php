@@ -70,28 +70,36 @@ class RegistrationController extends AbstractController
     public function register(
         Request $request,
         ManagerRegistry $doctrine,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        UtilisateurRepository $utilisateurRepository
     ): Response {
         $user = new Utilisateur();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
+            if ($utilisateurRepository->emailExists($user->getEmail())) {
+                $this->addFlash('error', 'Cette adresse email est déjà utilisée.');
+                return $this->render('registration/register.html.twig', [
+                    'registrationForm' => $form->createView(),
+                ]);
+            }
+            
             $user->setPassword(
                 $passwordHasher->hashPassword(
                     $user,
                     $form->get('plainPassword')->getData()
                 )
             );
+            
             $user->setMapperName($user->getUsername());
             $entityManager = $doctrine->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
-
+    
             $this->sendEmailVerification($user);
             // do anything else you need here, like send an email
-            $this->addFlash('success', "Your account has been created.");
+            $this->addFlash('success', "Votre compte a été créé avec succès.");
             return $this->redirectToRoute('app_login');
         }
 

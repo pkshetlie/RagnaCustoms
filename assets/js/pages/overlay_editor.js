@@ -1,4 +1,3 @@
-import '../../styles/pages/overlay_editor.scss';
 import 'jquery-ui/ui/core'
 import 'jquery-ui/ui/widget'
 import 'jquery-ui/ui/widgets/draggable'
