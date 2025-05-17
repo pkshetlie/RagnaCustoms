@@ -421,7 +421,7 @@ class SongService
 
         /** @var UploadedFile $file */
         $patterns_flattened = implode('|', $allowedFiles);
-        $infolder = strtolower(preg_replace('/[^a-zA-Z]/', '', $song->getName()));
+        $infolder = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $song->getName()));
         $zip = new ZipArchive();
         if ($zip->open($theZip) === true) {
             for ($i = 0; $i < $zip->numFiles; $i++) {

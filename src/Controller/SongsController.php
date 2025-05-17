@@ -264,7 +264,7 @@ class SongsController extends AbstractController
 
     private function slugify(string $text): string
     {
-        $pattern = '/[^a-zA-Z]/';
+        $pattern = '/[^a-zA-Z0-9]/';
         $text = preg_replace($pattern, '', $text);
 
         return strtolower($text);
@@ -551,7 +551,7 @@ class SongsController extends AbstractController
 
         $getName = str_replace($cyr, $lat, $getName);
 
-        return preg_replace('/[^a-zA-Z]/i', '', $getName);
+        return preg_replace('/[^a-zA-Z0-9]/i', '', $getName);
     }
 
     #[Route(path: '/toggle/{id}', name: 'diff_toggle_ranked', defaults: ['slug' => null])]
