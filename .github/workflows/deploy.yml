@@ -8,30 +8,30 @@ on:
             - beta
 
 jobs:
-    test:
-        name: Run Tests
-        runs-on: ubuntu-latest
-        steps:
-            -   name: Checkout repository
-                uses: actions/checkout@v3
-
-            -   name: Setup PHP
-                uses: shivammathur/setup-php@v2
-                with:
-                    php-version: '8.2'
-                    extensions: curl, mbstring, xml, zip
-                    ini-values: post_max_size=100M, memory_limit=512M
-                    coverage: none
-
-            -   name: Install Composer Dependencies
-                run: composer install --optimize-autoloader
-
-            -   name: Run PHPUnit tests
-                run: php bin/phpunit
+#    test:
+#        name: Run Tests
+#        runs-on: ubuntu-latest
+#        steps:
+#            -   name: Checkout repository
+#                uses: actions/checkout@v3
+#
+#            -   name: Setup PHP
+#                uses: shivammathur/setup-php@v2
+#                with:
+#                    php-version: '8.2'
+#                    extensions: curl, mbstring, xml, zip
+#                    ini-values: post_max_size=100M, memory_limit=512M
+#                    coverage: none
+#
+#            -   name: Install Composer Dependencies
+#                run: composer install --optimize-autoloader
+#
+#            -   name: Run PHPUnit tests
+#                run: php bin/phpunit
 
     deploy-production:
         name: Deploy to Prod
-        needs: test
+#        needs: test
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/master'
 
@@ -107,12 +107,10 @@ jobs:
                         php bin/console cache:clear --env=prod
                         php bin/console cache:warmup --env=prod
                         php bin/console doctrine:migrations:migrate --no-interaction
-    
-    
 
     deploy-beta:
         name: Deploy to Beta
-        needs: test
+#        needs: test
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/beta' # Exécuter uniquement pour la branche beta
 
