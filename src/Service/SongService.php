@@ -13,6 +13,10 @@ use App\Entity\Utilisateur;
 use App\Entity\Vote;
 use App\Entity\VoteCounter;
 use App\Enum\ENotification;
+use App\Exception\SongServiceEditorNotRecognized;
+use App\Exception\SongServiceNoJsonException;
+use App\Interface\IDiscordService;
+use App\Interface\INotificationService;
 use App\Repository\SongRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,11 +44,13 @@ class SongService
         private readonly KernelInterface $kernel,
         private readonly EntityManagerInterface $em,
         private readonly MailerInterface $mailer,
-        private readonly DiscordService $discordService,
+        private readonly IDiscordService $discordService,
         private readonly UrlGeneratorInterface $router,
-        private readonly NotificationService $notificationService,
+        private readonly INotificationService $notificationService,
         private readonly SongRepository $songRepository,
-        private readonly Security $security
+        private readonly Security $security,
+        private readonly string $webmasterMail,
+        private readonly string $fromMail,
     ) {
     }
 
@@ -57,8 +63,8 @@ class SongService
             $mappers = $song->getMappers();
 
             foreach ($mappers as $mapper) {
-                $email = (new Email())->from('contact@ragnacustoms.com')->to($mapper->getEmail())->addBcc(
-                    "pierrick.pobelle@gmail.com"
+                $email = (new Email())->from($this->fromMail)->to($mapper->getEmail())->addBcc(
+                    $this->webmasterMail
                 )->subject('[Ragnacustoms.com] New feedback for '.htmlentities($song->getName()).'!');
 
                 $email->html(
@@ -167,13 +173,12 @@ class SongService
      */
     public function processFile(?FormInterface $form, Song $song, bool $isWip = false)
     {
+        $finalFolder = $this->kernel->getProjectDir()."/public/songs-files/";
+        $folder = $this->kernel->getProjectDir()."/public/tmp-song/";
+        $unzipFolder = $folder.uniqid();
+        @mkdir($unzipFolder);
+
         try {
-
-            $finalFolder = $this->kernel->getProjectDir()."/public/songs-files/";
-            $folder = $this->kernel->getProjectDir()."/public/tmp-song/";
-            $unzipFolder = $folder.uniqid();
-            @mkdir($unzipFolder);
-
             if ($form != null) {
                 $file = $form->get('zipFile')->getData();
                 $file->move($unzipFolder, $file->getClientOriginalName());
@@ -215,6 +220,7 @@ class SongService
             if (!$song->isPublished()) {
                 $this->cleanUp($song);
             }
+
             throw new Exception($e->getMessage());
         } finally {
             $this->rrmdir($unzipFolder);
@@ -223,6 +229,10 @@ class SongService
         return true;
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws Exception
+     */
     private function process(string $unzippableFile, string $unzipFolder, Song $song, bool $isWip = false)
     {
         $allowedFiles = [
@@ -233,7 +243,7 @@ class SongService
         $finalFolder = $this->kernel->getProjectDir()."/public/songs-files/";
         $zip = new ZipArchive();
         $theZip = $unzippableFile;
-        /** @var UploadedFile $file */
+
         if ($zip->open($theZip) === true) {
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 $filename = $zip->getNameIndex($i);
@@ -250,7 +260,9 @@ class SongService
             }
             $zip->close();
         }
+
         $file = $unzipFolder."/info.dat";
+
         if (!file_exists($file)) {
             $file = $unzipFolder."/Info.dat";
             if (!file_exists($file)) {
@@ -259,25 +271,31 @@ class SongService
             }
         }
 
-
         $content = file_get_contents($file);
         $json = json_decode($content);
+
         if ($json == null) {
             $this->rrmdir($unzipFolder);
             throw new Exception("WTF? I can't read your info.dat please check the file encoding.");
         }
+
         if (!file_exists($unzipFolder."/".$json->_coverImageFilename)) {
             throw new Exception("The cover name doesn't match to the name in the info.dat.");
         }
+
         $allowedFiles[] = $json->_coverImageFilename;
+
         if ($json->_coverImageFilename == ".jpg" || empty($json->_coverImageFilename)) {
             throw new Exception("Cover is missing, please fix it and upload again");
         }
+
         if (strlen($json->_coverImageFilename) > 29) {
             throw new Exception("The cover name need to contain less than 25 chars.");
         }
+
         $allowedFiles[] = $json->_songFilename;
         list($width, $height) = getimagesize($unzipFolder."/".$json->_coverImageFilename);
+
         if ($width != $height) {
             throw new Exception("Cover have to be a square.");
         }
@@ -289,7 +307,7 @@ class SongService
             throw new Exception("This song is ranked, you can't update it for now, please contact us.");
         }
 
-        if (!isset($json->_songApproximativeDuration) || empty($json->_songApproximativeDuration)) {
+        if (empty($json->_songApproximativeDuration)) {
             $this->rrmdir($unzipFolder);
             throw new Exception("\"_songApproximativeDuration\" is missing in the info.dat file!");
         }
@@ -319,7 +337,7 @@ class SongService
             throw new Exception("\"_songSubName\" is missing in the info.dat file!");
         }
         $song->setSubName($json->_songSubName);
-        $song->setIsExplicit(isset($json->_explicit) ? $json->_explicit == "true" : false);
+        $song->setIsExplicit(isset($json->_explicit) && $json->_explicit == "true");
         $song->setAuthorName($authorName);
         $song->setLevelAuthorName($json->_levelAuthorName);
         $song->setBeatsPerMinute($json->_beatsPerMinute);
@@ -331,6 +349,23 @@ class SongService
         $song->setFileName($json->_songFilename);
         $song->setCoverImageFileName($json->_coverImageFilename);
         $song->setEnvironmentName($json->_environmentName);
+        try {
+            if ($this->checkIsConverted($json)) {
+                $song->setIsConverted(true);
+            }
+        } catch (SongServiceEditorNotRecognized $e) {
+            $email = (new Email())
+                ->from($this->fromMail)
+                ->to($this->webmasterMail)
+                ->subject('[Ragnacustoms.com] Unknown editor detected')
+                ->html(
+                    "Hi,<br/>An unknown editor has been detected: ".$e->getMessage(
+                    )."<br/><br/>Best regards,<br/> The Staff"
+                );
+            $this->mailer->send($email);
+            throw $e;
+        }
+
         $song->setIsModerated(true);
 
         $this->em->persist($song);
@@ -621,12 +656,45 @@ class SongService
         }
     }
 
+    /**
+     * @throws SongServiceNoJsonException
+     * @throws SongServiceEditorNotRecognized
+     */
+    public function checkIsConverted(?object $json): bool
+    {
+        if ($json == null) {
+            throw new SongServiceNoJsonException();
+        }
+
+        $editors = $json->_customData?->_editors ?? null;
+
+        if ($editors == null) {
+            return false;
+        }
+
+        $toIgnore = ['_lastEditedBy'];
+        $knownRagnarockEditors = ['Edda', 'MMA2'];
+        $knownBeatsaberEditors = ['BeatSaber2Ragnarock', 'ChroMapper'];
+
+        foreach ($editors as $editor => $infos) {
+            if (in_array($editor, $knownBeatsaberEditors)) {
+                return true;
+            }
+
+            if (!in_array($editor, [...$knownRagnarockEditors, ...$knownBeatsaberEditors, ...$toIgnore])) {
+                throw new SongServiceEditorNotRecognized($editor);
+            }
+        }
+
+        return false;
+    }
+
     public function calculateRealMapDuration(Song $song, mixed $beatmapNotes): float
     {
         $globalBPM = $song->getBeatsPerMinute();
         $firstNote = $beatmapNotes[0];
         $lastNote = $beatmapNotes[count($beatmapNotes ?? []) - 1];
-        $length  = 60 * ($lastNote->_time - $firstNote->_time) / $globalBPM;
+        $length = 60 * ($lastNote->_time - $firstNote->_time) / $globalBPM;
 
         return $length > 0 ? $length : 1;
     }
@@ -659,6 +727,26 @@ class SongService
             + ($maxYellowCombo * 3 * $baseSpeed);
 
         return round($theoricalMaxScore, 2);
+    }
+
+    public function calculateMaxCombos(SongDifficulty $diff): mixed
+    {
+        // Max is achieved by assuming all notes are hit perfectly, you're hitting yellow combo as soon as it's charged, then one last blue combo if still possible.
+        $comboPoints = $diff->getNotesCount();
+        $maxYellowCombos = 0;
+        $maxBlueCombos = 0;
+        $blueComboThreshold = 15;
+
+        while ($comboPoints >= 2 * $blueComboThreshold) {
+            $maxYellowCombos++;
+            $comboPoints -= 2 * $blueComboThreshold;
+            $blueComboThreshold += 10;
+        }
+        if ($comboPoints >= $blueComboThreshold) {
+            $maxBlueCombos++;
+        }
+
+        return [$maxYellowCombos, $maxBlueCombos];
     }
 
     public function calculateTheoricalMinScore(SongDifficulty $diff): float
@@ -701,18 +789,22 @@ class SongService
         $peakNPS16Beat = $this->calculatePeakNPS($diff->getSong(), $beatmapNotes, 16);
 
         // Clamp the result into a sensible range to avoid weird edge-cases - very long maps tend to produce average greater than 100% accuracy.
-        return max(60, min(90,
-            0.03876706669 * $songLength +
-            -0.008254445786 * $notesCount +
-            -0.2231918353 * $notesPerSecond +
-            0.09527718708 * $peakNPS4Beat +
-            -0.1789451031 * $peakNPS8Beat +
-            -0.1912528064 * $peakNPS16Beat +
-            0.0368017563 * log($songLength, 10) +
-            0.02945385172 * log($notesCount, 10) +
-            0.002727130838 * $maxComboScore +
-            82.74979112
-        ));
+        return max(
+            60,
+            min(
+                90,
+                0.03876706669 * $songLength +
+                -0.008254445786 * $notesCount +
+                -0.2231918353 * $notesPerSecond +
+                0.09527718708 * $peakNPS4Beat +
+                -0.1789451031 * $peakNPS8Beat +
+                -0.1912528064 * $peakNPS16Beat +
+                0.0368017563 * log($songLength, 10) +
+                0.02945385172 * log($notesCount, 10) +
+                0.002727130838 * $maxComboScore +
+                82.74979112
+            )
+        );
     }
 
     public function calculatePeakNPS(Song $song, mixed $beatmapNotes, float $beats): float
@@ -733,13 +825,14 @@ class SongService
             }
             $peakNPB = max($peakNPB, ($j - $i + 1) / $beats);
         }
+
         return $peakNPB * $song->getBeatsPerMinute() / 60;
     }
 
     public function calculatePPCurveMax(SongDifficulty $diff): float
     {
         // Max PP is calculated in a way that pins two major points on the curve:
-        // - 100 PP at average accuracy, 
+        // - 100 PP at average accuracy,
         // - (600 - 1.5 * avgAcc) PP at 95th percentile of accuracy; we want to penalize easy maps a bit to ensure grinding them to 100% is not always the optimal strategy.
         // 95th percentile of accuracy is calculated assuming truncated normal distribution on range [0, 100] with 10% standard deviation (matches majority of the data).
         $minAccuracy = 0;
@@ -748,36 +841,17 @@ class SongService
         $normDist = new Continuous\Normal($meanAccuracy, 10);
         $topPercentile = 0.95;
         $accuracyAtTopPercentile = $normDist->inverse(
-            $normDist->cdf($minAccuracy) + 
+            $normDist->cdf($minAccuracy) +
             $topPercentile * (
                 $normDist->cdf($maxAccuracy) - $normDist->cdf($minAccuracy)
             )
         );
         $averagePP = 100;
         $ppAtTopPercentile = 600 - 1.5 * $meanAccuracy;
+
         // The formula here was derived to ensure that at 100% accuracy, we'll hit both of the major points described above (see https://www.desmos.com/calculator/hj693uj4ot).
-        return $ppAtTopPercentile ** (($maxAccuracy - $meanAccuracy) / ($accuracyAtTopPercentile - $meanAccuracy)) / 
+        return $ppAtTopPercentile ** (($maxAccuracy - $meanAccuracy) / ($accuracyAtTopPercentile - $meanAccuracy)) /
             $averagePP ** (($maxAccuracy - $accuracyAtTopPercentile) / ($accuracyAtTopPercentile - $meanAccuracy));
-    }
-
-    public function calculateMaxCombos(SongDifficulty $diff): mixed
-    {
-        // Max is achieved by assuming all notes are hit perfectly, you're hitting yellow combo as soon as it's charged, then one last blue combo if still possible.
-        $comboPoints = $diff->getNotesCount();
-        $maxYellowCombos = 0;
-        $maxBlueCombos = 0;
-        $blueComboThreshold = 15;
-        
-        while ($comboPoints >= 2 * $blueComboThreshold) {
-            $maxYellowCombos++;
-            $comboPoints -= 2 * $blueComboThreshold;
-            $blueComboThreshold += 10;
-        }
-        if ($comboPoints >= $blueComboThreshold) {
-            $maxBlueCombos++;
-        }
-
-        return [$maxYellowCombos, $maxBlueCombos];
     }
 
     public function emulatorFileDispatcher(Song $song, bool $force = false)

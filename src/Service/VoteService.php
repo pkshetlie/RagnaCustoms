@@ -8,20 +8,18 @@ use App\Entity\Vote;
 use App\Entity\VoteCounter;
 use App\Repository\VoteCounterRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class VoteService
 {
     public function __construct(
-        private KernelInterface $kernel,
-        private EntityManagerInterface $em,
-        private VoteCounterRepository $voteCounterRepository,
+        private readonly EntityManagerInterface $em,
+        private readonly VoteCounterRepository $voteCounterRepository,
     ) {
 
     }
 
-    public function subScore(Song $song, Vote $vote)
+    public function subScore(Song $song, Vote $vote): void
     {
         if ($vote->getId() != null) {
             $song->setTotalVotes($song->getTotalVotes() - $this->getMoyenne($vote));
@@ -29,11 +27,10 @@ class VoteService
         }
     }
 
-    private function getMoyenne(Vote $vote)
+    private function getMoyenne(Vote $vote): float|int
     {
         if ($vote->getFlow() > 0) {
-            return ($vote->getFlow() + $vote->getLevelQuality() + $vote->getFunFactor() + $vote->getRhythm(
-                    ) + $vote->getReadability() + $vote->getPatternQuality()) / 6;
+            return ($vote->getFlow() + $vote->getLevelQuality() + $vote->getFunFactor() + $vote->getRhythm() + $vote->getReadability() + $vote->getPatternQuality()) / 6;
         }
 
         return ($vote->getFunFactor() + $vote->getRhythm() + $vote->getReadability() + $vote->getPatternQuality()) / 4;

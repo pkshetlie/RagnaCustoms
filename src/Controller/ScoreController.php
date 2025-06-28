@@ -20,15 +20,16 @@ class ScoreController extends AbstractController
     public function getStats(Song $song, LoggerInterface $logger): Response
     {
         // $logger->error('Stat score');
-        return new Response('',Response::HTTP_NOT_FOUND);
+        return new Response('', Response::HTTP_NOT_FOUND);
     }
 
     /**
-     * @param  Request  $request
-     * @param  Country  $country
-     * @param  PaginationService  $pagination
-     * @param  ScoreService  $scoreService
-     * @param  RankedScoresRepository  $rankedScoresRepository
+     * @param Request $request
+     * @param Country $country
+     * @param PaginationService $pagination
+     * @param ScoreService $scoreService
+     * @param RankedScoresRepository $rankedScoresRepository
+     *
      * @return Response
      */
     #[Route(path: '/ranking/country/{twoLetters}', name: 'score_global_country')]
@@ -41,16 +42,21 @@ class ScoreController extends AbstractController
     ): Response {
         if ($request->get('findme', null)) {
             $score = null;
+
             if ($this->isGranted('ROLE_USER') && $this->getUser()->getCountry()->getId() == $country->getId()) {
                 $score = $scoreService->getGeneralLeaderboardPosition($this->getUser(), $country);
             }
+
             if ($score == null) {
                 $this->addFlash("danger", "No score found");
+
                 return $this->redirectToRoute("score_global_ranking");
             } else {
                 return $this->redirect(
-                    $this->generateUrl("score_global_ranking")."?ppage1=".ceil($score / 25)."#".$this->getUser(
-                    )->getUsername()
+                    $this->generateUrl(
+                        "score_global_ranking",
+                        ['ppage1' => ceil($score / 25)."#".$this->getUser()->getUsername()]
+                    )
                 );
             }
         }
@@ -73,7 +79,7 @@ class ScoreController extends AbstractController
             ->orderBy("rs.totalPPScore", "DESC");
         $scoresFlat = $pagination->setDefaults(25)->process($qb, $request);
 
- $qb = $rankedScoresRepository->createQueryBuilder('rs')->leftJoin('rs.user', 'u')
+        $qb = $rankedScoresRepository->createQueryBuilder('rs')->leftJoin('rs.user', 'u')
             ->leftJoin('u.country', 'c')
             ->where('u.country = :country')
             ->setParameter('country', $country)
@@ -86,15 +92,16 @@ class ScoreController extends AbstractController
             'scores' => $scores,
             'scoresFlatClassic' => $scoresFlat,
             'scoresFlatOkodo' => $scoresFlatOkodo,
-            'country' => $country
+            'country' => $country,
         ]);
     }
 
     /**
-     * @param  Request  $request
-     * @param  PaginationService  $pagination
-     * @param  ScoreService  $scoreService
-     * @param  RankedScoresRepository  $rankedScoresRepository
+     * @param Request $request
+     * @param PaginationService $pagination
+     * @param ScoreService $scoreService
+     * @param RankedScoresRepository $rankedScoresRepository
+     *
      * @return Response
      */
     #[Route(path: '/ranking/global', name: 'score_global_ranking')]
@@ -109,6 +116,7 @@ class ScoreController extends AbstractController
             $score = $scoreService->getGeneralLeaderboardPosition($this->getUser());
             if ($score == null) {
                 $this->addFlash("danger", "No score found");
+
                 return $this->redirectToRoute("score_global_ranking");
             } else {
                 return $this->redirect(
@@ -141,6 +149,7 @@ class ScoreController extends AbstractController
             $scoreFlat = $scoreService->getGeneralLeaderboardPosition($this->getUser(), null, false);
             if ($scoreFlat == null) {
                 $this->addFlash("danger", "No score found");
+
                 return $this->redirectToRoute("score_global_ranking");
             } else {
                 return $this->redirect(
@@ -166,6 +175,7 @@ class ScoreController extends AbstractController
             $scoreFlat = $scoreService->getGeneralLeaderboardPosition($this->getUser(), null, false);
             if ($scoreFlat == null) {
                 $this->addFlash("danger", "No score found");
+
                 return $this->redirectToRoute("score_global_ranking");
             } else {
                 return $this->redirect(
@@ -190,7 +200,7 @@ class ScoreController extends AbstractController
         return $this->render('score/global_ranking.html.twig', [
             'scores' => $scores,
             'scoresFlatClassic' => $scoresFlat,
-            'scoresFlatOkodo' => $scoresFlatOkodo
+            'scoresFlatOkodo' => $scoresFlatOkodo,
         ]);
     }
 }

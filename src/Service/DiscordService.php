@@ -4,8 +4,9 @@ namespace App\Service;
 
 use App\Entity\Song;
 use App\Entity\Vote;
+use App\Interface\IDiscordService;
 
-readonly class DiscordService
+readonly class DiscordService implements IDiscordService
 {
     public function __construct(
         private string $webhookUrl,

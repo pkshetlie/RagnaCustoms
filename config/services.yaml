@@ -11,6 +11,9 @@ parameters:
     discord_client_id: "%env(resolve:DISCORD_CLIENT_ID)%"
     google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
     discord_client_secret: "%env(resolve:DISCORD_CLIENT_SECRET)%"
+    from_mail: '%env(FROM_MAIL)%'
+    webmaster_mail: '%env(WEBMASTER_MAIL)%'
+
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -52,6 +55,11 @@ services:
             $webhookModerator: '%env(resolve:DISCORD_WEBHOOK_MODERATOR)%'
             $webhookRequest: '%env(resolve:DISCORD_WEBHOOK_REQUEST)%'
             $webhookRanked: '%env(resolve:DISCORD_WEBHOOK_RANKED)%'
+
+    App\Service\SongService:
+        arguments:
+            $fromMail: '%from_mail%'
+            $webmasterMail: '%webmaster_mail%'
 
     App\EventListener\ExceptionListener:
         tags:

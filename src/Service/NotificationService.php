@@ -5,9 +5,10 @@ namespace App\Service;
 use App\Entity\Notification;
 use App\Entity\Utilisateur;
 use App\Enum\ENotification;
+use App\Interface\INotificationService;
 use App\Repository\NotificationRepository;
 
-readonly class NotificationService
+readonly class NotificationService implements INotificationService
 {
     public function __construct(private NotificationRepository $notificationRepository)
     {
