@@ -2,11 +2,14 @@
 
 namespace App\Tests;
 
+use App\Entity\Song;
 use App\Exception\SongServiceEditorNotRecognized;
 use App\Exception\SongServiceNoJsonException;
 use App\Interface\IDiscordService;
 use App\Interface\INotificationService;
+use App\Repository\SongHashRepository;
 use App\Repository\SongRepository;
+use App\Repository\VoteRepository;
 use App\Service\SongService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -22,16 +25,18 @@ class SongServiceTest extends TestCase
     public function setUp(): void
     {
         $this->songService = new SongService(
+            $this->createMock(SongRepository::class),
+            $this->createMock(SongHashRepository::class),
+            $this->createMock(VoteRepository::class),
             $this->createMock(KernelInterface::class),
-            $this->createMock(EntityManagerInterface::class),
             $this->createMock(MailerInterface::class),
             $this->createMock(IDiscordService::class),
             $this->createMock(UrlGeneratorInterface::class),
             $this->createMock(INotificationService::class),
-            $this->createMock(SongRepository::class),
             $this->createMock(Security::class),
             'contact@ragnacustoms.com',
-            'contact@ragnacustoms.com'
+            'contact@ragnacustoms.com',
+
         );
     }
 
@@ -333,4 +338,137 @@ class SongServiceTest extends TestCase
         $this->assertEquals(false, $this->songService->checkIsConverted($json2));
     }
     #endregion
+
+    #region encodage
+    /** @test */
+    public function it_removes_utf8_bom_from_text()
+    {
+        $textWithBom = "\xEF\xBB\xBFHello, world!";
+        $expectedText = "Hello, world!";
+
+        $result = $this->songService->remove_utf8_bom($textWithBom);
+
+        $this->assertEquals($expectedText, $result);
+    }
+
+    /** @test */
+    public function it_removes_utf16le_bom_from_text()
+    {
+        $textWithBom = "\xFF\xFEHello, world!";
+        $expectedText = "Hello, world!";
+
+        $result = $this->songService->stripUtf16Le($textWithBom);
+
+        $this->assertEquals($expectedText, $result);
+    }
+
+    /** @test */
+    public function it_removes_utf16be_bom_from_text()
+    {
+        $textWithBom = "\xFE\xFFHello, world!";
+        $expectedText = "Hello, world!";
+
+        $result = $this->songService->stripUtf16Be($textWithBom);
+
+        $this->assertEquals($expectedText, $result);
+    }
+
+    /** @test */
+    public function it_returns_null_for_null_input_in_remove_utf8_bom()
+    {
+        $this->assertNull($this->songService->remove_utf8_bom(null));
+    }
+
+    /** @test */
+    public function it_returns_null_for_null_input_in_stripUtf8Bom()
+    {
+        $this->assertNull($this->songService->stripUtf8Bom(null));
+    }
+
+    /** @test */
+    public function it_returns_null_for_null_input_in_stripUtf16Le()
+    {
+        $this->assertNull($this->songService->stripUtf16Le(null));
+    }
+
+    /** @test */
+    public function it_returns_null_for_null_input_in_stripUtf16Be()
+    {
+        $this->assertNull($this->songService->stripUtf16Be(null));
+    }
+    #endregion
+
+    #region getFileSize
+    /** @test */
+    public function it_formats_bytes_correctly()
+    {
+        $kernel = $this->createMock(KernelInterface::class);
+        $kernel->method('getProjectDir')->willReturn('/tmp');
+        $songService = new SongService(
+            $this->createMock(SongRepository::class),
+            $this->createMock(SongHashRepository::class),
+            $this->createMock(VoteRepository::class),
+            $kernel,
+            $this->createMock(MailerInterface::class),
+            $this->createMock(IDiscordService::class),
+            $this->createMock(UrlGeneratorInterface::class),
+            $this->createMock(INotificationService::class),
+            $this->createMock(Security::class),
+            'contact@ragnacustoms.com',
+            'contact@ragnacustoms.com'
+        );
+
+        $testCases = [
+            ['size' => 500, 'expected' => '500.00B'],
+            ['size' => 1024, 'expected' => '1.00K'],
+            ['size' => 1048576, 'expected' => '1.00M'],
+        ];
+
+        foreach ($testCases as $case) {
+            $song = $this->createMock(Song::class);
+            $song->method('getId')->willReturn(1);
+
+            $testFile = '/tmp/public/songs-files/1.zip';
+            if (!file_exists(dirname($testFile))) {
+                mkdir(dirname($testFile), 0777, true);
+            }
+            file_put_contents($testFile, str_repeat('0', $case['size']));
+
+            $result = $songService->getFileSize($song);
+            unlink($testFile);
+            rmdir(dirname($testFile));
+
+            $this->assertEquals($case['expected'], $result);
+        }
+    }
+
+    /** @test */
+    public function it_handles_nonexistent_file()
+    {
+        $kernel = $this->createMock(KernelInterface::class);
+        $kernel->method('getProjectDir')->willReturn('/nonexistent');
+
+        $songService = new SongService(
+            $this->createMock(SongRepository::class),
+            $this->createMock(SongHashRepository::class),
+            $this->createMock(VoteRepository::class),
+            $kernel,
+            $this->createMock(MailerInterface::class),
+            $this->createMock(IDiscordService::class),
+            $this->createMock(UrlGeneratorInterface::class),
+            $this->createMock(INotificationService::class),
+            $this->createMock(Security::class),
+            'contact@ragnacustoms.com',
+            'contact@ragnacustoms.com'
+        );
+
+        $song = $this->createMock(Song::class);
+        $song->method('getId')->willReturn(999);
+
+        $this->expectWarning();
+        $songService->getFileSize($song);
+    }
+    #endregion
+
+
 }

@@ -14,33 +14,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ScoreHistory[]    findAll()
  * @method ScoreHistory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ScoreHistoryRepository extends ServiceEntityRepository
+class ScoreHistoryRepository extends AbstractEntityRepositoryWithTools
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ScoreHistory::class);
-    }
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function add(ScoreHistory $entity, bool $flush = false): void
-    {
-        $this->_em->persist($entity);
-        if ($flush) {
-            $this->_em->flush();
-        }
-    }
-
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function remove(ScoreHistory $entity, bool $flush = false): void
-    {
-        $this->_em->remove($entity);
-        if ($flush) {
-            $this->_em->flush();
-        }
     }
 }

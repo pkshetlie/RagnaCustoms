@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method Friend[]    findAll()
  * @method Friend[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class FriendRepository extends ServiceEntityRepository
+class FriendRepository extends AbstractEntityRepositoryWithTools
 {
     public function __construct(ManagerRegistry $registry)
     {

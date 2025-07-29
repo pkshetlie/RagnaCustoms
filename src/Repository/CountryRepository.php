@@ -14,23 +14,11 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Country[]    findAll()
  * @method Country[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CountryRepository extends ServiceEntityRepository
+class CountryRepository extends AbstractEntityRepositoryWithTools
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Country::class);
-    }
-
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function add(Country $entity, bool $flush = true): void
-    {
-        $this->_em->persist($entity);
-        if ($flush) {
-            $this->_em->flush();
-        }
     }
 
     /**

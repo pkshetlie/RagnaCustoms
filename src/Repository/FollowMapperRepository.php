@@ -16,36 +16,15 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method FollowMapper[]    findAll()
  * @method FollowMapper[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class FollowMapperRepository extends ServiceEntityRepository
+class FollowMapperRepository extends AbstractEntityRepositoryWithTools
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, FollowMapper::class);
     }
 
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function add(FollowMapper $entity, bool $flush = true): void
-    {
-        $this->_em->persist($entity);
-        if ($flush) {
-            $this->_em->flush();
-        }
-    }
 
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function remove(FollowMapper $entity, bool $flush = true): void
-    {
-        $this->_em->remove($entity);
-        if ($flush) {
-            $this->_em->flush();
-        }
-    }
+
 
     // /**
     //  * @return FollowMapper[] Returns an array of FollowMapper objects

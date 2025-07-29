@@ -54,7 +54,7 @@ class RecalculateSongLengthCommand extends Command
 
                     // Populate all the data that will be needed for PP calculation.
                     $diff->setRealMapDuration($this->songService->calculateRealMapDuration($song, $notes));
-                    $diff->setTheoricalMaxScore($this->songService->calculateTheoricalMaxScore($diff));
+                    $diff->setTheoricalMaxScore($this->songService->calculateTheoreticalMaxScore($diff));
                     $diff->setTheoricalMinScore($this->songService->calculateTheoricalMinScore($diff));
                     // We already saw that the estimation formula doesn't represent some songs well - exceptions decided manually based on player scores
                     switch ($diff->getId()) {
