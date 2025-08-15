@@ -17,8 +17,18 @@ use App\Exception\SongServiceEditorNotRecognized;
 use App\Exception\SongServiceNoJsonException;
 use App\Interface\IDiscordService;
 use App\Interface\INotificationService;
+use App\Repository\DifficultyRankRepository;
+use App\Repository\DownloadCounterRepository;
+use App\Repository\NotificationRepository;
+use App\Repository\ScoreHistoryRepository;
+use App\Repository\ScoreRepository;
+use App\Repository\SongDifficultyRepository;
+use App\Repository\SongHashRepository;
 use App\Repository\SongRepository;
+use App\Repository\VoteCounterRepository;
+use App\Repository\VoteRepository;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Expr\Join;
@@ -38,34 +48,45 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ZipArchive;
 
-class SongService
+readonly class SongService
 {
     public function __construct(
-        private readonly KernelInterface $kernel,
-        private readonly EntityManagerInterface $em,
-        private readonly MailerInterface $mailer,
-        private readonly IDiscordService $discordService,
-        private readonly UrlGeneratorInterface $router,
-        private readonly INotificationService $notificationService,
-        private readonly SongRepository $songRepository,
-        private readonly Security $security,
-        private readonly string $webmasterMail,
-        private readonly string $fromMail,
+        private SongRepository $songRepository,
+        private SongHashRepository $songHashRepository,
+        private VoteRepository $voteRepository,
+        private KernelInterface $kernel,
+        private MailerInterface $mailer,
+        private IDiscordService $discordService,
+        private UrlGeneratorInterface $router,
+        private INotificationService $notificationService,
+        private Security $security,
+        private string $webmasterMail,
+        private string $fromMail,
+        private DifficultyRankRepository $difficultyRankRepository,
+        private SongDifficultyRepository $songDifficultyRepository,
+        private DownloadCounterRepository $downloadCounterRepository,
+        private ScoreHistoryRepository $scoreHistoryRepository,
+        private ScoreRepository $scoreRepository,
+        private NotificationRepository $notificationRepository,
+        private VoteCounterRepository $voteCounterRepository,
+
     ) {
     }
 
-    public function newFeedbackForMapper(Vote $feedback)
+    public function newFeedbackForMapper(Vote $feedback): void
     {
-        /** @var SongHash $songHash */
-        $songHash = $this->em->getRepository(SongHash::class)->findOneBy(['hash' => $feedback->getHash()]);
+        $songHash = $this->songHashRepository->findOneBy(['hash' => $feedback->getHash()]);
+
         if ($songHash != null) {
             $song = $songHash->getSong();
             $mappers = $song->getMappers();
 
             foreach ($mappers as $mapper) {
-                $email = (new Email())->from($this->fromMail)->to($mapper->getEmail())->addBcc(
-                    $this->webmasterMail
-                )->subject('[Ragnacustoms.com] New feedback for '.htmlentities($song->getName()).'!');
+                $email = (new Email())
+                    ->from($this->fromMail)
+                    ->to($mapper->getEmail())
+                    ->addBcc($this->webmasterMail)
+                    ->subject('[Ragnacustoms.com] New feedback for '.htmlentities($song->getName()).'!');
 
                 $email->html(
                     "Hi ".$mapper->getUsername().",<br/>You got a new feedback for ".htmlentities(
@@ -79,56 +100,17 @@ class SongService
     }
 
     /**
-     * @param Song $song
      *
-     * @return int
-     * @throws NonUniqueResultException
+     * @return ArrayCollection<Vote>
      */
-    public function countVotePublic(Song $song)
+    public function getVotePublicOrMine(?Utilisateur $user, Song $song): ArrayCollection
     {
-        $hashes = array_map(function(SongHash $hash) {
-            return $hash->getHash();
-        }, $song->getSongHashes()->toArray());
-        $result = $this->em->getRepository(Vote::class)->createQueryBuilder('f')
-            ->select("COUNT(f) AS nb")
-            ->where('f.hash IN (:hashes)')
-            ->andWhere('f.isPublic = true')
-            ->andWhere('f.isModerated = true')
-            ->setParameter('hashes', $hashes)
-            ->getQuery()->getOneOrNullResult();
-
-        return $result['nb'] ?? 0;
-    }
-
-    public function getVotePublicOrMine(?Utilisateur $user, Song $song)
-    {
-        $qb = $this->em->getRepository(Vote::class)
-            ->createQueryBuilder('f');
-        $qb
-            ->where(
-                $qb->expr()->andX(
-                    'f.song = :song',
-                    'f.isPublic = true',
-                    'f.isModerated = true',
-                    'f.feedback is not null',
-                )
-            )
-            ->orWhere(
-                $qb->expr()->andX(
-                    'f.song = :song',
-                    'f.user = :user',
-                    'f.feedback is not null',
-                )
-            )
-            ->setParameter('song', $song)
-            ->setParameter('user', $user);
-
-        return $qb->getQuery()->getResult();
+       return $this->voteRepository->getVotePublicOrMine($user, $song);
     }
 
     public function isFeedbackDone(?Utilisateur $user, Song $song): bool
     {
-        $qb = $this->em->getRepository(Vote::class)
+        $qb = $this->voteRepository
             ->createQueryBuilder('f');
         $qb
             ->where(
@@ -152,24 +134,8 @@ class SongService
         return sprintf("%.2f", $size / pow(1024, $factor)).@$sz[(int)$factor];
     }
 
-    public function getAdventCalendar()
-    {
-        return $this->em->getRepository(Song::class)
-            ->createQueryBuilder('s')
-            ->where('s.lastDateUpload BETWEEN \'2022-12-01\' AND \'2022-12-26\' ')
-            ->leftJoin('s.mappers', 'm')
-            ->where('m.id = :user')
-            ->setParameter('user', 29)
-            ->getQuery()->getResult();
-    }
-
     /**
-     * @param FormInterface $form
-     * @param Song $song
-     * @param bool $isWip
-     *
-     * @return bool
-     * @throws Exception
+     * @throws Exception|\Symfony\Component\Mailer\Exception\TransportExceptionInterface
      */
     public function processFile(?FormInterface $form, Song $song, bool $isWip = false)
     {
@@ -231,7 +197,7 @@ class SongService
 
     /**
      * @throws NonUniqueResultException
-     * @throws Exception
+     * @throws Exception|\Symfony\Component\Mailer\Exception\TransportExceptionInterface
      */
     private function process(string $unzippableFile, string $unzipFolder, Song $song, bool $isWip = false)
     {
@@ -252,9 +218,9 @@ class SongService
                 if (end($exp) != "") {
                     $fileinfo = pathinfo($filename);
                     if (preg_match("#info\.dat#isU", $fileinfo['basename'])) {
-                        $result = file_put_contents($unzipFolder."/".strtolower($fileinfo['basename']), $elt);
+                        file_put_contents($unzipFolder."/".strtolower($fileinfo['basename']), $elt);
                     } else {
-                        $result = file_put_contents($unzipFolder."/".$fileinfo['basename'], $elt);
+                        file_put_contents($unzipFolder."/".$fileinfo['basename'], $elt);
                     }
                 }
             }
@@ -314,7 +280,7 @@ class SongService
 
         $songName = trim($json->_songName);
         $authorName = $json->_songAuthorName;
-        $existingSong = $this->em->getRepository(Song::class)
+        $existingSong = $this->songRepository
             ->createQueryBuilder('s')
             ->distinct()
             ->leftJoin('s.mappers', 'm')
@@ -368,7 +334,7 @@ class SongService
 
         $song->setIsModerated(true);
 
-        $this->em->persist($song);
+        $this->songRepository->add($song);
         $previousDiffs = [];
 
         foreach ($song->getSongDifficulties() as $difficulty) {
@@ -379,13 +345,12 @@ class SongService
             $jsonContent = file_get_contents($unzipFolder."/".$difficulty->_beatmapFilename);
             $fcrc = Fcrc::StrCrc32($jsonContent);
 
-            $rank = $this->em
-                ->getRepository(DifficultyRank::class)
+            $rank = $this->difficultyRankRepository
                 ->findOneBy(["level" => $difficulty->_difficultyRank]);
             $diff = null;
             if ($song->getId() !== null) {
                 /** @var SongDifficulty $diff */
-                $diff = $this->em->getRepository(SongDifficulty::class)
+                $diff = $this->songDifficultyRepository
                     ->createQueryBuilder('sd')
                     ->where('sd.wanadevHash = :fcrc')
                     ->setParameter('fcrc', $fcrc)
@@ -397,7 +362,7 @@ class SongService
                     $allowedFiles[] = $difficulty->_beatmapFilename;
                     continue;
                 } else {
-                    $diff = $this->em->getRepository(SongDifficulty::class)
+                    $diff = $this->songDifficultyRepository
                         ->createQueryBuilder('sd')
                         ->where('sd.difficultyRank = :rank')
                         ->setParameter('rank', $rank)
@@ -414,13 +379,13 @@ class SongService
                 $allowedFiles[] = $difficulty->_beatmapFilename;
             }
             foreach ($diff->getScores() as $score) {
-                $this->em->remove($score);
+                $this->scoreRepository->remove($score);
             }
             foreach ($diff->getScoreHistories() as $score) {
-                $this->em->remove($score);
+                $this->scoreHistoryRepository->remove($score);
             }
             foreach ($song->getDownloadCounters() as $download) {
-                $this->em->remove($download);
+                $this->downloadCounterRepository->remove($download);
             }
             $diff->setIsRanked((bool)$diff->isRanked());
             $diff->setDifficultyRank($rank);
@@ -437,12 +402,12 @@ class SongService
             $diff->setNotesCount(count($json2->_notes));
             $diff->setRealMapDuration($this->calculateRealMapDuration($song, $json2->_notes));
             $diff->setNotePerSecond($diff->getNotesCount() / $song->getApproximativeDuration());
-            $diff->setTheoricalMaxScore($this->calculateTheoricalMaxScore($diff));
+            $diff->setTheoricalMaxScore($this->calculateTheoreticalMaxScore($diff));
             $diff->setTheoricalMinScore($this->calculateTheoricalMinScore($diff));
             $diff->setEstAvgAccuracy($this->calculateEstAvgAccuracy($diff, $json2->_notes));
             $diff->setPPCurveMax($this->calculatePPCurveMax($diff));
             $song->addSongDifficulty($diff);
-            $this->em->persist($diff);
+            $this->songDifficultyRepository->add($diff);
             $allowedFiles[] = $difficulty->_beatmapFilename;
             $diff->setWanadevHash($fcrc);
         }
@@ -450,14 +415,14 @@ class SongService
             //there is at least one update on difficulties
             foreach ($previousDiffs as $diff) {
                 $diff->setSong(null);
-                $this->em->remove($diff);
+                $this->songDifficultyRepository->remove($diff);
             }
         }
 
         if ($isWip != $song->getWip()) {
             $song->setCreatedAt(new DateTime());
         }
-        $this->em->flush();
+        $this->songRepository->add($song);;
 
         /** @var UploadedFile $file */
         $patterns_flattened = implode('|', $allowedFiles);
@@ -617,37 +582,55 @@ class SongService
                 }
 
                 $song->setNotificationDone(true);
-                $this->em->flush();
+                $this->songRepository->add($song);
             }
         }
     }
 
-    function remove_utf8_bom($text)
+    function remove_utf8_bom(false|null|string $string): ?string
     {
+        if (!$string) {
+            return null;
+        }
+
         return $this->stripUtf16Le(
-            $this->stripUtf16Be($this->stripUtf8Bom($text))
-        );//mb_convert_encoding($text, 'UTF-8', 'UCS-2LE');
+            $this->stripUtf16Be($this->stripUtf8Bom($string))
+        );
     }
 
-    function stripUtf16Le($string)
+    function stripUtf16Le(false|null|string $string): ?string
     {
+        if (!$string) {
+            return null;
+        }
+
         return preg_replace('/^\xff\xfe/', '', $string);
     }
 
-    function stripUtf16Be($string)
+    function stripUtf16Be(false|null|string $string): ?string
     {
+        if (!$string) {
+            return null;
+        }
+
         return preg_replace('/^\xfe\xff/', '', $string);
     }
 
-    function stripUtf8Bom($string)
+    function stripUtf8Bom(false|null|string $string): ?string
     {
+        if (!$string) {
+            return null;
+        }
+
         return preg_replace('/^\xef\xbb\xbf/', '', $string);
     }
 
+    /** @codeCoverageIgnore */
     public function rrmdir($dir)
     {
         if (is_dir($dir)) {
             $objects = scandir($dir);
+
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
                     if (is_dir($dir.DIRECTORY_SEPARATOR.$object) && !is_link($dir."/".$object)) {
@@ -657,6 +640,7 @@ class SongService
                     }
                 }
             }
+
             rmdir($dir);
         }
     }
@@ -704,7 +688,7 @@ class SongService
         return $length > 0 ? $length : 1;
     }
 
-    public function calculateTheoricalMaxScore(SongDifficulty $diff): float
+    public function calculateTheoreticalMaxScore(SongDifficulty $diff): float
     {
         // we consider that no note were missed
         $miss = 0;
@@ -726,12 +710,7 @@ class SongService
         // + Number of blue combos * base speed for 0.75 second
         // + Number of yellow combos * base speed for 3 second
 
-        $theoricalMaxScore = ($baseSpeed * $duration) + ($noteCount * 0.3 * $baseSpeed / 4)
-            - ($miss * 0.3 * $baseSpeed / 4)
-            + ($maxBlueCombo * 3 / 4 * $baseSpeed)
-            + ($maxYellowCombo * 3 * $baseSpeed);
-
-        return round($theoricalMaxScore, 2);
+        return $this->calculate($baseSpeed, $duration, $noteCount, $miss, $maxBlueCombo, $maxYellowCombo);
     }
 
     public function calculateMaxCombos(SongDifficulty $diff): mixed
@@ -775,9 +754,7 @@ class SongService
         // + Number of blue combos * base speed for 0.75 second
         // + Number of yellow combos * base speed for 3 second
 
-        $theoricalMinScore = ($baseSpeed * $duration) + ($noteCount * 0.3 * $baseSpeed / 4) - ($miss * 0.3 * $baseSpeed / 4) + ($maxBlueCombo * 3 / 4 * $baseSpeed) + ($maxYellowCombo * 3 * $baseSpeed);
-
-        return round($theoricalMinScore, 2);
+        return $this->calculate($baseSpeed, $duration, $noteCount, $miss, $maxBlueCombo, $maxYellowCombo);
     }
 
     public function calculateEstAvgAccuracy(SongDifficulty $diff, mixed $beatmapNotes): float
@@ -910,17 +887,17 @@ class SongService
                 $hash = $this->HashSong($files);
 
                 if ($song->getNewGuid() !== $hash) {
-                    $version = $this->em->getRepository(SongHash::class)->getLastVersion($song) + 1;
+                    $version = $this->songHashRepository->getLastVersion($song) + 1;
                     $newHash = new SongHash();
                     $newHash->setSong($song);
                     $newHash->setHash($hash);
                     $newHash->setVersion($version);
                     $song->addSongHash($newHash);
-                    $this->em->persist($newHash);
+                    $this->songHashRepository->add($newHash);
                 }
 
                 $song->setNewGuid($hash);
-                $this->em->flush();
+                $this->songRepository->add($song);
 
                 if (!$getpreview) {
                     $ffprobe = FFProbe::create([
@@ -1019,8 +996,7 @@ class SongService
         // remove zip
         @unlink($this->kernel->getProjectDir()."/public/songs-file/".$song->getId().'.zip');
         // remove song
-        $this->em->remove($song);
-        $this->em->flush();
+        $this->songRepository->remove($song);
     }
 
     public function processFileWithoutForm(Request $request, Song $song)
@@ -1075,7 +1051,7 @@ class SongService
         return true;
     }
 
-    public function processExistingFile(Song $song)
+    public function processExistingFile(Song $song): bool
     {
         try {
             $allowedFiles = [
@@ -1124,10 +1100,10 @@ class SongService
             $allowedFiles[] = $json->_songFilename;
 
             foreach (($json->_difficultyBeatmapSets[0])->_difficultyBeatmaps as $difficulty) {
-                $rank = $this->em->getRepository(DifficultyRank::class)->findOneBy(
+                $rank = $this->difficultyRankRepository->findOneBy(
                     ["level" => $difficulty->_difficultyRank]
                 );
-                $diff = $this->em->getRepository(SongDifficulty::class)->findOneBy([
+                $diff = $this->songDifficultyRepository->findOneBy([
                     'song' => $song,
                     'difficultyRank' => $rank,
                 ]);
@@ -1140,15 +1116,16 @@ class SongService
                 $jsonContent = file_get_contents($unzipFolder."/".$difficulty->_beatmapFilename);
                 $beatmapNotes = json_decode($jsonContent)->_notes;
                 $diff->setRealMapDuration($this->calculateRealMapDuration($song, $beatmapNotes));
-                $diff->setTheoricalMaxScore($this->calculateTheoricalMaxScore($diff));
+                $diff->setTheoricalMaxScore($this->calculateTheoreticalMaxScore($diff));
                 $diff->setTheoricalMinScore($this->calculateTheoricalMinScore($diff));
                 $diff->setEstAvgAccuracy($this->calculateEstAvgAccuracy($diff, $beatmapNotes));
                 $diff->setPPCurveMax($this->calculatePPCurveMax($diff));
                 $diff->setWanadevHash(Fcrc::StrCrc32($jsonContent));
-                $this->em->flush();
+                $this->songDifficultyRepository->add($diff);
+                $this->difficultyRankRepository->add($rank);
             }
 
-            $this->em->flush();
+            $this->songDifficultyRepository->add($song);
             $this->rrmdir($unzipFolder);
 
             return true;
@@ -1161,7 +1138,7 @@ class SongService
 
     public function getLastSongsPlayed($count)
     {
-        return $this->em->getRepository(Song::class)
+        return $this->songRepository
             ->createQueryBuilder('s')
             ->leftJoin('s.songHashes', 'song_hashes')
             ->leftJoin(Score::class, 'score', Join::WITH, 'score.hash = song_hashes.hash')->orderBy(
@@ -1201,6 +1178,7 @@ class SongService
             $zip->close();
         }
         $file = $unzipFolder."/info.dat";
+
         if (!file_exists($file)) {
             $file = $unzipFolder."/Info.dat";
             if (!file_exists($file)) {
@@ -1229,7 +1207,7 @@ class SongService
 
     public function count($addWip = false)
     {
-        $qb = $this->em->getRepository(Song::class)
+        $qb = $this->songRepository
             ->createQueryBuilder('s')
             ->where('s.isDeleted != true')
             ->andWhere('s.moderated = true')
@@ -1256,7 +1234,7 @@ class SongService
 
     public function getSimilarSongs(Song $song, $max = 10)
     {
-        return $this->em->getRepository(Song::class)->createQueryBuilder('s')->distinct()->leftJoin(
+        return $this->songRepository->createQueryBuilder('s')->distinct()->leftJoin(
             's.categoryTags',
             'category_tags'
         )->where("category_tags.id IN (:categories)")->andWhere('s.id != :song')->setParameter(
@@ -1269,7 +1247,7 @@ class SongService
 
     public function getLeaderboardPosition(UserInterface $user, SongDifficulty $songDifficulty)
     {
-        $mine = $this->em->getRepository(Score::class)->findOneBy([
+        $mine = $this->scoreRepository->findOneBy([
             'user' => $user,
             'songDifficulty' => $songDifficulty,
         ]);
@@ -1278,7 +1256,7 @@ class SongService
         }
 
         return count(
-                $this->em->getRepository(Score::class)
+                $this->scoreRepository
                     ->createQueryBuilder("s")
                     ->select('s.id')
                     ->where('s.rawPP > :my_score')
@@ -1308,11 +1286,11 @@ class SongService
                         $this->router->generate('mapper_profile', ['username' => $user->getUsername()])."'>".
                         $user->getMapperName()."</a>"
                     );
-                    $this->em->persist($notification);
+                    $this->notificationRepository->add($notification);
                 }
             }
             $song->setNotificationDone(true);
-            $this->em->flush();
+            $this->songRepository->add($song);
         }
     }
 
@@ -1347,7 +1325,7 @@ class SongService
 
     public function getLastPlayedToVote(Utilisateur $user): array
     {
-        $qb = $this->em->getRepository(VoteCounter::class)
+        $qb = $this->voteCounterRepository
             ->createQueryBuilder('v')
             ->select('count(v)')
             ->where('v.song = s.id')
@@ -1360,13 +1338,13 @@ class SongService
             ->where('s2.id = s.id')
             ->andWhere('mapper.id = :user');
         try {
-            return $this->songRepository->createQueryBuilder('s')
+             $qb = $this->songRepository->createQueryBuilder('s')
                 ->select('s')
                 ->distinct('s')
                 ->leftJoin('s.songDifficulties', 'diff')
-                ->leftJoin('diff.scoreHistories', 'score')
-                ->andWhere($this->em->getExpressionBuilder()->eq('('.$qb->getDQL().')', '0'))
-                ->andWhere($this->em->getExpressionBuilder()->eq('('.$qbMapper->getDQL().')', '0'))
+                ->leftJoin('diff.scoreHistories', 'score');
+           return $qb->andWhere($qb->expr()->eq('('.$qb->getDQL().')', '0'))
+                ->andWhere($qb->expr()->eq('('.$qbMapper->getDQL().')', '0'))
                 ->andWhere('score.user = :user')
                 ->andWhere('s.wip = false')
                 ->setParameter('user', $user)
@@ -1449,6 +1427,29 @@ class SongService
         }
 
         return round($taille, 2).' '.$unites[$i];
+    }
+
+    /**
+     * @param float $baseSpeed
+     * @param float|null $duration
+     * @param int|null $noteCount
+     * @param int $miss
+     * @param mixed $maxBlueCombo
+     * @param mixed $maxYellowCombo
+     *
+     * @return float
+     */
+    public function calculate(
+        float $baseSpeed,
+        ?float $duration,
+        ?int $noteCount,
+        int $miss,
+        mixed $maxBlueCombo,
+        mixed $maxYellowCombo
+    ): float {
+        $theoricalMaxScore = ($baseSpeed * $duration) + ($noteCount * 0.3 * $baseSpeed / 4) - ($miss * 0.3 * $baseSpeed / 4) + ($maxBlueCombo * 3 / 4 * $baseSpeed) + ($maxYellowCombo * 3 * $baseSpeed);
+
+        return round($theoricalMaxScore, 2);
     }
 }
 

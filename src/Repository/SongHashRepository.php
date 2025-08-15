@@ -13,29 +13,13 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method SongHash[]    findAll()
  * @method SongHash[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SongHashRepository extends ServiceEntityRepository
+class SongHashRepository extends AbstractEntityRepositoryWithTools
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, SongHash::class);
     }
 
-    // /**
-    //  * @return SongHash[] Returns an array of SongHash objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
     public function getLastVersion(Song $song)
     {
         /** @var SongHash $hash */
@@ -52,15 +36,4 @@ class SongHashRepository extends ServiceEntityRepository
         }
         return 0;
     }
-    /*
-    public function findOneBySomeField($value): ?SongHash
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
