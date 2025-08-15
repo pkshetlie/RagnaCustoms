@@ -576,7 +576,7 @@ class SongService
                 }
             }
             $this->discordService->sendWipSongMessage($song);
-        } elseif ($new && $song->isPublished()) {
+        } elseif ($new && $song->isPublished() && !$song->isPrivate()) {
             /** @var FollowMapper $follower */
             foreach ($song->getMappers() as $user) {
                 foreach ($user->getFollowersNotifiable(ENotification::Followed_mapper_new_map) as $follower) {
@@ -591,7 +591,7 @@ class SongService
                 }
             }
         } else {
-            if ($song->isPublished()) {
+            if ($song->isPublished() && !$song->isPrivate()) {
                 if ($song->isNotificationDone()) {
                     $this->discordService->sendUpdatedSongMessage($song);
                     foreach ($song->getMappers() as $user) {
