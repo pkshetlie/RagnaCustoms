@@ -37,6 +37,7 @@ class SongType extends AbstractType
                 'placeholder' => 'Select a category, or more ..',
                 'required' => true,
                 'autocomplete' => true,
+                'tom_select_options' => ['maxItems' => 6],
                 'query_builder' => function (SongCategoryRepository $songCategoryRepository) {
                     return $songCategoryRepository->createQueryBuilder('songCategory')->orderBy(
                         'songCategory.label',
