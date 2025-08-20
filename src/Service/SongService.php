@@ -429,6 +429,11 @@ class SongService
             $diff->setNoteJumpStartBeatOffset($difficulty->_noteJumpStartBeatOffset);
 
             $json2 = json_decode($jsonContent);
+            if (!$json2) {
+                throw new Exception(
+                    "I can't read your ".$difficulty->_beatmapFilename." please check the file encoding."
+                );
+            }
             $diff->setNotesCount(count($json2->_notes));
             $diff->setRealMapDuration($this->calculateRealMapDuration($song, $json2->_notes));
             $diff->setNotePerSecond($diff->getNotesCount() / $song->getApproximativeDuration());
