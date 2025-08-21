@@ -9,6 +9,9 @@
   will-change: transform;
   overflow: hidden;
   border-radius:10px;
+  img{
+    width: 100%;
+  }
 }
 
 /* Slight parallax effect on hover */
