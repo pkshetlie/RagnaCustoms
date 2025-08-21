@@ -21,7 +21,7 @@ export default class extends Controller {
       let height = $description.height();
       let maxHeight = height;
 
-      if (height > 90) {
+      if (height > 115) {
         $description.after('<i class="expend" style="cursor:pointer">Click to expand</i>');
         $description.css('height', '80px');
         $description.css('overflow', 'hidden');
