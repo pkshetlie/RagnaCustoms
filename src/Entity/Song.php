@@ -1002,6 +1002,10 @@ class Song
 
     public function getMappersNames(): string
     {
+        if ($this->getMappers()->count() == 0) {
+            return $this->getLevelAuthorName();
+        }
+
         return implode(
             ', ',
             $this->getMappers()->map(function (Utilisateur $mapper) {
