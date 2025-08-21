@@ -16,7 +16,7 @@ export default class extends Controller {
         Dropzone.autoDiscover = false;
         let myDropzone = new Dropzone("#my-form",{
             url:"/account/upload/bundle/song/add",
-            dictDefaultMessage : 'Click to select files or drag and drop them here'
+            dictDefaultMessage : 'Click to select files or drag and drop them here <i class="fa fa-upload"></i><br><small><i>only .zip are allowed</i></small>',
         });
         myDropzone.on("addedfile", file => {
         });
