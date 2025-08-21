@@ -856,3 +856,13 @@ tr td:last-child {
 .custom-file-label::after{
   color: #2c2b2c;
 }
+
+.close{
+  color:#fff;
+  opacity:0.75;
+  text-shadow: none;
+  &:hover{
+    color:#fff;
+    opacity:1!important;
+  }
+}
