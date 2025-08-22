@@ -12,7 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method VoteCounter[]    findAll()
  * @method VoteCounter[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class VoteCounterRepository extends ServiceEntityRepository
+class VoteCounterRepository extends AbstractEntityRepositoryWithTools
 {
     public function __construct(ManagerRegistry $registry)
     {

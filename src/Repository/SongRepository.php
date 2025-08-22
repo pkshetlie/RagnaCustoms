@@ -14,16 +14,12 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Song[]    findAll()
  * @method Song[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SongRepository extends ServiceEntityRepository
+class SongRepository extends AbstractEntityRepositoryWithTools
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Song::class);
     }
-
-    // /**
-    //  * @return Song[] Returns an array of Song objects
-    //  */
 
     public function findByExampleField($value)
     {
@@ -36,33 +32,6 @@ class SongRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function add(Song $entity, bool $flush = true): void
-    {
-        $this->_em->persist($entity);
-        if ($flush) {
-            $this->_em->flush();
-        }
-    }
-
-    public function remove(Song $entity, bool $flush = true): void
-    {
-        $this->_em->remove($entity);
-        if ($flush) {
-            $this->_em->flush();
-        }
-    }
-
-    /*
-    public function findOneBySomeField($value): ?Song
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
     public function findOneByHash(string $hash)
     {
         return $this->createQueryBuilder('s')

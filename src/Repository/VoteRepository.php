@@ -2,8 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Song;
+use App\Entity\Utilisateur;
 use App\Entity\Vote;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -12,39 +15,35 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Vote[]    findAll()
  * @method Vote[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class VoteRepository extends ServiceEntityRepository
+class VoteRepository extends AbstractEntityRepositoryWithTools
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Vote::class);
     }
 
-    // /**
-    //  * @return Vote[] Returns an array of Vote objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getVotePublicOrMine(?Utilisateur $user, Song $song): ArrayCollection
     {
-        return $this->createQueryBuilder('v')
-            ->andWhere('v.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('v.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('f');
+        $qb
+            ->where(
+                $qb->expr()->andX(
+                    'f.song = :song',
+                    'f.isPublic = true',
+                    'f.isModerated = true',
+                    'f.feedback is not null',
+                )
+            )
+            ->orWhere(
+                $qb->expr()->andX(
+                    'f.song = :song',
+                    'f.user = :user',
+                    'f.feedback is not null',
+                )
+            )
+            ->setParameter('song', $song)
+            ->setParameter('user', $user);
 
-    /*
-    public function findOneBySomeField($value): ?Vote
-    {
-        return $this->createQueryBuilder('v')
-            ->andWhere('v.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        return $qb->getQuery()->getResult();
     }
-    */
 }
