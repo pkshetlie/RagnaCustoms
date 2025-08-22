@@ -931,6 +931,11 @@ class Song
         return StatisticService::dateDisplay($this->getLastDateUpload());
     }
 
+    public function getTimeAgoShort()
+    {
+        return StatisticService::dateDisplayedShort($this->getLastDateUpload());
+    }
+
     public function __api()
     {
         return [

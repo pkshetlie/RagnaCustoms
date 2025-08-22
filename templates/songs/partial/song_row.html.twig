@@ -1,6 +1,6 @@
 <tr>
     <td>
-        <div class="d-flex ">
+        <div class="d-flex">
             <a href="{{ url('song_detail',{slug:song.slug}) }}">
                 <div class="card-cover">
                     <img src="{{ song.cover }}" class="small-cover"
@@ -8,8 +8,8 @@
                 </div>
             </a>
             <div class="song pl-1">
-                <div class="title"><a
-                            href="{{ url('song_detail',{slug:song.slug}) }}">{{ song|raw }}</a>
+                <div class="title">
+                    <a href="{{ url('song_detail',{slug:song.slug}) }}">{{ song|raw }}</a>
                     {% set downloaded = downloadsService.alreadyDownloaded(song) %}
                     {% if downloaded %}
                         <small class="small"><i data-toggle="tooltip" title="Already downloaded"
@@ -17,6 +17,7 @@
                     {% endif %}
                 </div>
                 {% include 'songs/partial/artists.html.twig' with {song : song} %}
+                {% include 'songs/partial/mappers.html.twig' with {song:song} %}
             </div>
         </div>
     </td>
@@ -51,9 +52,7 @@
     <td>
         {{ song.beatsPerMinute|round }}
     </td>
-    <td>
-        {% include 'songs/partial/mappers.html.twig' with {song:song} %}
-    </td>
+
     <td class="small-col  pt-2 pb-2">{% include 'songs/partial/downupvote.html.twig' with {song:song} %}</td>
 
     <td class="table-column padded text-center song-vote-content-{{ song.id }}">
@@ -61,7 +60,7 @@
     </td>
 
     <td class="text-right text-grey">
-        {{ song.getTimeAgo }}&nbsp;
+        {{ song.getTimeAgoShort }}&nbsp;
     </td>
     <td class="text-right   pt-2 pb-2">
         {{ song.downloads|number_format(0) }}
