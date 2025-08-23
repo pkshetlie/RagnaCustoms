@@ -46,19 +46,19 @@
                 {% set diff = notation.difficulty %}
                 {% set isAllowedToNote = songDifficultyNotationService.isAllowedToNote(diff, app.user) %}
               {% if isAllowedToNote %}
-                <div data-id="{{ diff.id }}" class='level {% if diff.isRanked %}is-ranked{% endif %} btn btn-sm btn-outline-success'
+                <a href='#' data-id="{{ diff.id }}"
+                     data-modal="#editSong"
+                     data-modalform="#form-edit"
+                     data-refresh="true"
+                     data-url="{{ url('new_song') }}"
+                     data-title="{{ "Level Notation"|trans }}"
+                     class='ajax-modal-form level btn btn-sm btn-outline-success'
                      style="background-color:#{{ diff.difficultyRank.color }};">
-                  {% if diff.isRanked %}<i class="fas fa-star" data-toggle="tooltip"
-                                           title="Ranked"
-                                           style="color:#{{ diff.difficultyRank.color }};"></i>{% endif %}
                   <span>{{ notation.level }}</span>
-                </div>
+                </a>
                 {% else %}
-                <div data-id="{{ diff.id }}" class='level {% if diff.isRanked %}is-ranked{% endif %} btn btn-sm disabled'
+                <div data-id="{{ diff.id }}" class='level btn btn-sm disabled'
                      style="background-color:#{{ diff.difficultyRank.color }};{% if isAllowedToNote %}border:1px solid yellow;{% endif %}">
-                  {% if diff.isRanked %}<i class="fas fa-star" data-toggle="tooltip"
-                                           title="Ranked"
-                                           style="color:#{{ diff.difficultyRank.color }};"></i>{% endif %}
                   <span>{{ notation.level }}</span>
                 </div>
                   {% endif %}
