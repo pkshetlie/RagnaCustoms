@@ -50,9 +50,9 @@
                      data-modal="#editSong"
                      data-modalform="#form-edit"
                      data-refresh="true"
-                     data-url="{{ url('new_song') }}"
+                     data-url="{{ url('app_song_difficulty_notation',{id: song.id}) }}"
                      data-title="{{ "Level Notation"|trans }}"
-                     class='ajax-modal-form level btn btn-sm btn-outline-success'
+                     class='ajax-modal-form ajax-load level btn btn-sm btn-outline-success'
                      style="background-color:#{{ diff.difficultyRank.color }};">
                   <span>{{ notation.level }}</span>
                 </a>

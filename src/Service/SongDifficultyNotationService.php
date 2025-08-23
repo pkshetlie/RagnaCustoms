@@ -19,8 +19,12 @@ class SongDifficultyNotationService
     ) {
     }
 
-    public function setScore(SongDifficulty $songDifficulty, Utilisateur $utilisateur, int $note)
+    public function setScore(SongDifficulty $songDifficulty, ?Utilisateur $utilisateur, int $note)
     {
+        if ($utilisateur === null) {
+            return false;
+        }
+
         if ($this->isAllowedToNote($songDifficulty, $utilisateur) === false) {
             return false;
         }
@@ -42,8 +46,13 @@ class SongDifficultyNotationService
         return true;
     }
 
-    public function isAllowedToNote(SongDifficulty $songDifficulty, Utilisateur $utilisateur): bool
+    public function isAllowedToNote(SongDifficulty $songDifficulty, ?Utilisateur $utilisateur): bool
     {
+
+        if ($utilisateur === null) {
+            return false;
+        }
+
         $scoreHistory = $this->scoreHistoryRepository->findOneBy([
             'songDifficulty' => $songDifficulty,
             'user' => $utilisateur,
@@ -86,6 +95,45 @@ class SongDifficultyNotationService
         }
 
         return $difficultyNotations;
+    }
+
+    public function getAllowedNotation(Song $song, ?Utilisateur $user): array
+    {
+        if ($user === null) {
+            return [];
+        }
+
+        $notes = [];
+
+        foreach ($song->getSongDifficulties() as $difficulty) {
+            if ($this->isAllowedToNote($difficulty, $user)) {
+                $notes[] = [
+                    'difficulty' => $difficulty,
+                    'note' => $this->getUserCommunityNote($difficulty, $user),
+                ];
+            }
+        }
+
+        return $notes;
+    }
+
+    private function getUserCommunityNote(mixed $difficulty, ?Utilisateur $user)
+    {
+
+        if ($user === null) {
+            return [];
+        }
+
+        $notation = $this->songDifficultyNotationRepository->findOneBy([
+            'songDifficulty' => $difficulty,
+            'user' => $user,
+        ]);
+
+        if ($notation === null) {
+            return $difficulty->getDifficultyRank()->getLevel();
+        }
+
+        return (int)($notation->getNote());
     }
 
 }
