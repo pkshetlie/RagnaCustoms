@@ -41,7 +41,7 @@ function loadForm(modalform, content) {
             processData: false,
             contentType: false,
             success: function (data) {
-                if (data.goto !== false) {
+              if (data.goto !== false) {
                     window.location.href = data.goto;
                 }
                 if (data.reload) {
