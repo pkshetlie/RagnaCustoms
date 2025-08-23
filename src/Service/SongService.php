@@ -103,7 +103,7 @@ readonly class SongService
      *
      * @return ArrayCollection<Vote>
      */
-    public function getVotePublicOrMine(?Utilisateur $user, Song $song): ArrayCollection
+    public function getVotePublicOrMine(?Utilisateur $user, Song $song)
     {
        return $this->voteRepository->getVotePublicOrMine($user, $song);
     }
