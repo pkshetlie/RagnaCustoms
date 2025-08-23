@@ -69,7 +69,6 @@ readonly class SongService
         private ScoreRepository $scoreRepository,
         private NotificationRepository $notificationRepository,
         private VoteCounterRepository $voteCounterRepository,
-
     ) {
     }
 

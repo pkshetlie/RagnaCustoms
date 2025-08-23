@@ -7,8 +7,15 @@ use App\Exception\SongServiceEditorNotRecognized;
 use App\Exception\SongServiceNoJsonException;
 use App\Interface\IDiscordService;
 use App\Interface\INotificationService;
+use App\Repository\DifficultyRankRepository;
+use App\Repository\DownloadCounterRepository;
+use App\Repository\NotificationRepository;
+use App\Repository\ScoreHistoryRepository;
+use App\Repository\ScoreRepository;
+use App\Repository\SongDifficultyRepository;
 use App\Repository\SongHashRepository;
 use App\Repository\SongRepository;
+use App\Repository\VoteCounterRepository;
 use App\Repository\VoteRepository;
 use App\Service\SongService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,7 +43,13 @@ class SongServiceTest extends TestCase
             $this->createMock(Security::class),
             'contact@ragnacustoms.com',
             'contact@ragnacustoms.com',
-
+            $this->createMock(DifficultyRankRepository::class),
+            $this->createMock(SongDifficultyRepository::class),
+            $this->createMock(DownloadCounterRepository::class),
+            $this->createMock(ScoreHistoryRepository::class),
+            $this->createMock(ScoreRepository::class),
+            $this->createMock(NotificationRepository::class),
+            $this->createMock(VoteCounterRepository::class),
         );
     }
 
@@ -415,7 +428,15 @@ class SongServiceTest extends TestCase
             $this->createMock(INotificationService::class),
             $this->createMock(Security::class),
             'contact@ragnacustoms.com',
-            'contact@ragnacustoms.com'
+            'contact@ragnacustoms.com',
+            $this->createMock(DifficultyRankRepository::class),
+            $this->createMock(SongDifficultyRepository::class),
+            $this->createMock(DownloadCounterRepository::class),
+            $this->createMock(ScoreHistoryRepository::class),
+            $this->createMock(ScoreRepository::class),
+            $this->createMock(NotificationRepository::class),
+            $this->createMock(VoteCounterRepository::class),
+
         );
 
         $testCases = [
@@ -459,7 +480,15 @@ class SongServiceTest extends TestCase
             $this->createMock(INotificationService::class),
             $this->createMock(Security::class),
             'contact@ragnacustoms.com',
-            'contact@ragnacustoms.com'
+            'contact@ragnacustoms.com',
+            $this->createMock(DifficultyRankRepository::class),
+            $this->createMock(SongDifficultyRepository::class),
+            $this->createMock(DownloadCounterRepository::class),
+            $this->createMock(ScoreHistoryRepository::class),
+            $this->createMock(ScoreRepository::class),
+            $this->createMock(NotificationRepository::class),
+            $this->createMock(VoteCounterRepository::class),
+
         );
 
         $song = $this->createMock(Song::class);
