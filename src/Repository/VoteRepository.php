@@ -22,7 +22,7 @@ class VoteRepository extends AbstractEntityRepositoryWithTools
         parent::__construct($registry, Vote::class);
     }
 
-    public function getVotePublicOrMine(?Utilisateur $user, Song $song): ArrayCollection
+    public function getVotePublicOrMine(?Utilisateur $user, Song $song)
     {
         $qb = $this->createQueryBuilder('f');
         $qb
