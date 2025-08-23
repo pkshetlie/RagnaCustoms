@@ -48,7 +48,6 @@ class SongDifficultyNotationService
 
     public function isAllowedToNote(SongDifficulty $songDifficulty, ?Utilisateur $utilisateur): bool
     {
-
         if ($utilisateur === null) {
             return false;
         }
@@ -58,7 +57,7 @@ class SongDifficultyNotationService
             'user' => $utilisateur,
         ]);
 
-        if ($scoreHistory === null) {
+        if ($scoreHistory !== null) {
             return true;
         }
 
