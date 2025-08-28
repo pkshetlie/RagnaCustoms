@@ -236,7 +236,17 @@ class SongsController extends AbstractController
                 ).
                 ' ('.$song->getId(
                 ).')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/download/'.$id;
+            $visitorId = isset($_COOKIE['_pk_id_1']) ? $_COOKIE['_pk_id_1'] : '';
+            $visitorId = explode('.', $visitorId)[0];
 
+            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API key&e_n='.$song->getName(
+                ).
+                ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/download/'.$id;
+
+            // Add visitor ID if available
+            if ($visitorId) {
+                $trackingUrl .= '&_id='.$visitorId;
+            }
             $client = new Client(['verify' => false]);
             $client->get($trackingUrl);
         } catch (Exception $e) {
@@ -357,15 +367,23 @@ class SongsController extends AbstractController
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
+            // Get user ID from JS cookie if available
+            $visitorId = isset($_COOKIE['_pk_id_1']) ? $_COOKIE['_pk_id_1'] : '';
+            $visitorId = explode('.', $visitorId)[0];
+
             $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API key&e_n='.$song->getName(
                 ).
-                ' ('.$song->getId(
-                ).')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/download/'.$id;
+                ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/download/'.$id;
+
+            // Add visitor ID if available
+            if ($visitorId) {
+                $trackingUrl .= '&_id='.$visitorId;
+            }
 
             $client = new Client(['verify' => false]);
             $client->get($trackingUrl);
         } catch (Exception $e) {
-            // Silently continue if tracking fails
+            // Silently continue if tracking fails 
         }
 
         if ($grantedService->isGranted($user, 'ROLE_PREMIUM_LVL1')) {
@@ -437,6 +455,17 @@ class SongsController extends AbstractController
             $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=DDL&e_n='.$song->getName(
                 ).
                 ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/ddl/'.$id;
+            $visitorId = isset($_COOKIE['_pk_id_1']) ? $_COOKIE['_pk_id_1'] : '';
+            $visitorId = explode('.', $visitorId)[0];
+
+            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API key&e_n='.$song->getName(
+                ).
+                ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/download/'.$id;
+
+            // Add visitor ID if available
+            if ($visitorId) {
+                $trackingUrl .= '&_id='.$visitorId;
+            }
             $client = new Client(['verify' => false]);
             $client->get($trackingUrl);
         } catch (Exception $e) {
