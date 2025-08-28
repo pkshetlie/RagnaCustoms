@@ -43,10 +43,10 @@ class ScoreHistory
     #[ORM\Column(type: 'integer', nullable: true)]
     #[Groups(['song:get'])]
     private ?int $comboYellow;
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $country;
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $dateRagnarock;
+    #[ORM\Column(type: 'string', length: 5, nullable: true)]
+    private $country;
+    #[ORM\Column(type: 'string', length: 5, nullable: true)]
+    private $dateRagnarock;
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $extra;
     #[ORM\Column(type: 'integer', nullable: true)]
@@ -67,15 +67,15 @@ class ScoreHistory
     #[ORM\Column(type: 'integer', nullable: true)]
     #[Groups(['song:get'])]
     private ?int $percentageOfPerfects;
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: 'string', length: 15, nullable: true)]
     #[Groups(['song:get'])]
     private ?string $plateform;
-    #[ORM\Column(type: 'float', nullable: true)]
+    #[ORM\Column(type: 'decimal', precision: 8, scale: 2, nullable: true)]
     private ?float $rawPP;
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: 'integer')]
     #[Groups(['song:get'])]
     private float $score;
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: 'string', length:40, nullable: true)]
     private ?string $session;
     #[ORM\ManyToOne(targetEntity: SongDifficulty::class, inversedBy: 'scoreHistories')]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
@@ -83,7 +83,7 @@ class ScoreHistory
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'scoreHistories')]
     #[ORM\JoinColumn(nullable: false)]
     private Utilisateur $user;
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: 'string', length:40, nullable: true)]
     #[Groups(['song:get'])]
     private ?string $userRagnarock;
 
@@ -113,12 +113,12 @@ class ScoreHistory
         return $this;
     }
 
-    public function getScore(): ?float
+    public function getScore(): ?int
     {
         return $this->score;
     }
 
-    public function setScore(float $score): self
+    public function setScore(int $score): self
     {
         $this->score = $score;
 
