@@ -232,7 +232,7 @@ class SongsController extends AbstractController
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
-            $visitorIp = $_SERVER['REMOTE_ADDR'] ?? '';        // IP du visiteur
+            $visitorIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? uniqid();        // IP du visiteur
             $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';   // User-Agent du visiteur
 
             $trackingParams = [
@@ -371,7 +371,7 @@ class SongsController extends AbstractController
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
-            $visitorIp = $_SERVER['REMOTE_ADDR'] ?? '';        // IP du visiteur
+            $visitorIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? uniqid();        // IP du visiteur
             $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';   // User-Agent du visiteur
 
             $trackingParams = [
@@ -423,10 +423,6 @@ class SongsController extends AbstractController
             );
         }
     }
-    #[Route(path: '/songs/infophp', name: 'song_info_php')]
-    public function infos() {
-        phpinfo();
-    }
 
     #[Route(path: '/songs/ddl/{id}', name: 'song_direct_download')]
     public function directDownload(
@@ -467,30 +463,7 @@ class SongsController extends AbstractController
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
-            $ipKeys = [
-                'HTTP_CLIENT_IP',
-                'HTTP_X_FORWARDED_FOR',
-                'HTTP_X_FORWARDED',
-                'HTTP_X_CLUSTER_CLIENT_IP',
-                'HTTP_FORWARDED_FOR',
-                'HTTP_FORWARDED',
-                'REMOTE_ADDR'
-            ];
-
-            $visitorIp = $_SERVER['REMOTE_ADDR'] ?? '';        // IP du visiteur
-
-            foreach ($ipKeys as $key) {
-                if (!empty($_SERVER[$key])) {
-                    // parfois plusieurs IPs séparées par des virgules
-                    $ips = explode(',', $_SERVER[$key]);
-                    foreach ($ips as $ip) {
-                        $ip = trim($ip);
-                        if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                            $visitorIp = $ip;
-                        }
-                    }
-                }
-            }
+            $visitorIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? uniqid();        // IP du visiteur
 
             $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';   // User-Agent du visiteur
 
