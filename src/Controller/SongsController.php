@@ -249,7 +249,7 @@ class SongsController extends AbstractController
             // Ajouter IP et User-Agent
             // if ($visitorIp) $trackingParams['cip'] = $visitorIp;
             if ($userAgent) $trackingParams['ua'] = $userAgent;
-            $visitorId = substr(md5($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'), 0, 16);
+            $visitorId = substr(md5($visitorIp), 0, 16);
             if($visitorId) $trackingParams['_id'] = $visitorId;
             $client = new Client(['verify' => false]);
             $client->get($matomoUrl, ['query' => $trackingParams]);
@@ -388,7 +388,7 @@ class SongsController extends AbstractController
             // Ajouter IP et User-Agent
             // if ($visitorIp) $trackingParams['cip'] = $visitorIp;
             if ($userAgent) $trackingParams['ua'] = $userAgent;
-            $visitorId = substr(md5($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'), 0, 16);
+            $visitorId = substr(md5($visitorIp), 0, 16);
             if($visitorId) $trackingParams['_id'] = $visitorId;
             $client = new Client(['verify' => false]);
             $client->get($matomoUrl, ['query' => $trackingParams]);
@@ -471,14 +471,14 @@ class SongsController extends AbstractController
                 'idsite' => $matomoSiteId,
                 'rec' => 1,
                 'apiv' => 1,
-                'e_c' => $visitorIp,
+                'e_c' => 'Download',
                 'e_a' => 'DDL',
                 'e_n' => $song->getName() . ' (' . $song->getId() . ')',
                 'url' => 'https://ragnacustoms.com/songs/download/'.$id,
                 'token_auth' => $matomoToken,
             ];
 
-            $visitorId = substr(md5($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'), 0, 16);
+            $visitorId = substr(md5($visitorIp), 0, 16);
             if($visitorId) $trackingParams['_id'] = $visitorId;
             // Ajouter IP et User-Agent
             // if ($visitorIp) $trackingParams['cip'] = $visitorIp;
