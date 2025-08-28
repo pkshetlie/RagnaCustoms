@@ -463,7 +463,31 @@ class SongsController extends AbstractController
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
+            $ipKeys = [
+                'HTTP_CLIENT_IP',
+                'HTTP_X_FORWARDED_FOR',
+                'HTTP_X_FORWARDED',
+                'HTTP_X_CLUSTER_CLIENT_IP',
+                'HTTP_FORWARDED_FOR',
+                'HTTP_FORWARDED',
+                'REMOTE_ADDR'
+            ];
+
             $visitorIp = $_SERVER['REMOTE_ADDR'] ?? '';        // IP du visiteur
+
+            foreach ($ipKeys as $key) {
+                if (!empty($_SERVER[$key])) {
+                    // parfois plusieurs IPs séparées par des virgules
+                    $ips = explode(',', $_SERVER[$key]);
+                    foreach ($ips as $ip) {
+                        $ip = trim($ip);
+                        if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                            $visitorIp = $ip;
+                        }
+                    }
+                }
+            }
+
             $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';   // User-Agent du visiteur
 
             $trackingParams = [
