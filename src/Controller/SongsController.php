@@ -423,6 +423,10 @@ class SongsController extends AbstractController
             );
         }
     }
+    #[Route(path: '/songs/infophp', name: 'song_info_php')]
+    public function infos() {
+        phpinfo();
+    }
 
     #[Route(path: '/songs/ddl/{id}', name: 'song_direct_download')]
     public function directDownload(
