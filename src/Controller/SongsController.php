@@ -470,10 +470,9 @@ class SongsController extends AbstractController
                 'idsite' => $matomoSiteId,
                 'rec' => 1,
                 'apiv' => 1,
-                'e_c' => 'Download',
+                'e_c' => $visitorIp,
                 'e_a' => 'DDL',
                 'e_n' => $song->getName() . ' (' . $song->getId() . ')',
-                'c_n' => $visitorIp,
                 'url' => 'https://ragnacustoms.com/songs/download/'.$id,
                 'token_auth' => $matomoToken,
             ];
