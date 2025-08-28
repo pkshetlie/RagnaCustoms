@@ -476,8 +476,7 @@ class SongsController extends AbstractController
             }
         }
 
-        try {
-            // Track download event in Matomo
+               // Track download event in Matomo
             $matomoUrl = 'https://matomo.ragnacustoms.com/matomo.php';
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
@@ -485,18 +484,16 @@ class SongsController extends AbstractController
             $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API&e_n='.$song->getName().
                 ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/ddl/'.$id;
             // $ch = curl_init();
-            // $context = stream_context_create([
-            //     "ssl" => [
-            //         "verify_peer" => false,
-            //         "verify_peer_name" => false,
-            //     ]
-            // ]);
+            $context = stream_context_create([
+                "ssl" => [
+                    "verify_peer" => false,
+                    "verify_peer_name" => false,
+                ]
+            ]);
 
-            $content = file_get_contents($trackingUrl);
+            $content = file_get_contents($trackingUrl, false, $context);;
 
-        } catch (\Exception $e) {
-            // Silently continue if tracking fails
-        }
+
 
         $em = $doctrine->getManager();
         $song->setDownloads($song->getDownloads() + 1);
