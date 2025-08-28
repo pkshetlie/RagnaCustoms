@@ -247,7 +247,7 @@ class SongsController extends AbstractController
             ];
 
             // Ajouter IP et User-Agent
-            if ($visitorIp != '127.0.0.1') $trackingParams['cip'] = $visitorIp;
+            // if ($visitorIp != '127.0.0.1') $trackingParams['cip'] = $visitorIp;
             if ($userAgent) $trackingParams['ua'] = $userAgent;
             $visitorId = substr(md5($visitorIp), 0, 16);
             if($visitorId) $trackingParams['_id'] = $visitorId;
@@ -386,7 +386,7 @@ class SongsController extends AbstractController
             ];
 
             // Ajouter IP et User-Agent
-            if ($visitorIp != '127.0.0.1') $trackingParams['cip'] = $visitorIp;
+            // if ($visitorIp != '127.0.0.1') $trackingParams['cip'] = $visitorIp;
             if ($userAgent) $trackingParams['ua'] = $userAgent;
             $visitorId = substr(md5($visitorIp), 0, 16);
             if($visitorId) $trackingParams['_id'] = $visitorId;
@@ -481,7 +481,7 @@ class SongsController extends AbstractController
             $visitorId = substr(md5($visitorIp), 0, 16);
             if($visitorId) $trackingParams['_id'] = $visitorId;
             // Ajouter IP et User-Agent
-            if ($visitorIp != '127.0.0.1') $trackingParams['cip'] = $visitorIp;
+            // if ($visitorIp != '127.0.0.1') $trackingParams['cip'] = $visitorIp;
             if ($userAgent) $trackingParams['ua'] = $userAgent;
 
             $client = new Client(['verify' => false]);
