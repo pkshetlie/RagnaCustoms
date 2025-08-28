@@ -24,6 +24,7 @@ use App\Service\SearchService;
 use App\Service\SongService;
 use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
+use GuzzleHttp\Client;
 use Pkshetlie\PaginationBundle\Service\PaginationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -476,24 +477,16 @@ class SongsController extends AbstractController
             }
         }
 
-               // Track download event in Matomo
-            $matomoUrl = 'https://matomo.ragnacustoms.com/matomo.php';
-            $matomoSiteId = 1;
-            $matomoToken = $_ENV['MATOMO_API_KEY'];
+        // Track download event in Matomo
+        $matomoUrl = 'https://matomo.ragnacustoms.com/matomo.php';
+        $matomoSiteId = 1;
+        $matomoToken = $_ENV['MATOMO_API_KEY'];
 
-            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API&e_n='.$song->getName().
-                ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/ddl/'.$id;
-            // $ch = curl_init();
-            $context = stream_context_create([
-                "ssl" => [
-                    "verify_peer" => false,
-                    "verify_peer_name" => false,
-                ]
-            ]);
+        $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API&e_n='.$song->getName().
+            ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/ddl/'.$id;
 
-            $content = file_get_contents($trackingUrl, false, $context);;
-
-
+        $client = new Client(['verify' => false]);
+        $client->get($trackingUrl);
 
         $em = $doctrine->getManager();
         $song->setDownloads($song->getDownloads() + 1);
