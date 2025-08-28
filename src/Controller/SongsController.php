@@ -226,31 +226,35 @@ class SongsController extends AbstractController
 
         $downloadService->addOne($song);
         $this->reformatSubFolderName($song, $kernel);
+
         try {
-            // Track download event in Matomo
             $matomoUrl = 'https://matomo.ragnacustoms.com/matomo.php';
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
-            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=No API key&e_n='.$song->getName(
-                ).
-                ' ('.$song->getId(
-                ).')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/download/'.$id;
-            $visitorId = isset($_COOKIE['_pk_id_1']) ? $_COOKIE['_pk_id_1'] : '';
-            $visitorId = explode('.', $visitorId)[0];
+            $visitorIp = $_SERVER['REMOTE_ADDR'] ?? '';        // IP du visiteur
+            $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';   // User-Agent du visiteur
 
-            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API key&e_n='.$song->getName(
-                ).
-                ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/download/'.$id;
+            $trackingParams = [
+                'idsite' => $matomoSiteId,
+                'rec' => 1,
+                'apiv' => 1,
+                'e_c' => 'Download',
+                'e_a' => 'NO API KEY',
+                'e_n' => $song->getName() . ' (' . $song->getId() . ')',
+                'url' => 'https://ragnacustoms.com/songs/download/'.$id,
+                'token_auth' => $matomoToken,
+            ];
 
-            // Add visitor ID if available
-            if ($visitorId) {
-                $trackingUrl .= '&_id='.$visitorId;
-            }
+            // Ajouter IP et User-Agent
+            if ($visitorIp) $trackingParams['cip'] = $visitorIp;
+            if ($userAgent) $trackingParams['ua'] = $userAgent;
+
             $client = new Client(['verify' => false]);
-            $client->get($trackingUrl);
-        } catch (Exception $e) {
-            // Silently continue if tracking fails
+            $client->get($matomoUrl, ['query' => $trackingParams]);
+
+        } catch (\Exception $e) {
+            // Gérer l'erreur
         }
 
         return $this->RestrictedDownload(
@@ -362,29 +366,35 @@ class SongsController extends AbstractController
         }
 
         try {
-            // Track download event in Matomo
             $matomoUrl = 'https://matomo.ragnacustoms.com/matomo.php';
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
-            // Get user ID from JS cookie if available
-            $visitorId = isset($_COOKIE['_pk_id_1']) ? $_COOKIE['_pk_id_1'] : '';
-            $visitorId = explode('.', $visitorId)[0];
+            $visitorIp = $_SERVER['REMOTE_ADDR'] ?? '';        // IP du visiteur
+            $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';   // User-Agent du visiteur
 
-            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API key&e_n='.$song->getName(
-                ).
-                ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/download/'.$id;
+            $trackingParams = [
+                'idsite' => $matomoSiteId,
+                'rec' => 1,
+                'apiv' => 1,
+                'e_c' => 'Download',
+                'e_a' => 'DDL',
+                'e_n' => $song->getName() . ' (' . $song->getId() . ')',
+                'url' => 'https://ragnacustoms.com/songs/ddl/'.$id,
+                'token_auth' => $matomoToken,
+            ];
 
-            // Add visitor ID if available
-            if ($visitorId) {
-                $trackingUrl .= '&_id='.$visitorId;
-            }
+            // Ajouter IP et User-Agent
+            if ($visitorIp) $trackingParams['cip'] = $visitorIp;
+            if ($userAgent) $trackingParams['ua'] = $userAgent;
 
             $client = new Client(['verify' => false]);
-            $client->get($trackingUrl);
-        } catch (Exception $e) {
-            // Silently continue if tracking fails 
+            $client->get($matomoUrl, ['query' => $trackingParams]);
+
+        } catch (\Exception $e) {
+            // Gérer l'erreur
         }
+
 
         if ($grantedService->isGranted($user, 'ROLE_PREMIUM_LVL1')) {
             $fileContent = file_get_contents(
@@ -447,29 +457,33 @@ class SongsController extends AbstractController
         $this->reformatSubFolderName($song, $kernel);
 
         try {
-            // Track download event in Matomo
             $matomoUrl = 'https://matomo.ragnacustoms.com/matomo.php';
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
-            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=DDL&e_n='.$song->getName(
-                ).
-                ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/ddl/'.$id;
-            $visitorId = isset($_COOKIE['_pk_id_1']) ? $_COOKIE['_pk_id_1'] : '';
-            $visitorId = explode('.', $visitorId)[0];
+            $visitorIp = $_SERVER['REMOTE_ADDR'] ?? '';        // IP du visiteur
+            $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';   // User-Agent du visiteur
 
-            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API key&e_n='.$song->getName(
-                ).
-                ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/download/'.$id;
+            $trackingParams = [
+                'idsite' => $matomoSiteId,
+                'rec' => 1,
+                'apiv' => 1,
+                'e_c' => 'Download',
+                'e_a' => 'DDL',
+                'e_n' => $song->getName() . ' (' . $song->getId() . ')',
+                'url' => 'https://ragnacustoms.com/songs/download/'.$id,
+                'token_auth' => $matomoToken,
+            ];
 
-            // Add visitor ID if available
-            if ($visitorId) {
-                $trackingUrl .= '&_id='.$visitorId;
-            }
+            // Ajouter IP et User-Agent
+            if ($visitorIp) $trackingParams['cip'] = $visitorIp;
+            if ($userAgent) $trackingParams['ua'] = $userAgent;
+
             $client = new Client(['verify' => false]);
-            $client->get($trackingUrl);
-        } catch (Exception $e) {
+            $client->get($matomoUrl, ['query' => $trackingParams]);
 
+        } catch (\Exception $e) {
+            // Gérer l'erreur
         }
 
         if ($this->isGranted('ROLE_PREMIUM_LVL1')) {
