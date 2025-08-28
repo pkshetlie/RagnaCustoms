@@ -374,7 +374,8 @@ class SongsController extends AbstractController
             );
         }
     }
-    #[Route(path: '/songs/ddl3/{id}', name: 'song_direct_download')]
+
+    #[Route(path: '/songs/ddl3/{id}', name: 'song_direct_download3')]
     public function directDownload3(
         string $id,
         ManagerRegistry $doctrine,
@@ -449,7 +450,7 @@ class SongsController extends AbstractController
         }
     }
 
-    #[Route(path: '/songs/ddl2/{id}', name: 'song_direct_download')]
+    #[Route(path: '/songs/ddl2/{id}', name: 'song_direct_download2')]
     public function directDownload2(
         string $id,
         ManagerRegistry $doctrine,
