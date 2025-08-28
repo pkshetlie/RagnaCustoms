@@ -34,6 +34,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\VarDumper\VarDumper;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use ZipArchive;
 
@@ -332,6 +333,22 @@ class SongsController extends AbstractController
             $downloadService->addOne($song, $api);
         }
 
+        try {
+            // Track download event in Matomo
+            $matomoUrl = 'https://matomo.ragnacustoms.com/matomo.php';
+            $matomoSiteId = 1;
+            $matomoToken = $_ENV['MATOMO_API_KEY'];
+
+            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API&e_n='.$song->getName(
+                ).
+                ' ('.$song->getId(
+                ).')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/download/'.$id.'/'.$api;
+
+        file_get_contents($trackingUrl);
+        } catch (\Exception $e) {
+            // Silently continue if tracking fails
+        }
+
         if ($grantedService->isGranted($user, 'ROLE_PREMIUM_LVL1')) {
             $fileContent = file_get_contents(
                 $kernel->getProjectDir()."/public/songs-files/".$song->getId().".zip"
@@ -351,7 +368,159 @@ class SongsController extends AbstractController
         } else {
             $file = $kernel->getProjectDir()."/public/songs-files/".$song->getId().".zip"; // Nom du fichier
 
-            return $this->RestrictedDownload($file, ($song->isPrivate() ? $song->getPrivateLink() : $song->getId()).".zip");
+            return $this->RestrictedDownload(
+                $file,
+                ($song->isPrivate() ? $song->getPrivateLink() : $song->getId()).".zip"
+            );
+        }
+    }
+    #[Route(path: '/songs/ddl3/{id}', name: 'song_direct_download')]
+    public function directDownload3(
+        string $id,
+        ManagerRegistry $doctrine,
+        KernelInterface $kernel,
+        DownloadService $downloadService,
+        SongRepository $songRepository
+    ) {
+        if (is_numeric($id)) {
+            $song = $songRepository->find($id);
+        } else {
+            $song = $songRepository->findOneBy(['privateLink' => $id]);
+        }
+
+        if ($song && $song->isPrivate() && is_numeric($id)) {
+            return new Response("Not available now", 404);
+        }
+
+        if ( !$song || !$song->isModerated()
+            || $song->getProgrammationDate() == null
+            || $song->getProgrammationDate() > new DateTime()) {
+            if ($this->isGranted('ROLE_ADMIN') || ($song && $song->getMappers()->contains($this->getUser()))) {
+
+            } else {
+                return new Response("Not available now", 403);
+            }
+        }
+
+        try {
+            // Track download event in Matomo
+            $matomoUrl = 'https://matomo.ragnacustoms.com/matomo.php';
+            $matomoSiteId = 1;
+            $matomoToken = $_ENV['MATOMO_API_KEY'];
+
+            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API&e_n='.$song->getName().
+                ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/ddl/'.$id;
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $trackingUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $resp = curl_exec($ch);
+            curl_close($ch);
+        } catch (\Exception $e) {
+            // Silently continue if tracking fails
+        }
+
+        $em = $doctrine->getManager();
+        $song->setDownloads($song->getDownloads() + 1);
+        $em->flush();
+        $downloadService->addOne($song);
+        $this->reformatSubFolderName($song, $kernel);
+        if ($this->isGranted('ROLE_PREMIUM_LVL1')) {
+            $fileContent = file_get_contents(
+                $kernel->getProjectDir()."/public/songs-files/".$song->getId().".zip"
+            );
+            $response = new Response($fileContent);
+            $disposition = HeaderUtils::makeDisposition(
+                HeaderUtils::DISPOSITION_ATTACHMENT,
+                $this->cleanName($song->getName()).'.zip'
+            );
+            $response->headers->set('Content-Disposition', $disposition);
+            $response->headers->set('Content-type', "application/octet-stream");
+            $response->headers->set('Content-Transfer-Encoding', "binary");
+            $response->headers->set(
+                'Content-Length',
+                filesize($kernel->getProjectDir()."/public/songs-files/".$song->getId().".zip")
+            );
+
+            return $response;
+        } else {
+            $file = $kernel->getProjectDir()."/public/songs-files/".$song->getId().".zip"; // Nom du fichier
+
+            return $this->RestrictedDownload($file, $this->cleanName($song->getName()).".zip");
+        }
+    }
+
+    #[Route(path: '/songs/ddl2/{id}', name: 'song_direct_download')]
+    public function directDownload2(
+        string $id,
+        ManagerRegistry $doctrine,
+        KernelInterface $kernel,
+        DownloadService $downloadService,
+        SongRepository $songRepository
+    ) {
+        if (is_numeric($id)) {
+            $song = $songRepository->find($id);
+        } else {
+            $song = $songRepository->findOneBy(['privateLink' => $id]);
+        }
+
+        if ($song && $song->isPrivate() && is_numeric($id)) {
+            return new Response("Not available now", 404);
+        }
+
+        if ( !$song || !$song->isModerated()
+            || $song->getProgrammationDate() == null
+            || $song->getProgrammationDate() > new DateTime()) {
+            if ($this->isGranted('ROLE_ADMIN') || ($song && $song->getMappers()->contains($this->getUser()))) {
+
+            } else {
+                return new Response("Not available now", 403);
+            }
+        }
+
+        try {
+            // Track download event in Matomo
+            $matomoUrl = 'https://matomo.ragnacustoms.com/matomo.php';
+            $matomoSiteId = 1;
+            $matomoToken = $_ENV['MATOMO_API_KEY'];
+
+            $trackingUrl = $matomoUrl.'?idsite='.$matomoSiteId.'&rec=1&apiv=1&e_c=Download&e_a=API&e_n='.$song->getName().
+                ' ('.$song->getId().')&token_auth='.$matomoToken.'&url=https://ragnacustoms.com/songs/ddl/'.$id;
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $trackingUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $resp = curl_exec($ch);
+            curl_close($ch);
+        } catch (\Exception $e) {
+            // Silently continue if tracking fails
+        }
+
+        $em = $doctrine->getManager();
+        $song->setDownloads($song->getDownloads() + 1);
+        $em->flush();
+        $downloadService->addOne($song);
+        $this->reformatSubFolderName($song, $kernel);
+        if ($this->isGranted('ROLE_PREMIUM_LVL1')) {
+            $fileContent = file_get_contents(
+                $kernel->getProjectDir()."/public/songs-files/".$song->getId().".zip"
+            );
+            $response = new Response($fileContent);
+            $disposition = HeaderUtils::makeDisposition(
+                HeaderUtils::DISPOSITION_ATTACHMENT,
+                $this->cleanName($song->getName()).'.zip'
+            );
+            $response->headers->set('Content-Disposition', $disposition);
+            $response->headers->set('Content-type', "application/octet-stream");
+            $response->headers->set('Content-Transfer-Encoding', "binary");
+            $response->headers->set(
+                'Content-Length',
+                filesize($kernel->getProjectDir()."/public/songs-files/".$song->getId().".zip")
+            );
+
+            return $response;
+        } else {
+            $file = $kernel->getProjectDir()."/public/songs-files/".$song->getId().".zip"; // Nom du fichier
+
+            return $this->RestrictedDownload($file, $this->cleanName($song->getName()).".zip");
         }
     }
 
@@ -382,7 +551,6 @@ class SongsController extends AbstractController
                 return new Response("Not available now", 403);
             }
         }
-
 
         $em = $doctrine->getManager();
         $song->setDownloads($song->getDownloads() + 1);

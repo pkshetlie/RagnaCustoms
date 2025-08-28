@@ -1,11 +1,11 @@
 name: Deploy Symfony Application
 
 # Déclencher l'exécution du workflow sur un push dans la branche principale
-on:
-    push:
-        branches:
-            - master
-            - beta
+#on:
+#    push:
+#        branches:
+#            - master
+#            - beta
 
 jobs:
 #    test:
