@@ -473,6 +473,7 @@ class SongsController extends AbstractController
                 'e_c' => 'Download',
                 'e_a' => 'DDL',
                 'e_n' => $song->getName() . ' (' . $song->getId() . ')',
+                'c_n' => $visitorIp,
                 'url' => 'https://ragnacustoms.com/songs/download/'.$id,
                 'token_auth' => $matomoToken,
             ];
@@ -487,6 +488,7 @@ class SongsController extends AbstractController
             $client->get($matomoUrl, ['query' => $trackingParams]);
         } catch (\Exception $e) {
             // Gérer l'erreur
+            VarDumper::dump($e);
         }
 
         if ($this->isGranted('ROLE_PREMIUM_LVL1')) {
