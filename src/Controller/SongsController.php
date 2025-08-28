@@ -26,6 +26,7 @@ use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use GuzzleHttp\Client;
+use MatomoTracker;
 use Pkshetlie\PaginationBundle\Service\PaginationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -232,27 +233,40 @@ class SongsController extends AbstractController
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
-            $visitorIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? uniqid();        // IP du visiteur
-            $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';   // User-Agent du visiteur
+            // IP et User-Agent du visiteur
+            $visitorIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '127.0.0.1';
+            $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
-            $trackingParams = [
-                'idsite' => $matomoSiteId,
-                'rec' => 1,
-                'apiv' => 1,
-                'e_c' => 'Download',
-                'e_a' => 'NO API KEY',
-                'e_n' => $song->getName() . ' (' . $song->getId() . ')',
-                'url' => 'https://ragnacustoms.com/songs/download/'.$id,
-                'token_auth' => $matomoToken,
-            ];
-
-            // Ajouter IP et User-Agent
-            // if ($visitorIp != '127.0.0.1') $trackingParams['cip'] = $visitorIp;
-            if ($userAgent) $trackingParams['ua'] = $userAgent;
+            // Générer un visitor ID unique (16 caractères hex)
             $visitorId = substr(md5($visitorIp), 0, 16);
-            if($visitorId) $trackingParams['_id'] = $visitorId;
-            $client = new Client(['verify' => false]);
-            $client->get($matomoUrl, ['query' => $trackingParams]);
+
+            // Créer le tracker Matomo
+            $tracker = new MatomoTracker($matomoSiteId, $matomoUrl);
+
+            // Définir le visitor ID
+            $tracker->setVisitorId($visitorId);
+
+            // Définir l'IP du visiteur (pour éviter les 400 liés à cip)
+            if ($visitorIp !== '127.0.0.1') {
+                $tracker->setIp($visitorIp);
+            }
+
+            // Définir le User-Agent
+            if ($userAgent) {
+                $tracker->setUserAgent($userAgent);
+            }
+
+            // Tracker l'événement
+            $tracker->doTrackEvent(
+                'Download',                               // e_c
+                'DDL',                                    // e_a
+                $song->getName() . ' (' . $song->getId() . ')' // e_n
+            );
+
+            $tracker->setTokenAuth($matomoToken);
+
+            // Tracker la page (optionnel)
+            $tracker->doTrackPageView('https://ragnacustoms.com/songs/download/' . $id);
 
         } catch (\Exception $e) {
             // Gérer l'erreur
@@ -371,27 +385,40 @@ class SongsController extends AbstractController
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
-            $visitorIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? uniqid();        // IP du visiteur
-            $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';   // User-Agent du visiteur
+            // IP et User-Agent du visiteur
+            $visitorIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '127.0.0.1';
+            $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
-            $trackingParams = [
-                'idsite' => $matomoSiteId,
-                'rec' => 1,
-                'apiv' => 1,
-                'e_c' => 'Download',
-                'e_a' => 'DDL',
-                'e_n' => $song->getName() . ' (' . $song->getId() . ')',
-                'url' => 'https://ragnacustoms.com/songs/ddl/'.$id,
-                'token_auth' => $matomoToken,
-            ];
-
-            // Ajouter IP et User-Agent
-            // if ($visitorIp != '127.0.0.1') $trackingParams['cip'] = $visitorIp;
-            if ($userAgent) $trackingParams['ua'] = $userAgent;
+            // Générer un visitor ID unique (16 caractères hex)
             $visitorId = substr(md5($visitorIp), 0, 16);
-            if($visitorId) $trackingParams['_id'] = $visitorId;
-            $client = new Client(['verify' => false]);
-            $client->get($matomoUrl, ['query' => $trackingParams]);
+
+            // Créer le tracker Matomo
+            $tracker = new MatomoTracker($matomoSiteId, $matomoUrl);
+
+            // Définir le visitor ID
+            $tracker->setVisitorId($visitorId);
+
+            // Définir l'IP du visiteur (pour éviter les 400 liés à cip)
+            if ($visitorIp !== '127.0.0.1') {
+                $tracker->setIp($visitorIp);
+            }
+
+            // Définir le User-Agent
+            if ($userAgent) {
+                $tracker->setUserAgent($userAgent);
+            }
+
+            // Tracker l'événement
+            $tracker->doTrackEvent(
+                'Download',                               // e_c
+                'DDL',                                    // e_a
+                $song->getName() . ' (' . $song->getId() . ')' // e_n
+            );
+
+            $tracker->setTokenAuth($matomoToken);
+
+            // Tracker la page (optionnel)
+            $tracker->doTrackPageView('https://ragnacustoms.com/songs/download/' . $id);
 
         } catch (\Exception $e) {
             // Gérer l'erreur
@@ -463,32 +490,43 @@ class SongsController extends AbstractController
             $matomoSiteId = 1;
             $matomoToken = $_ENV['MATOMO_API_KEY'];
 
-            $visitorIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '127.0.0.1';        // IP du visiteur
+            // IP et User-Agent du visiteur
+            $visitorIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '127.0.0.1';
+            $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
-            $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? '';   // User-Agent du visiteur
-
-            $trackingParams = [
-                'idsite' => $matomoSiteId,
-                'rec' => 1,
-                'apiv' => 1,
-                'e_c' => 'Download',
-                'e_a' => 'DDL',
-                'e_n' => $song->getName() . ' (' . $song->getId() . ')',
-                'url' => 'https://ragnacustoms.com/songs/download/'.$id,
-                'token_auth' => $matomoToken,
-            ];
-
+            // Générer un visitor ID unique (16 caractères hex)
             $visitorId = substr(md5($visitorIp), 0, 16);
-            if($visitorId) $trackingParams['_id'] = $visitorId;
-            // Ajouter IP et User-Agent
-            // if ($visitorIp != '127.0.0.1') $trackingParams['cip'] = $visitorIp;
-            if ($userAgent) $trackingParams['ua'] = $userAgent;
 
-            $client = new Client(['verify' => false]);
-            $client->get($matomoUrl, ['query' => $trackingParams]);
+            // Créer le tracker Matomo
+            $tracker = new MatomoTracker($matomoSiteId, $matomoUrl);
+
+            // Définir le visitor ID
+            $tracker->setVisitorId($visitorId);
+
+            // Définir l'IP du visiteur (pour éviter les 400 liés à cip)
+            if ($visitorIp !== '127.0.0.1') {
+                $tracker->setIp($visitorIp);
+            }
+
+            // Définir le User-Agent
+            if ($userAgent) {
+                $tracker->setUserAgent($userAgent);
+            }
+
+            // Tracker l'événement
+            $tracker->doTrackEvent(
+                'Download',                               // e_c
+                'DDL',                                    // e_a
+                $song->getName() . ' (' . $song->getId() . ')' // e_n
+            );
+
+            $tracker->setTokenAuth($matomoToken);
+
+            // Tracker la page (optionnel)
+            $tracker->doTrackPageView('https://ragnacustoms.com/songs/download/' . $id);
+
         } catch (\Exception $e) {
             // Gérer l'erreur
-            VarDumper::dump($e);
         }
 
         if ($this->isGranted('ROLE_PREMIUM_LVL1')) {
