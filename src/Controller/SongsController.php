@@ -247,9 +247,10 @@ class SongsController extends AbstractController
             ];
 
             // Ajouter IP et User-Agent
-            if ($visitorIp) $trackingParams['cip'] = $visitorIp;
+            // if ($visitorIp) $trackingParams['cip'] = $visitorIp;
             if ($userAgent) $trackingParams['ua'] = $userAgent;
-
+            $visitorId = substr(md5($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'), 0, 16);
+            if($visitorId) $trackingParams['_id'] = $visitorId;
             $client = new Client(['verify' => false]);
             $client->get($matomoUrl, ['query' => $trackingParams]);
 
@@ -385,9 +386,10 @@ class SongsController extends AbstractController
             ];
 
             // Ajouter IP et User-Agent
-            if ($visitorIp) $trackingParams['cip'] = $visitorIp;
+            // if ($visitorIp) $trackingParams['cip'] = $visitorIp;
             if ($userAgent) $trackingParams['ua'] = $userAgent;
-
+            $visitorId = substr(md5($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'), 0, 16);
+            if($visitorId) $trackingParams['_id'] = $visitorId;
             $client = new Client(['verify' => false]);
             $client->get($matomoUrl, ['query' => $trackingParams]);
 
@@ -475,13 +477,14 @@ class SongsController extends AbstractController
                 'token_auth' => $matomoToken,
             ];
 
+            $visitorId = substr(md5($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'), 0, 16);
+            if($visitorId) $trackingParams['_id'] = $visitorId;
             // Ajouter IP et User-Agent
-            if ($visitorIp) $trackingParams['cip'] = $visitorIp;
+            // if ($visitorIp) $trackingParams['cip'] = $visitorIp;
             if ($userAgent) $trackingParams['ua'] = $userAgent;
 
             $client = new Client(['verify' => false]);
             $client->get($matomoUrl, ['query' => $trackingParams]);
-
         } catch (\Exception $e) {
             // Gérer l'erreur
         }
