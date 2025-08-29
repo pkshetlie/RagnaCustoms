@@ -259,7 +259,7 @@ class SongsController extends AbstractController
             // Tracker l'événement
             $tracker->doTrackEvent(
                 'Download',                               // e_c
-                'DDL',                                    // e_a
+                'Api (anonymous)',                        // e_a
                 $song->getName() . ' (' . $song->getId() . ')' // e_n
             );
 
@@ -411,7 +411,7 @@ class SongsController extends AbstractController
             // Tracker l'événement
             $tracker->doTrackEvent(
                 'Download',                               // e_c
-                'DDL',                                    // e_a
+                'Api (logged in)',                                    // e_a
                 $song->getName() . ' (' . $song->getId() . ')' // e_n
             );
 
@@ -516,7 +516,7 @@ class SongsController extends AbstractController
             // Tracker l'événement
             $tracker->doTrackEvent(
                 'Download',                               // e_c
-                'DDL',                                    // e_a
+                $this->getUser() ? 'DDL (logged in)':'DDL (anonymous)',                                    // e_a
                 $song->getName() . ' (' . $song->getId() . ')' // e_n
             );
 
