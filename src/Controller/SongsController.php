@@ -513,14 +513,13 @@ class SongsController extends AbstractController
             if ($userAgent) {
                 $tracker->setUserAgent($userAgent);
             }
+
             $ua = $request->headers->get('User-Agent', '');
-
-
-
+            
             // Tracker l'événement
             $tracker->doTrackEvent(
                 'Download',                               // e_c
-                $this->getUser() ? 'DDL (logged in)':(preg_match('/bot|crawler|spider/i', $ua) ? '(bot)':'DDL (anonymous)'),                                    // e_a
+                $this->getUser() ? 'DDL (logged in)':(preg_match('/bot|crawler|spider/i', $ua) ? '(bot)':'DDL (anonymous)'.$request->getUri()),                                    // e_a
                 $song->getName() . ' (' . $song->getId() . ')' // e_n
             );
 
