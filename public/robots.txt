@@ -1,6 +1,19 @@
 User-agent: *
-
 Disallow: /admin/
+Disallow: /songs/ddl/
 Allow: /
+
+# Bloquer certains crawlers gourmands
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
 
 Sitemap: https://ragnacustoms.com/songs.xml
