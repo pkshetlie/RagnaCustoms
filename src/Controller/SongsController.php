@@ -260,7 +260,7 @@ class SongsController extends AbstractController
             $tracker->doTrackEvent(
                 'Download',                               // e_c
                 'Api (anonymous)',                        // e_a
-                $song->getName() . ' (' . $song->getId() . ')' // e_n
+                $song->getId() // e_n
             );
 
             $tracker->setTokenAuth($matomoToken);
@@ -412,7 +412,7 @@ class SongsController extends AbstractController
             $tracker->doTrackEvent(
                 'Download',                               // e_c
                 'Api (logged in)',                                    // e_a
-                $song->getName() . ' (' . $song->getId() . ')' // e_n
+               $song->getId() // e_n
             );
 
             $tracker->setTokenAuth($matomoToken);
@@ -514,13 +514,12 @@ class SongsController extends AbstractController
                 $tracker->setUserAgent($userAgent);
             }
 
-            $ua = $request->headers->get('User-Agent', '');
-            
+
             // Tracker l'événement
             $tracker->doTrackEvent(
                 'Download',                               // e_c
-                $this->getUser() ? 'DDL (logged in)':(preg_match('/bot|crawler|spider/i', $ua) ? '(bot)':'DDL (anonymous)'.$request->getUri()),                                    // e_a
-                $song->getName() . ' (' . $song->getId() . ')' // e_n
+                $this->getUser() ? 'DDL (logged in)':'DDL (anonymous)',                                    // e_a
+                $song->getId() // e_n
             );
 
             $tracker->setTokenAuth($matomoToken);
