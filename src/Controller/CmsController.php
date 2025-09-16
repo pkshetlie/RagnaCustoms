@@ -39,7 +39,16 @@ class CmsController extends AbstractController
         ScoreHistoryRepository $scoreHistoryRepository,
         StatisticService $statisticService
     ): Response {
-        return $this->render('cms/homepage.html.twig');
+
+        $patreonImages = [
+            '/apps/patreon_1.png',
+            '/apps/patreon_2.png',
+            '/apps/patreon_3.png',
+        ];
+        $randomKey = array_rand($patreonImages);
+        return $this->render('cms/homepage.html.twig',[
+            'patreonImage' => $patreonImages[$randomKey],
+        ]);
     }
 
 }
