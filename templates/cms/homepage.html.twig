@@ -3,6 +3,15 @@
 {% block title %}RagnaCustoms.com, Your favorites custom songs for Ragnarock VR{% endblock %}
 
 {% block body %}
+  {% include 'event/partial/notification_strip.html.twig' with {
+    notification: {
+      id: 'constant-companions',
+      message: 'A community special event is currently running from <b>October 4th</b> until <b>October 25th</b>. Click here to learn more.',
+      link: '/constant-companions-event',
+      startAt: ("2025-10-04 12:00")|date(null, 'Europe/Warsaw'),
+      endAt: ("2025-10-25 12:00")|date(null, 'Europe/Warsaw')
+    }
+  } %}
   <header>
     <div {{ stimulus_controller('homepage') }} class="container">
       <div class="row">

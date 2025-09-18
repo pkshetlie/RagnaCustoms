@@ -1,0 +1,346 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RagnaCustoms.com, Constant Companions RAID{% endblock %}
+    {% block metas %}
+      <meta name="description" content="Constant Companions RAID">
+      <meta property="og:url" content="https://ragnacustoms.com"/>
+      <meta property="og:type" content="website"/>
+      <meta property="og:title" content="Constant Companions RAID"/>
+      <meta property="og:description" content="Constant Companions RAID"/>
+      <meta property="og:image" content="https://ragnacustoms.com/apps/logo.webp?2024"/>
+    {% endblock %}
+{% block body %}
+  <div id="event">
+    <img src="{{ asset('apps/constant_companions_event/event_banner.png') }}" class="w-100">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h1 class="pt-5">Constant Companions RAID</h1>
+
+          <div class="pb-5 medium">
+            <i>* This event is not managed by <b>RagnaCustoms</b>. This page has been provided to and is edited by <b>Brollyy</b>.</i>
+          </div>
+
+          <div class="h2 pb-3">Go on a musical journey with Jamie Paige!</div>
+          <div class="pb-5">
+            <div class="indent">
+              <a href="https://jamiepaige.bandcamp.com/album/constant-companions-deluxe-edition">Constant Companions</a> by <b>Jamie Paige</b> is a 2024 album exploring themes of longing, loneliness, and self-fulfillment through electronic breakbeat sounds, with a heavy use of vocaloids, leitmotifs and collaborations with both human and synthetic artists. Deluxe Edition is an expanded version released in 2025, featuring five bonus tracks, for a total of 17.
+              <br>
+              <br>
+              I've been listening to this album non-stop since I've discovered it a while ago and decided that I want to share it with you all, so it's finally time to do a follow-up to my previous Kanaria RAID event!
+              <br>
+              <br>
+              Starting <b>October 4th</b>, I'll be releasing custom maps for the album in 3 weekly packs, every <b>Saturday at 12:00 PM (CET)</b>. The event lasts until <b>October 25th</b> and in this time you'll be able to participate in a little game on the <a href="https://discord.com/invite/smrQK6A9?utm_source=Discord%20Widget&amp;utm_medium=Connect">RagnaCustoms Discord server</a> to challenge yourself in various ways while playing these songs, and maybe get a little reward in the process...
+              <br>
+              What's the reward, you ask? Self-actualization, increased skill as a player, and most importantly - bragging rights! ...and maybe even more Jamie Paige custom maps.
+              <br>
+              <br>
+              Since I can't be there 24/7 to personally verify and congratulate everyone for their achievements during the event, I've also <s>crammed</s> employed the lovely Vocaloid <b>GUMI</b> to help me host the event - I hope you'll enjoy her small talk after you're finished drumming and kicking ass in-game.
+              <br>
+              <br>
+              Before I forget - here's a <a href="/playlist/show/507">playlist</a> with all the custom maps released for the event so far, so you can download them in one go.
+            </div>
+          </div>
+
+          <div class="h2 pb-3">Face the challenges and earn medals!</div>
+          <div class="pb-5">
+            <div class="indent">
+              There are 9 different challenges waiting for you to conquer them during the event - some easier, some harder - with each one having three medals to obtain:
+              <br>
+              <br>
+              <div class="row">
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>By Your Side</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/bronze_by_your_side.png') }}" width="75px" class="pr-2" title="By Your Side - Bronze">
+                      <div class="text-break align-content-center">Hit 3 gold shield boosts on any map from the album</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/silver_by_your_side.png') }}" width="75px" class="pr-2" title="By Your Side - Silver">
+                      <div class="text-break align-content-center">Hit 5 gold shield boosts on all maps in a weekly pack</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/gold_by_your_side.png') }}" width="75px" class="pr-2" title="By Your Side - Gold">
+                      <div class="text-break align-content-center">Hit all possible shield boosts on all maps from the album</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Perfect Little Packages</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/bronze_perfect_little_packages.png') }}" width="75px" class="pr-2" title="Perfect Little Packages - Bronze">
+                      <div class="text-break align-content-center">Accumulate 1000 perfect hits over all runs on any map from the album</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/silver_perfect_little_packages.png') }}" width="75px" class="pr-2" title="Perfect Little Packages - Silver">
+                      <div class="text-break align-content-center">Accumulate 10000 perfect hits over all runs of all maps in a weekly pack</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/gold_perfect_little_packages.png') }}" width="75px" class="pr-2" title="Perfect Little Packages - Gold">
+                      <div class="text-break align-content-center">Accumulate 100000 perfect hits over all runs of all maps from the album</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Perfect Pattern</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/bronze_perfect_pattern.png') }}" width="75px" class="pr-2" title="Perfect Pattern - Bronze">
+                      <div class="text-break align-content-center">Get at least 30% perfects on any map from the album</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/silver_perfect_pattern.png') }}" width="75px" class="pr-2" title="Perfect Pattern - Silver">
+                      <div class="text-break align-content-center">Get at least 50% perfects on all maps in a weekly pack</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/gold_perfect_pattern.png') }}" width="75px" class="pr-2" title="Perfect Pattern - Gold">
+                      <div class="text-break align-content-center">Get at least 80% perfects on all the maps from the album</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Cadmium Colors</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/bronze_cadmium_colors.png') }}" width="75px" class="pr-2" title="Cadmium Colors - Bronze">
+                      <div class="text-break align-content-center">Get a Bronze medal on any map from the album</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/silver_cadmium_colors.png') }}" width="75px" class="pr-2" title="Cadmium Colors - Silver">
+                      <div class="text-break align-content-center">Get a Silver medal on all the maps in a weekly pack</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/gold_cadmium_colors.png') }}" width="75px" class="pr-2" title="Cadmium Colors - Gold">
+                      <div class="text-break align-content-center">Get a Gold medal on all the maps from the album</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Baby, Do You Know What You Wanna Hear?</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/bronze_baby_do_you_know.png') }}" width="75px" class="pr-2" title="Baby, Do You Know What You Wanna Hear? - Bronze">
+                      <div class="text-break align-content-center">Play any map from the album</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/silver_baby_do_you_know.png') }}" width="75px" class="pr-2" title="Baby, Do You Know What You Wanna Hear? - Silver">
+                      <div class="text-break align-content-center">Play all maps in a weekly pack</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/gold_baby_do_you_know.png') }}" width="75px" class="pr-2" title="Baby, Do You Know What You Wanna Hear? - Gold">
+                      <div class="text-break align-content-center">Play all maps from the album</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Dream Together</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/bronze_dream_together.png') }}" width="75px" class="pr-2" title="Dream Together - Bronze">
+                      <div class="text-break align-content-center">Full combo any map from the album</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/silver_dream_together.png') }}" width="75px" class="pr-2" title="Dream Together - Silver">
+                      <div class="text-break align-content-center">Full combo all maps in a weekly pack</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/gold_dream_together.png') }}" width="75px" class="pr-2" title="Dream Together - Gold">
+                      <div class="text-break align-content-center">Full combo all maps from the album</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Meet You In The Middle</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/bronze_meet_you_in_the_middle.png') }}" width="75px" class="pr-2" title="Meet You In The Middle - Bronze">
+                      <div class="text-break align-content-center">Beat the mapper score on any map from the album</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/silver_meet_you_in_the_middle.png') }}" width="75px" class="pr-2" title="Meet You In The Middle - Silver">
+                      <div class="text-break align-content-center">Beat the mapper score on all maps in a weekly pack</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/gold_meet_you_in_the_middle.png') }}" width="75px" class="pr-2" title="Meet You In The Middle - Gold">
+                      <div class="text-break align-content-center">Beat the mapper score on all maps from the album</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Birdbrain</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/bronze_birdbrain.png') }}" width="75px" class="pr-2" title="Birdbrain - Bronze">
+                      <div class="text-break align-content-center">Get a Bronze medal on any map from the album without using a shield boost</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/silver_birdbrain.png') }}" width="75px" class="pr-2" title="Birdbrain - Silver">
+                      <div class="text-break align-content-center">Get a Silver medal on all maps in a weekly pack without using a shield boost</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/gold_birdbrain.png') }}" width="75px" class="pr-2" title="Birdbrain - Gold">
+                      <div class="text-break align-content-center">Get a Gold medal on all the maps from the album without using a shield boost</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Constant Companions</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/bronze_constant_companions.png') }}" width="75px" class="pr-2" title="Constant Companions - Bronze">
+                      <div class="text-break align-content-center">Play a single map from the album at least 3 times</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/silver_constant_companions.png') }}" width="75px" class="pr-2" title="Constant Companions - Silver">
+                      <div class="text-break align-content-center">Play each map in a weekly pack at least 3 times</div>
+                    </div>
+                    <div class="row flex-nowrap">
+                      <img src="{{ asset('apps/constant_companions_event/gold_constant_companions.png') }}" width="75px" class="pr-2" title="Constant Companions - Gold">
+                      <div class="text-break align-content-center">Play each map from the album at least 3 times</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br>
+              <a href="https://ragnacustoms.com/getting-started#howToUploadScores">Score upload</a> needs to be enabled to participate - your achievements will be automatically announced in the RagnaCustoms Discord server on the event channel, and you can use Slash Commands <b>/cc-summary</b> and <b>/cc-progress</b> there to see how you or other players are doing.
+            </div>
+          </div>
+
+          <div class="h2 pb-3">Weekly music packs to keep things fresh!</div>
+          <div class="pb-5">
+            <div class="indent">
+              The album will be released in 3 weekly packs, each one bringing new music and opportunities to score medals!
+              <br>
+              <br>
+              Don't worry, when a new week arrives, the previous weekly packs are not going anywhere!
+              <br>
+              Medals can still be obtained by playing any of the album songs, although if a challenge requires you to beat it on all maps in the weekly pack, you might want to focus your efforts on a single one for a while.
+              <br>
+              <br>
+              One final reminder - all the custom maps released for this event so far will be available within this <a href="/playlist/show/507">playlist</a> shortly after release.
+              <br>
+              <br>
+              <div class="row">
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Week 1 - October 4th</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/dyad-4">
+                        01. Dyad
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/not-quite-there-with-telebasher-2">
+                        02. Not Quite There (with telebasher)
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/rot-for-clout-2">
+                        03. ROT FOR CLOUT
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/i-wish-that-i-could-fall-2">
+                        04. I Wish That I Could Fall
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/cadmium-colors-3">
+                        05. Cadmium Colors
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/breeze-blows-with-marcy-nabors-marlow-jacobs-2">
+                        06. Breeze Blows (with Marcy Nabors & Marlow Jacobs)
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Week 2 - October 11th</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/aggrandicize-2">
+                        07. Aggrandicize
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/liaison-2">
+                        08. Liaison
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/object-of-affection-2">
+                        09. Object of Affection
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/clouddrop">
+                        10. Clouddrop
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/my-darling-my-companion-2">
+                        11. My Darling, My Companion
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/machine-love-2">
+                        12. Machine Love
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <h3>Week 3 - October 18th</h3>
+                  <div class="pl-3 pr-3 pb-3">
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/birdbrain-with-ok-glass-2">
+                        13. BIRDBRAIN (with OK Glass)
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/shiny-chariot-2">
+                        14. Shiny Chariot
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/strawberry-2">
+                        15. Strawberry
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/manifesto-2">
+                        16. Manifesto
+                      </a>
+                    </div>
+                    <div class="row text-break">
+                      <a href="https://jamiepaige.bandcamp.com/track/dance-delightful">
+                        17. Dance Delightful
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container small">
+      Music by <a href="https://jamiepaige.bandcamp.com/music">Jamie Paige</a>, ℗ 2025 Sunrise 101.1
+      <br>
+      Album cover art by <a href="https://twitter.com/REVERIEQUE">Que</a>
+      <br>
+      Jamie Cat Kid and GUMI illustrations by <a href="/user-profile/CT">CT</a>
+      <br>
+      Everything else by yours truly - <a href="/mapper-profile/Brollyy">Brollyy</a>
+    </div>
+  </div>
+{% endblock %}
+
+  {% block javascripts %}
+    {{ parent() }}
+  {% endblock %}
