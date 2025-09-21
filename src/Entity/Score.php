@@ -39,9 +39,9 @@ class Score
     private $comboBlue;
     #[ORM\Column(type: 'integer', nullable: true)]
     private $comboYellow;
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: 'string', length: 5, nullable: true)]
     private $country;
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: 'string', length: 5, nullable: true)]
     private $dateRagnarock;
     #[ORM\Column(type: 'text', nullable: true)]
     private $extra;
@@ -55,13 +55,13 @@ class Score
     private $missed;
     #[ORM\Column(type: 'integer', nullable: true)]
     private $percentageOfPerfects;
-    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    #[ORM\Column(type: 'string', length: 15, nullable: true)]
     private $plateform;
-    #[ORM\Column(type: 'float', nullable: true)]
+    #[ORM\Column(type: 'decimal', precision: 8, scale: 2, nullable: true)]
     private $rawPP;
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: 'integer')]
     private $score;
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: 'string', length:40, nullable: true)]
     private $session;
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     #[ORM\ManyToOne(targetEntity: SongDifficulty::class, inversedBy: 'scores')]
@@ -71,9 +71,9 @@ class Score
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'scores')]
     #[ORM\JoinColumn(nullable: false)]
     private $user;
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: 'string', length:40, nullable: true)]
     private $userRagnarock;
-    #[ORM\Column(type: 'float', nullable: true)]
+    #[ORM\Column(type: 'decimal', precision: 8, scale: 2, nullable: true)]
     private $weightedPP;
 
     #[ORM\Column]
@@ -96,12 +96,12 @@ class Score
         return $this;
     }
 
-    public function getScore(): ?float
+    public function getScore(): ?int
     {
         return $this->score;
     }
 
-    public function setScore(float $score): self
+    public function setScore(int $score): self
     {
         $this->score = $score;
 
