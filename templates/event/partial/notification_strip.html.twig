@@ -3,18 +3,18 @@
   {% set startTs = notification.startAt is not null ? notification.startAt|date('U') : null %}
   {% set endTs = notification.endAt is not null ? notification.endAt|date('U') : null %}
   {% if (startTs is null or startTs <= nowTs) and (endTs is null or endTs >= nowTs) %}
-    <div id="notification-strip-{{ notification.id }}" class="w-100 text-larger bg-info" role="status" aria-live="polite" aria-atomic="true">
+    <div id="notification-strip-{{ notification.id }}" class="w-100 text-larger bg-warning" role="status" aria-live="polite" aria-atomic="true">
       <div class="container d-flex text-center align-items-center justify-content-between py-2">
         <div class="flex-grow-1 me-3">
           {% if notification.link %}
-            <a href="{{ notification.link }}" class="text-white text-decoration-none notif-message">{{ notification.message|raw }}</a>
+            <a href="{{ notification.link }}" class="text-dark text-decoration-none notif-message">{{ notification.message|raw }}</a>
           {% else %}
             <div class="notif-message">{{ notification.message|raw }}</div>
           {% endif %}
         </div>
 
         <button type="button"
-                class="btn btn-info p-0 ms-3 notif-dismiss"
+                class="btn btn-warning text-dark p-0 ms-3 notif-dismiss"
                 aria-label="Dismiss"
                 data-notif-id="{{ notification.id }}">
           <span aria-hidden="true">✕</span>
