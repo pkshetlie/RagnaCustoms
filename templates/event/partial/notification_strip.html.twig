@@ -1,6 +1,8 @@
 {% if notification is defined and notification %}
-  {% set now = "now"|date %}
-  {% if (notification.startAt is null or notification.startAt <= now) and (notification.endAt is null or notification.endAt >= now) %}
+  {% set nowTs = "now"|date('U') %}
+  {% set startTs = notification.startAt is not null ? notification.startAt|date('U') : null %}
+  {% set endTs = notification.endAt is not null ? notification.endAt|date('U') : null %}
+  {% if (startTs is null or startTs <= nowTs) and (endTs is null or endTs >= nowTs) %}
     <div id="notification-strip-{{ notification.id }}" class="w-100 text-larger bg-info" role="status" aria-live="polite" aria-atomic="true">
       <div class="container d-flex text-center align-items-center justify-content-between py-2">
         <div class="flex-grow-1 me-3">
