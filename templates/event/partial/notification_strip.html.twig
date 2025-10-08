@@ -3,7 +3,13 @@
   {% set startTs = notification.startAt is not null ? notification.startAt|date('U') : null %}
   {% set endTs = notification.endAt is not null ? notification.endAt|date('U') : null %}
   {% if (startTs is null or startTs <= nowTs) and (endTs is null or endTs >= nowTs) %}
-    <div id="notification-strip-{{ notification.id }}" class="w-100 text-larger bg-warning" role="status" aria-live="polite" aria-atomic="true">
+    <div id="notification-strip-{{ notification.id }}"
+         {{ stimulus_controller('notification-strip') }}
+         data-notification-strip-id-value="{{ notification.id }}"
+         class="w-100 text-larger bg-warning d-none"
+         role="status"
+         aria-live="polite"
+         aria-atomic="true">
       <div class="container d-flex text-center align-items-center justify-content-between py-2">
         <div class="flex-grow-1 me-3">
           {% if notification.link %}
@@ -16,31 +22,11 @@
         <button type="button"
                 class="btn btn-warning text-dark p-0 ms-3 notif-dismiss"
                 aria-label="Dismiss"
-                data-notif-id="{{ notification.id }}">
+                data-action="notification-strip#dismiss"
+        >
           <span aria-hidden="true">✕</span>
         </button>
       </div>
     </div>
-
-    <script>
-    (function(){
-      const id = "{{ notification.id }}";
-      const key = 'dismiss_notification_' + id;
-      try {
-        if (localStorage.getItem(key)) {
-          document.getElementById('notification-strip-' + id)?.remove();
-          return;
-        }
-      } catch(e) {}
-
-      document.querySelectorAll('#notification-strip-{{ notification.id }} .notif-dismiss').forEach(btn => {
-        btn.addEventListener('click', function(){
-          const strip = document.getElementById('notification-strip-{{ notification.id }}');
-          if (strip) strip.remove();
-          try { localStorage.setItem(key, '1'); } catch(e) {}
-        });
-      });
-    })();
-    </script>
   {% endif %}
 {% endif %}
