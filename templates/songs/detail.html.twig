@@ -50,7 +50,7 @@ To submit your rating, you must:<br>
             <div class="pt-1 community-level-list">
               {% for notation in songDifficultyNotationService.communityNotations(song) %}
                 {% set diff = notation.difficulty %}
-                {% set isAllowedToNote = songDifficultyNotationService.isAllowedToNote(diff, app.user) %}
+                {% set isAllowedToNote = is_granted(constant('\\App\\Voter\\CommunityVoteVoter::VOTE'), diff) %}
               {% if isAllowedToNote %}
                 <a href='#' data-id="{{ diff.id }}"
                      data-modal="#editSong"

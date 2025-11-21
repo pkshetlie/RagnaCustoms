@@ -116,7 +116,7 @@ class SongDifficultyNotationService
         return $notes;
     }
 
-    private function getUserCommunityNote(mixed $difficulty, ?Utilisateur $user)
+    public function getUserCommunityNote(mixed $difficulty, ?Utilisateur $user)
     {
 
         if ($user === null) {
