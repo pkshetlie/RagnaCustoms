@@ -47,7 +47,6 @@ To submit your rating, you must:<br>
 <li>Have a score on the map you wish to evaluate</li>
 <li>Have scores on at least 5 other maps of the same difficulty</li>
 </ul>"></i></small><br/>
-            {{ app.user.createdAt.format('Y-m-d') }}
             <div class="pt-1 community-level-list">
               {% for notation in songDifficultyNotationService.communityNotations(song) %}
                 {% set diff = notation.difficulty %}

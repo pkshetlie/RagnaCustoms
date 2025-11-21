@@ -21,14 +21,6 @@ class SongDifficultyNotationService
 
     public function setScore(SongDifficulty $songDifficulty, ?Utilisateur $utilisateur, int $note)
     {
-        if ($utilisateur === null) {
-            return false;
-        }
-
-        if ($this->isAllowedToNote($songDifficulty, $utilisateur) === false) {
-            return false;
-        }
-
         $notation = $this->songDifficultyNotationRepository->findOneBy([
             'songDifficulty' => $songDifficulty,
             'user' => $utilisateur,
