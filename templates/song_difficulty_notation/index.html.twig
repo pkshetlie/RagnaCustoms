@@ -1,10 +1,9 @@
 {{ form_start(form) }}
     {# Itérer sur les champs de la collection Notations #}
     {% for notation in form.Notations %}
-      <div class="notation-entry row">
-        <div class="col-5">
-        <label>Your feeling for level {{ notation.vars.data.songDifficulty.level }}</label>
-
+      <div class="notation-entry row mb-2">
+        <div class="col-5 pt-1">
+        <b>Your feeling for level {{ notation.vars.data.songDifficulty.level }}</b>
         </div>
         <div class="col-5">{{ form_widget(notation) }}
         {{ form_errors(notation) }}

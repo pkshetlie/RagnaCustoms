@@ -7,6 +7,7 @@ use App\Entity\SongDifficultyNotation;
 use App\Form\MultipleSongDifficultyNotationType;
 use App\Repository\ChangelogRepository;
 use App\Service\SongDifficultyNotationService;
+use App\Voter\CommunityVoteVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,16 +25,17 @@ final class SongDifficultyNotationController extends AbstractController
     {
         $notations = []; // Tableau d'entités SongDifficultyNotation
 
-        // Créer les entités nécessaires pour chaque notation permise
-        foreach ($songDifficultyNotationService->getAllowedNotation($song, $this->getUser()) as $notation) {
-            $notations[] =
-                (new SongDifficultyNotation())
-                ->setSongDifficulty($notation['difficulty'])
-                ->setNote($notation['note'])
-                ->setUser($this->getUser());
+        foreach ($song->getSongDifficulties() as $difficulty) {
+            if ($this->isGranted(CommunityVoteVoter::VOTE, $difficulty)) {
+                $notations[] =
+                    (new SongDifficultyNotation())
+                        ->setSongDifficulty($difficulty)
+                        ->setNote($songDifficultyNotationService->getUserCommunityNote($difficulty, $this->getUser()))
+                        ->setUser($this->getUser());
+            }
         }
 
-        // Créer le formulaire avec les entités directement
+            // Créer le formulaire avec les entités directement
         $form = $this->createForm(MultipleSongDifficultyNotationType::class, ['Notations' => $notations], [
             'action' => $this->generateUrl('app_song_difficulty_notation', ['id' => $song->getId()]),
             "attr" => [
