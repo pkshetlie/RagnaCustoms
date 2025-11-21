@@ -1,0 +1,10 @@
+Rate a map’s difficulty by clicking the community rating.<br/>
+To submit your rating, you must:<br>
+<br/>
+
+{% if steps[0] %}✅{% else %}❌{% endif %} Be logged in to your Ragnacustoms account<br>
+{% if steps[1] %}✅{% else %}❌{% endif %} Your Ragnacustoms account must be 1 month old
+{% if not steps[1] %}<br><small class="pl-4"><i>(remaining : {{ remainingTime.days }}d {{ remainingTime.hours }}h {{ remainingTime.minutes }}min)</i></small>{% endif %}<br>
+{% if steps[2] %}✅{% else %}❌{% endif %} Have a score on the map you wish to evaluate<br>
+{% if steps[3] %}✅{% else %}❌{% endif %} Have scores on at least 5 other maps with the same difficulty<br>
+

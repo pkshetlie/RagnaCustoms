@@ -40,13 +40,18 @@
                 {% endfor %}
               </div>
             </div>
-              <small>Community's level notation <i class="fa fa-info-circle" data-html="true" data-toggle="tooltip" data-title="Rate a map’s difficulty by clicking the community rating.<br/>
-To submit your rating, you must:<br>
-<ul>
-<li>Be logged in to your Ragnacustoms account</li>
-<li>Have a score on the map you wish to evaluate</li>
-<li>Have scores on at least 5 other maps of the same difficulty</li>
-</ul>"></i></small><br/>
+              <small>Community's level notation
+                <a href='#'
+                   data-modal="#editSong"
+                   data-modalform="#form-edit"
+                   data-refresh="true"
+                   data-url="{{ url('app_song_difficulty_notation_infos',{id: song.id}) }}"
+                   data-title="{{ "Level Notation Information"|trans }}"
+                   class='ajax-modal-form ajax-load text-warning'
+                   >
+                  <i class="fa fa-info-circle" data-html="true" data-toggle="tooltip"></i>
+                </a>
+              </small><br/>
             <div class="pt-1 community-level-list">
               {% for notation in songDifficultyNotationService.communityNotations(song) %}
                 {% set diff = notation.difficulty %}
@@ -63,10 +68,17 @@ To submit your rating, you must:<br>
                   <span>{{ notation.level }}</span>
                 </a>
                 {% else %}
-                <div data-id="{{ diff.id }}" class='level btn btn-sm disabled'
-                     style="background-color:#{{ diff.difficultyRank.color }};{% if isAllowedToNote %}border:1px solid yellow;{% endif %}">
-                  <span>{{ notation.level }}</span>
-                </div>
+
+                  <a href='#' data-id="{{ diff.id }}"
+                     data-modal="#editSong"
+                     data-modalform="#form-edit"
+                     data-refresh="true"
+                     data-url="{{ url('app_song_difficulty_notation_details',{id: diff.id}) }}"
+                     data-title="{{ "Level Notation"|trans }}"
+                     class='ajax-modal-form ajax-load level btn btn-sm btn-outline'
+                     style="background-color:#{{ diff.difficultyRank.color }};">
+                    <span>{{ notation.level }}</span>
+                  </a>
                   {% endif %}
               {% endfor %}
             </div>

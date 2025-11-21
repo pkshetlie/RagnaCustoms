@@ -83,7 +83,7 @@ class CommunityVoteVoter extends Voter
 
         $playedSongsCount = count($playedSongsCount);
 
-        if ($playedDifficultiesCount < 5 || $playedSongsCount < 5) {
+        if ($playedDifficultiesCount < 6 || $playedSongsCount < 6) {
             return false;
         }
 
