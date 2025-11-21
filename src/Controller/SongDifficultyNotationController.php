@@ -48,7 +48,13 @@ final class SongDifficultyNotationController extends AbstractController
 
         if ($request->isMethod('POST')) {
             foreach($form->getData()['Notations'] as $notation){
-                $songDifficultyNotationService->setScore($notation->getSongDifficulty(), $this->getUser(),$notation->getNote());
+                if ($this->isGranted(CommunityVoteVoter::VOTE, $notation->getSongDifficulty())) {
+                    $songDifficultyNotationService->setScore(
+                        $notation->getSongDifficulty(),
+                        $this->getUser(),
+                        $notation->getNote()
+                    );
+                }
             }
 
             return new JsonResponse(['reload'=>true]);
