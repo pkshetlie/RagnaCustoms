@@ -436,7 +436,6 @@ class SongServiceTest extends TestCase
             $this->createMock(ScoreRepository::class),
             $this->createMock(NotificationRepository::class),
             $this->createMock(VoteCounterRepository::class),
-
         );
 
         $testCases = [

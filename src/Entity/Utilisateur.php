@@ -200,6 +200,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: TournamentPlayer::class)]
     private Collection $tournamentPlayers;
 
+    /**
+     * @var Collection<int, SongDifficultyNotation>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: SongDifficultyNotation::class, orphanRemoval: true)]
+    private Collection $songDifficultyNotations;
+
     public function __construct()
     {
         $this->votes = new ArrayCollection();
@@ -220,6 +226,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->participatingEvents = new ArrayCollection();
         $this->ownedEvents = new ArrayCollection();
         $this->tournamentPlayers = new ArrayCollection();
+        $this->songDifficultyNotations = new ArrayCollection();
     }
 
     public function __toString()
@@ -1624,6 +1631,36 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($tournamentPlayer->getUser() === $this) {
                 $tournamentPlayer->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SongDifficultyNotation>
+     */
+    public function getSongDifficultyNotations(): Collection
+    {
+        return $this->songDifficultyNotations;
+    }
+
+    public function addSongDifficultyNotation(SongDifficultyNotation $songDifficultyNotation): static
+    {
+        if (!$this->songDifficultyNotations->contains($songDifficultyNotation)) {
+            $this->songDifficultyNotations->add($songDifficultyNotation);
+            $songDifficultyNotation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSongDifficultyNotation(SongDifficultyNotation $songDifficultyNotation): static
+    {
+        if ($this->songDifficultyNotations->removeElement($songDifficultyNotation)) {
+            // set the owning side to null (unless already changed)
+            if ($songDifficultyNotation->getUser() === $this) {
+                $songDifficultyNotation->setUser(null);
             }
         }
 

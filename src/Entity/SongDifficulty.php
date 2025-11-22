@@ -77,6 +77,12 @@ class SongDifficulty
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $wanadevHash;
 
+    /**
+     * @var Collection<int, SongDifficultyNotation>
+     */
+    #[ORM\OneToMany(mappedBy: 'songDifficultyNotation', targetEntity: SongDifficultyNotation::class, orphanRemoval: true)]
+    private Collection $songDifficultyNotations;
+
     // /**
     //  * @var Collection<int, Tournament>
     //  */
@@ -88,6 +94,7 @@ class SongDifficulty
         $this->scores = new ArrayCollection();
         $this->scoreHistories = new ArrayCollection();
         // $this->tournaments = new ArrayCollection();
+        $this->songDifficultyNotations = new ArrayCollection();
     }
 
     public function __toString()
@@ -375,6 +382,36 @@ class SongDifficulty
     {
         if ($this->tournaments->removeElement($event)) {
             $event->removeSongDifficulty($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SongDifficultyNotation>
+     */
+    public function getSongDifficultyNotations(): Collection
+    {
+        return $this->songDifficultyNotations;
+    }
+
+    public function addSongDifficultyNotation(SongDifficultyNotation $songDifficultyNotation): static
+    {
+        if (!$this->songDifficultyNotations->contains($songDifficultyNotation)) {
+            $this->songDifficultyNotations->add($songDifficultyNotation);
+            $songDifficultyNotation->setSongDifficulty($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSongDifficultyNotation(SongDifficultyNotation $songDifficultyNotation): static
+    {
+        if ($this->songDifficultyNotations->removeElement($songDifficultyNotation)) {
+            // set the owning side to null (unless already changed)
+            if ($songDifficultyNotation->getSongDifficulty() === $this) {
+                $songDifficultyNotation->setSongDifficulty(null);
+            }
         }
 
         return $this;

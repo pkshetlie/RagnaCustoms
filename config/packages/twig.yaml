@@ -9,6 +9,7 @@ twig:
         scoreService: '@App\Service\ScoreService'
         rankingScoreService: '@App\Service\RankingScoreService'
         songService: '@App\Service\SongService'
+        songDifficultyNotationService: '@App\Service\SongDifficultyNotationService'
         statisticService: '@App\Service\StatisticService'
         membershipService: '@App\Service\MembershipService'
         grantedService: '@App\Service\GrantedService'

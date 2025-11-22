@@ -53,6 +53,39 @@
           }
         }
       }
+
+    }
+    .community-level-list {
+      .level {
+        display: inline-block;
+        width: 30px;
+        line-height: 18px;
+        border-radius: 4px;
+        font-size: 16px;
+        text-align: center;
+        color: $main-text-color;
+        margin-left: 2px;
+        margin-bottom: 5px;
+        //float: left;
+        &.is-ranked {
+          position: relative;
+          background: transparent !important;
+          width: 24px !important;
+          line-height: 24px;
+
+          i {
+            position: absolute;
+            font-size: 24px;
+            left: 0px;
+          }
+
+          span {
+            z-index: 200;
+            position: relative;
+            text-align: center;
+          }
+        }
+      }
     }
 
     .darker {

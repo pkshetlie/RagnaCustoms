@@ -1,0 +1,18 @@
+{{ form_start(form) }}
+    {# Itérer sur les champs de la collection Notations #}
+    {% for notation in form.Notations %}
+      <div class="notation-entry row mb-2">
+        <div class="col-5 pt-1">
+        <b>Your feeling for level {{ notation.vars.data.songDifficulty.level }}</b>
+        </div>
+        <div class="col-5">{{ form_widget(notation) }}
+        {{ form_errors(notation) }}
+        {# Rend uniquement les champs sans le label ni les index #}
+      </div>
+      </div>
+    {% endfor %}
+
+    {# Bouton de soumission #}
+<button type="submit" class="btn btn-primary">Submit</button>
+
+{{ form_end(form) }}
