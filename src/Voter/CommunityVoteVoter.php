@@ -78,7 +78,7 @@ class CommunityVoteVoter extends Voter
             return $sh->getSongDifficulty()->getLevel() === $songDifficulty->getLevel();
         })->toArray();
         $playedSongsCount = array_unique(array_map(function($sh) {
-            return $sh->getSongDifficulty()->getSong()->getId();
+            return $sh->getSongDifficulty()?->getSong()?->getId();
         }, $playedSongsCount));
 
         $playedSongsCount = count($playedSongsCount);

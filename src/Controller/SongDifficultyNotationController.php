@@ -84,7 +84,7 @@ final class SongDifficultyNotationController extends AbstractController
             )->toArray();
 
             $playedSongsCount = array_unique(array_map(function($sh) {
-                return $sh->getSongDifficulty()->getSong()->getId();
+                return $sh->getSongDifficulty()?->getSong()?->getId();
             }, $playedSongsCount));
 
             $playedSongsCount = count($playedSongsCount);
