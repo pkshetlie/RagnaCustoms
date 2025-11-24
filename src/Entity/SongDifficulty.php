@@ -80,7 +80,7 @@ class SongDifficulty
     /**
      * @var Collection<int, SongDifficultyNotation>
      */
-    #[ORM\OneToMany(mappedBy: 'songDifficultyNotation', targetEntity: SongDifficultyNotation::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'songDifficultyNotation', targetEntity: SongDifficultyNotation::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private Collection $songDifficultyNotations;
 
     // /**
