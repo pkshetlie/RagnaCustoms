@@ -1021,6 +1021,12 @@ readonly class SongService
         // remove zip
         @unlink($this->kernel->getProjectDir()."/public/songs-file/".$song->getId().'.zip');
         // remove song
+        foreach($song->getSongDifficulties() as $diff) {
+            foreach($diff->getSongDifficultyNotations() as $notation) {
+                $this->songDifficultyNotationRepository->remove($notation);
+            }
+            $this->songDifficultyRepository->remove($diff);
+        }
         $this->songRepository->remove($song);
     }
 
