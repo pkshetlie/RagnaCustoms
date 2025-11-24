@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\DifficultyRank;
 use App\Entity\FollowMapper;
 use App\Entity\Notification;
 use App\Entity\Score;
@@ -11,7 +10,6 @@ use App\Entity\SongDifficulty;
 use App\Entity\SongHash;
 use App\Entity\Utilisateur;
 use App\Entity\Vote;
-use App\Entity\VoteCounter;
 use App\Enum\ENotification;
 use App\Exception\SongServiceEditorNotRecognized;
 use App\Exception\SongServiceNoJsonException;
@@ -22,6 +20,7 @@ use App\Repository\DownloadCounterRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\ScoreHistoryRepository;
 use App\Repository\ScoreRepository;
+use App\Repository\SongDifficultyNotationRepository;
 use App\Repository\SongDifficultyRepository;
 use App\Repository\SongHashRepository;
 use App\Repository\SongRepository;
@@ -29,7 +28,6 @@ use App\Repository\VoteCounterRepository;
 use App\Repository\VoteRepository;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Exception;
@@ -42,6 +40,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -64,6 +63,7 @@ readonly class SongService
         private string $fromMail,
         private DifficultyRankRepository $difficultyRankRepository,
         private SongDifficultyRepository $songDifficultyRepository,
+        private SongDifficultyNotationRepository $songDifficultyNotationRepository,
         private DownloadCounterRepository $downloadCounterRepository,
         private ScoreHistoryRepository $scoreHistoryRepository,
         private ScoreRepository $scoreRepository,
@@ -104,7 +104,7 @@ readonly class SongService
      */
     public function getVotePublicOrMine(?Utilisateur $user, Song $song)
     {
-       return $this->voteRepository->getVotePublicOrMine($user, $song);
+        return $this->voteRepository->getVotePublicOrMine($user, $song);
     }
 
     public function isFeedbackDone(?Utilisateur $user, Song $song): bool
@@ -134,7 +134,7 @@ readonly class SongService
     }
 
     /**
-     * @throws Exception|\Symfony\Component\Mailer\Exception\TransportExceptionInterface
+     * @throws Exception|TransportExceptionInterface
      */
     public function processFile(?FormInterface $form, Song $song, bool $isWip = false)
     {
@@ -196,7 +196,7 @@ readonly class SongService
 
     /**
      * @throws NonUniqueResultException
-     * @throws Exception|\Symfony\Component\Mailer\Exception\TransportExceptionInterface
+     * @throws Exception|TransportExceptionInterface
      */
     private function process(string $unzippableFile, string $unzipFolder, Song $song, bool $isWip = false)
     {
@@ -414,6 +414,9 @@ readonly class SongService
             //there is at least one update on difficulties
             foreach ($previousDiffs as $diff) {
                 $diff->setSong(null);
+                foreach ($diff->getSongDifficultyNotations() as $notation) {
+                    $this->songDifficultyNotationRepository->remove($notation);
+                }
                 $this->songDifficultyRepository->remove($diff);
             }
         }
@@ -421,7 +424,7 @@ readonly class SongService
         if ($isWip != $song->getWip()) {
             $song->setCreatedAt(new DateTime());
         }
-        $this->songRepository->add($song);;
+        $this->songRepository->add($song);
 
         /** @var UploadedFile $file */
         $patterns_flattened = implode('|', $allowedFiles);
@@ -730,6 +733,29 @@ readonly class SongService
         }
 
         return [$maxYellowCombos, $maxBlueCombos];
+    }
+
+    /**
+     * @param float $baseSpeed
+     * @param float|null $duration
+     * @param int|null $noteCount
+     * @param int $miss
+     * @param mixed $maxBlueCombo
+     * @param mixed $maxYellowCombo
+     *
+     * @return float
+     */
+    public function calculate(
+        float $baseSpeed,
+        ?float $duration,
+        ?int $noteCount,
+        int $miss,
+        mixed $maxBlueCombo,
+        mixed $maxYellowCombo
+    ): float {
+        $theoricalMaxScore = ($baseSpeed * $duration) + ($noteCount * 0.3 * $baseSpeed / 4) - ($miss * 0.3 * $baseSpeed / 4) + ($maxBlueCombo * 3 / 4 * $baseSpeed) + ($maxYellowCombo * 3 * $baseSpeed);
+
+        return round($theoricalMaxScore, 2);
     }
 
     public function calculateTheoricalMinScore(SongDifficulty $diff): float
@@ -1337,12 +1363,13 @@ readonly class SongService
             ->where('s2.id = s.id')
             ->andWhere('mapper.id = :user');
         try {
-             $qb = $this->songRepository->createQueryBuilder('s')
+            $qb = $this->songRepository->createQueryBuilder('s')
                 ->select('s')
                 ->distinct('s')
                 ->leftJoin('s.songDifficulties', 'diff')
                 ->leftJoin('diff.scoreHistories', 'score');
-           return $qb->andWhere($qb->expr()->eq('('.$qb->getDQL().')', '0'))
+
+            return $qb->andWhere($qb->expr()->eq('('.$qb->getDQL().')', '0'))
                 ->andWhere($qb->expr()->eq('('.$qbMapper->getDQL().')', '0'))
                 ->andWhere('score.user = :user')
                 ->andWhere('s.wip = false')
@@ -1426,29 +1453,6 @@ readonly class SongService
         }
 
         return round($taille, 2).' '.$unites[$i];
-    }
-
-    /**
-     * @param float $baseSpeed
-     * @param float|null $duration
-     * @param int|null $noteCount
-     * @param int $miss
-     * @param mixed $maxBlueCombo
-     * @param mixed $maxYellowCombo
-     *
-     * @return float
-     */
-    public function calculate(
-        float $baseSpeed,
-        ?float $duration,
-        ?int $noteCount,
-        int $miss,
-        mixed $maxBlueCombo,
-        mixed $maxYellowCombo
-    ): float {
-        $theoricalMaxScore = ($baseSpeed * $duration) + ($noteCount * 0.3 * $baseSpeed / 4) - ($miss * 0.3 * $baseSpeed / 4) + ($maxBlueCombo * 3 / 4 * $baseSpeed) + ($maxYellowCombo * 3 * $baseSpeed);
-
-        return round($theoricalMaxScore, 2);
     }
 }
 
