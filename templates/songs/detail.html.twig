@@ -43,7 +43,7 @@
               <small>Community's level notation
                 <a href='#'
                    data-modal="#voteSong"
-                   data-modalform="#form-edit"
+                   data-target="#voteSong"
                    data-refresh="true"
                    data-url="{{ url('app_song_difficulty_notation_infos',{id: song.id}) }}"
                    data-title="{{ "Level Notation Information"|trans }}"
@@ -59,8 +59,8 @@
               {% if isAllowedToNote %}
                 <a href='#' data-id="{{ diff.id }}"
                      data-modal="#voteSong"
-                     data-modalform="#form-edit"
-                     data-refresh="true"
+                   data-target="#voteSong"
+                   data-refresh="true"
                      data-url="{{ url('app_song_difficulty_notation',{id: song.id}) }}"
                      data-title="{{ "Level Notation"|trans }}"
                      class='ajax-modal-form ajax-load level btn btn-sm btn-outline-success'
@@ -71,7 +71,7 @@
 
                   <a href='#' data-id="{{ diff.id }}"
                      data-modal="#voteSong"
-                     data-modalform="#form-edit"
+                     data-target="#voteSong"
                      data-refresh="true"
                      data-url="{{ url('app_song_difficulty_notation_details',{id: diff.id}) }}"
                      data-title="{{ "Level Notation"|trans }}"
