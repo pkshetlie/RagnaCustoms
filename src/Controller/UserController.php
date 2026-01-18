@@ -590,7 +590,7 @@ class UserController extends AbstractController
     ): Response {
         $this->addFlash('warning', "This page is under improvement.");
 
-        return $this->redirectToRoute('home', [], Response::HTTP_NOT_FOUND);
+        return $this->redirectToRoute('home', [], Response::HTTP_TEMPORARY_REDIRECT);
 
         if ($this->getUser() !== $utilisateur && !$utilisateur->getIsPublic()) {
             $this->addFlash('warning', "This profile is not public.");
