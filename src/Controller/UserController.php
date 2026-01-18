@@ -18,7 +18,6 @@ use App\Repository\UtilisateurRepository;
 use App\Service\ScoreService;
 use App\Service\SearchService;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
@@ -51,7 +50,9 @@ class UserController extends AbstractController
         }
         /** @var Utilisateur $utilisateur */
         $utilisateur = $this->getUser();
-        $nbSession = $this->isGranted('ROLE_PREMIUM_LVL3') ? 50 : ($this->isGranted('ROLE_PREMIUM_LVL2') ? 40 : ($this->isGranted('ROLE_PREMIUM_LVL1') ? 30 : 10));
+        $nbSession = $this->isGranted('ROLE_PREMIUM_LVL3') ? 50 : ($this->isGranted(
+            'ROLE_PREMIUM_LVL2'
+        ) ? 40 : ($this->isGranted('ROLE_PREMIUM_LVL1') ? 30 : 10));
         $histories = $scoreHistoryRepository->createQueryBuilder('s')
             ->where('s.user = :user')
             ->andWhere('s.songDifficulty = :difficulty')
@@ -497,7 +498,11 @@ class UserController extends AbstractController
             }
 
 
-            if ($form->has('currentPassword') && !empty($form->get('currentPassword')->getData()) && !empty($form->get('plainPassword')->getData())) {
+            if ($form->has('currentPassword') && !empty($form->get('currentPassword')->getData()) && !empty(
+                $form->get(
+                    'plainPassword'
+                )->getData()
+                )) {
                 if ($passwordEncoder->isPasswordValid($user, $form->get('currentPassword')->getData())) {
                     // Encode the plain password, and set it.
                     $encodedPassword = $passwordEncoder->hashPassword(
@@ -585,7 +590,7 @@ class UserController extends AbstractController
     ): Response {
         $this->addFlash('warning', "This page is under improvement.");
 
-        return $this->redirectToRoute('home');
+        return $this->redirectToRoute('home', [], Response::HTTP_NOT_FOUND);
 
         if ($this->getUser() !== $utilisateur && !$utilisateur->getIsPublic()) {
             $this->addFlash('warning', "This profile is not public.");
@@ -602,10 +607,12 @@ class UserController extends AbstractController
             $bestRank = min($rankVR, $rankFlat, $rankOKOD);
             if ($rankVR == $bestRank) {
                 $leaderboard = 'vr';
-            } else if ($rankFlat == $bestRank) {
-                $leaderboard = 'flat';
             } else {
-                $leaderboard = 'okod';
+                if ($rankFlat == $bestRank) {
+                    $leaderboard = 'flat';
+                } else {
+                    $leaderboard = 'okod';
+                }
             }
         }
 
@@ -616,7 +623,7 @@ class UserController extends AbstractController
             ->andWhere('sd.isRanked = true')
             ->andWhere('s.plateform IN (:type)');
 
-        switch($leaderboard) {
+        switch ($leaderboard) {
             case 'vr':
                 $qb->setParameter('type', WanadevApiController::VR_PLATEFORM);
                 break;
@@ -647,20 +654,22 @@ class UserController extends AbstractController
 
         $qb = $songDifficultyRepository->createQueryBuilder('sd')
             ->where('sd.isRanked = true')
-            ->andWhere($qb->expr()->notIn(
-                'sd.id', 
-                $scoreRepository->createQueryBuilder('s')
-                    ->join('s.songDifficulty', 'sd2')
-                    ->select('sd2.id')
-                    ->distinct()
-                    ->where('s.user = :user')
-                    ->andWhere('s.plateform IN (:type)')
-                    ->andWhere('sd2.isRanked = true')
-                    ->getDQL()
-            ))
+            ->andWhere(
+                $qb->expr()->notIn(
+                    'sd.id',
+                    $scoreRepository->createQueryBuilder('s')
+                        ->join('s.songDifficulty', 'sd2')
+                        ->select('sd2.id')
+                        ->distinct()
+                        ->where('s.user = :user')
+                        ->andWhere('s.plateform IN (:type)')
+                        ->andWhere('sd2.isRanked = true')
+                        ->getDQL()
+                )
+            )
             ->setParameter('user', $utilisateur);
-        
-        switch($leaderboard) {
+
+        switch ($leaderboard) {
             case 'vr':
                 $qb->setParameter('type', WanadevApiController::VR_PLATEFORM);
                 break;
@@ -677,13 +686,22 @@ class UserController extends AbstractController
 
         switch ($request->get('unplayed_order_by')) {
             case 'name':
-                $qb->join('sd.song', 'song')->orderBy("song.name", $request->get('unplayed_order_sort', 'asc') == "asc" ? "asc" : "desc");
+                $qb->join('sd.song', 'song')->orderBy(
+                    "song.name",
+                    $request->get('unplayed_order_sort', 'asc') == "asc" ? "asc" : "desc"
+                );
                 break;
             case 'difficulty':
-                $qb->join('sd.difficultyRank', 'd')->orderBy("d.level", $request->get('unplayed_order_sort', 'asc') == "asc" ? "asc" : "desc");
+                $qb->join('sd.difficultyRank', 'd')->orderBy(
+                    "d.level",
+                    $request->get('unplayed_order_sort', 'asc') == "asc" ? "asc" : "desc"
+                );
                 break;
             case 'date':
-                $qb->join('sd.song', 'song')->orderBy("song.lastDateUpload", $request->get('unplayed_order_sort', 'asc') == "asc" ? "asc" : "desc");
+                $qb->join('sd.song', 'song')->orderBy(
+                    "song.lastDateUpload",
+                    $request->get('unplayed_order_sort', 'asc') == "asc" ? "asc" : "desc"
+                );
                 break;
             default:
                 $qb->join('sd.song', 'song')->orderBy("song.lastDateUpload", "desc");
