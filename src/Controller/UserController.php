@@ -583,6 +583,10 @@ class UserController extends AbstractController
         ScoreRepository $scoreRepository,
         SongDifficultyRepository $songDifficultyRepository
     ): Response {
+        $this->addFlash('warning', "This page is under improvement.");
+
+        return $this->redirectToRoute('home');
+
         if ($this->getUser() !== $utilisateur && !$utilisateur->getIsPublic()) {
             $this->addFlash('warning', "This profile is not public.");
 
