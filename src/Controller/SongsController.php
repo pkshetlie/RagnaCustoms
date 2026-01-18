@@ -46,7 +46,7 @@ class SongsController extends AbstractController
 {
     private $paginate = 30;
 
-    public function __construct(private readonly SongService $songService)
+    public function __construct()
     {
     }
 
@@ -892,13 +892,12 @@ class SongsController extends AbstractController
         );
     }
 
-    public function __invoke(): array
-    {
-
-        return [
-            'countSongs' => $this->songService->count(),
-            'topRated' => $this->songService->getTopRated(),
-            'lastSongs' => $this->songService->getLastSongs(),
-        ];
-    }
+    // public function __invoke(): array
+    // {
+    //     return [
+    //         'countSongs' => $this->songService->count(),
+    //         'topRated' => $this->songService->getTopRated(),
+    //         'lastSongs' => $this->songService->getLastSongs(),
+    //     ];
+    // }
 }
