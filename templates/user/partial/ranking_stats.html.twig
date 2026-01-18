@@ -65,27 +65,27 @@
 
             <div class="row">
                 <div class="col-md-2 col-sm-6">
-                    <a href="{{url('ranking_stats',{username:user.username,leaderboard:'vr'})}}" class="mini-box" data-leaderboard="vr">
-                        <div class="numeric {{leaderboard == "vr" ? "active" : ""}}">
-                            <i class="fas fa-vr-cardboard" style="font-size:14px;"></i>
-                            #{{ scoreService.generalLeaderboardPosition(user, null, true)??" -" }}
-                        </div>
-                        <div class="text">{{ "VR rank"|trans }}</div>
-                    </a>
-                    <a href="{{url('ranking_stats',{username:user.username,leaderboard:'flat'})}}" class="mini-box" data-leaderboard="flat">
-                        <div class="numeric {{leaderboard == "flat" ? "active" : ""}}">
-                            <i class="fas fa-gamepad" style="font-size:14px;"></i>
-                            #{{ scoreService.generalLeaderboardPosition(user, null, false)??" -" }}
-                        </div>
-                        <div class="text">{{ "VoT Classic rank"|trans }}</div>
-                    </a>
-                    <a href="{{url('ranking_stats',{username:user.username,leaderboard:'okod'})}}" class="mini-box" data-leaderboard="okod">
-                        <div class="numeric {{leaderboard == "okod" ? "active" : ""}}">
-                            <i class="fas fa-gamepad" style="font-size:14px;"></i>
-                            #{{ scoreService.generalLeaderboardPosition(user, null, false, true)??" -" }}
-                        </div>
-                        <div class="text">{{ "VoT OKOD rank"|trans }}</div>
-                    </a>
+{#                    <a href="{{url('ranking_stats',{username:user.username,leaderboard:'vr'})}}" class="mini-box" data-leaderboard="vr">#}
+{#                        <div class="numeric {{leaderboard == "vr" ? "active" : ""}}">#}
+{#                            <i class="fas fa-vr-cardboard" style="font-size:14px;"></i>#}
+{#                            #{{ scoreService.generalLeaderboardPosition(user, null, true)??" -" }}#}
+{#                        </div>#}
+{#                        <div class="text">{{ "VR rank"|trans }}</div>#}
+{#                    </a>#}
+{#                    <a href="{{url('ranking_stats',{username:user.username,leaderboard:'flat'})}}" class="mini-box" data-leaderboard="flat">#}
+{#                        <div class="numeric {{leaderboard == "flat" ? "active" : ""}}">#}
+{#                            <i class="fas fa-gamepad" style="font-size:14px;"></i>#}
+{#                            #{{ scoreService.generalLeaderboardPosition(user, null, false)??" -" }}#}
+{#                        </div>#}
+{#                        <div class="text">{{ "VoT Classic rank"|trans }}</div>#}
+{#                    </a>#}
+{#                    <a href="{{url('ranking_stats',{username:user.username,leaderboard:'okod'})}}" class="mini-box" data-leaderboard="okod">#}
+{#                        <div class="numeric {{leaderboard == "okod" ? "active" : ""}}">#}
+{#                            <i class="fas fa-gamepad" style="font-size:14px;"></i>#}
+{#                            #{{ scoreService.generalLeaderboardPosition(user, null, false, true)??" -" }}#}
+{#                        </div>#}
+{#                        <div class="text">{{ "VoT OKOD rank"|trans }}</div>#}
+{#                    </a>#}
                 </div>
                 <div class="col-md-2 col-sm-6">
                     <div class="mini-box">
