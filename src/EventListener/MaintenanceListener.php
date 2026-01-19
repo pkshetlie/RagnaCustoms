@@ -15,10 +15,10 @@ class MaintenanceListener
         $request = $event->getRequest();
 
         // On vérifie si la route commence par /api
-        if (str_starts_with($request->getPathInfo(), '/api') || str_starts_with($request->getPathInfo(), '/rest-api')) {
-            $event->setResponse(
-                new JsonResponse(['message' => 'API temporairement en maintenance'], Response::HTTP_SERVICE_UNAVAILABLE)
-            );
-        }
+        // if (str_starts_with($request->getPathInfo(), '/api') || str_starts_with($request->getPathInfo(), '/rest-api')) {
+        //     $event->setResponse(
+        //         new JsonResponse(['message' => 'API temporairement en maintenance'], Response::HTTP_SERVICE_UNAVAILABLE)
+        //     );
+        // }
     }
 }
