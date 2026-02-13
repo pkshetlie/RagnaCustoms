@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Repository\ScoreHistoryRepository;
-use App\Service\StatisticService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -41,18 +39,17 @@ class CmsController extends AbstractController
     }
 
     #[Route(path: '/', name: 'home')]
-    public function homepage(
-        ScoreHistoryRepository $scoreHistoryRepository,
-        StatisticService $statisticService
-    ): Response {
-
+    public function homepage(): Response
+    {
         $patreonImages = [
-            '/apps/patreon_1.png',
-            // '/apps/patreon_2.png',
-            '/apps/patreon_3.png',
+            '/apps/01.webp',
+            '/apps/02.webp',
+            '/apps/03.webp',
+            '/apps/04.webp',
         ];
         $randomKey = array_rand($patreonImages);
-        return $this->render('cms/homepage.html.twig',[
+
+        return $this->render('cms/homepage.html.twig', [
             'patreonImage' => $patreonImages[$randomKey],
         ]);
     }
