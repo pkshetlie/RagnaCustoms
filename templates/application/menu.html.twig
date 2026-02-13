@@ -1,125 +1,132 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container pb-5">
+  <div class="container pb-5">
     <div class="row">
-        <div class="col-12 mt-4">
-            <h1>Our Softwares</h1>
-        </div>
+      <div class="col-12 mt-4">
+        <h1>Our Softwares</h1>
+      </div>
 
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-header">
-                    <div class="overlay"></div>
-                    <img src="{{ asset('apps/ragna.jpg') }}" >
-                    <h2>{{ "RagnaCustoms App"|trans }}</h2>
-                </div>
-                <div class="card-body">
-                    <p>{{ "By installing this application you enable the one click download, then you also can use it for
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="overlay"></div>
+            <img src="{{ asset('apps/ragna.jpg') }}">
+            <h2>{{ "RagnaCustoms App"|trans }}</h2>
+          </div>
+          <div class="card-body">
+            <p>{{ "By installing this application you enable the one click download, then you also can use it for
                     twitch requests and streaming overlay."|trans }}<br>
-                    <b>Be carefull to take the <u>RagnaCustoms.Installer2.msi</u>. If you take the zip folder, it won't work.</b></p>
-                    <a href="https://github.com/pkshetlie/RagnaCustomsApp/releases" target ="_blank" class="btn btn-block btn-lg btn-primary">{{ "Go
+              <b>Be carefull to take the <u>RagnaCustoms.Installer2.msi</u>. If you take the zip folder, it won't work.</b>
+            </p>
+            <a href="https://github.com/pkshetlie/RagnaCustomsApp/releases" target="_blank"
+               class="btn btn-block btn-lg btn-primary">{{ "Go
                     to"|trans }} <i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
 
     </div>
     <div class="row">
-        <div class="col-12 mt-4">
-            <h1>Community Softwares & Tools</h1>
-        </div>
+      <div class="col-12 mt-4">
+        <h1>Community Softwares & Tools</h1>
+      </div>
 
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-header">
-                    <div class="overlay"></div>
-                    <img src="{{ asset('apps/edda.jpg') }}">
-                    <h2>{{ "Edda" }}</h2>
-                </div>
-                <div class="card-body">
-                    <p>{{ "The defacto editor for Ragnarock. Created by PkBeam, Edda is a user-friendly program that allows
+      <div class="col-md-3 mb-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="overlay"></div>
+            <img src="{{ asset('apps/edda.jpg') }}">
+            <h2>{{ "Edda" }}</h2>
+          </div>
+          <div class="card-body">
+            <p>{{ "The defacto editor for Ragnarock. Created by PkBeam, Edda is a user-friendly program that allows
                     you to map custom songs for
                     Ragnarock VR on Steam and Quest."|trans }}</p>
-                    <a href="https://pkbeam.github.io/Edda/" target ="_blank" class="btn btn-block btn-lg btn-primary">{{ "Official
+            <a href="https://pkbeam.github.io/Edda/" target="_blank" class="btn btn-block btn-lg btn-primary">{{ "Official
                     website"|trans }} <i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-header">
-                    <div class="overlay"></div>
-                    <img src="{{ asset('apps/edda.jpg') }}">
-                    <h2>{{ "Edda v2" }}</h2>
-                </div>
-                <div class="card-body">
-                    <p>{{ "A fork of EDDA from PKBeam by Watsu, implementing additional features like sound per drum and integrated offset.<br/>&nbsp;"|trans|raw }}</p>
-                    <a href="https://github.com/watsu78/Edda/releases" target ="_blank" class="btn btn-block btn-lg btn-primary">{{ "Go to"|trans }} <i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
+      <div class="col-md-3 mb-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="overlay"></div>
+            <img src="{{ asset('apps/edda.jpg') }}">
+            <h2>{{ "Edda v2" }}</h2>
+          </div>
+          <div class="card-body">
+            <p>{{ "A fork of EDDA from PKBeam by Watsu, implementing additional features like sound per drum and integrated offset.<br/>&nbsp;"|trans|raw }}</p>
+            <a href="https://github.com/watsu78/Edda/releases" target="_blank"
+               class="btn btn-block btn-lg btn-primary">{{ "Go to"|trans }} <i class="fas fa-external-link-alt"></i></a>
+          </div>
         </div>
+      </div>
 
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-header">
-                    <div class="overlay"></div>
-                    <img src="{{ asset('apps/eddatimer.jpg') }}">
-                    <h2>{{ "Eddatimer" }}</h2>
-                </div>
-                <div class="card-body">
-                    <p>{{ "An application that couple with EDDA to calculate how much time you spend on mapping.<br/>Made by Watsu."}}</p>
-                    <a href="https://github.com/watsu78/eddatimer/releases" target ="_blank" class="btn btn-block btn-lg btn-primary">{{ "Go to"|trans }} <i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
+      <div class="col-md-3 mb-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="overlay"></div>
+            <img src="{{ asset('apps/eddatimer.jpg') }}">
+            <h2>{{ "Eddatimer" }}</h2>
+          </div>
+          <div class="card-body">
+            <p>{{ "An application that couple with EDDA to calculate how much time you spend on mapping.<br/>Made by Watsu." }}</p>
+            <a href="https://github.com/watsu78/eddatimer/releases" target="_blank"
+               class="btn btn-block btn-lg btn-primary">{{ "Go to"|trans }} <i class="fas fa-external-link-alt"></i></a>
+          </div>
         </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-header">
-                    <div class="overlay"></div>
-                    <img src="{{ asset('apps/bifrost.png') }}">
-                    <h2>{{ "Bifrost" }}</h2>
-                </div>
-                <div class="card-body">
-                    <p>{{ "A simple stat graphic generator for Ragnarock videos and other content, creates both end-screen stats and song info screen."|trans }}</p>
-                    <a href="https://unforeseenocean.github.io/Bifrost/" target ="_blank" class="btn btn-block btn-lg btn-primary">{{ "Go to"|trans }} <i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="overlay"></div>
+            <img src="{{ asset('apps/bifrost.png') }}">
+            <h2>{{ "Bifrost" }}</h2>
+          </div>
+          <div class="card-body">
+            <p>{{ "A simple stat graphic generator for Ragnarock videos and other content, creates both end-screen stats and song info screen."|trans }}</p>
+            <a href="https://unforeseenocean.github.io/Bifrost/" target="_blank"
+               class="btn btn-block btn-lg btn-primary">{{ "Go to"|trans }} <i class="fas fa-external-link-alt"></i></a>
+          </div>
         </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-header">
-                    <div class="overlay"></div>
-                    <img src="{{ asset('apps/ragnarock-layer.jpg') }}">
-                    <h2>{{ "Ragnarock add-on for Streamers" }}</h2>
-                </div>
-                <div class="card-body">
-                    <p>{{ "A Ragnarock Layer App for streaming or improve skills in Vikings on Tour.<br/>Made by wanadev developper."|trans|raw }}</p>
-                    <a href="https://www.youtube.com/watch?v=IUtdJnWZSVg" target ="_blank" class="btn btn-block btn-lg btn-primary">{{ "How to install"|trans }} <i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="overlay"></div>
+            <img src="{{ asset('apps/ragnarock-layer.jpg') }}">
+            <h2>{{ "Ragnarock add-on for Streamers" }}</h2>
+          </div>
+          <div class="card-body">
+            <p>{{ "A Ragnarock Layer App for streaming or improve skills in Vikings on Tour.<br/>Made by wanadev developper."|trans|raw }}</p>
+            <a href="https://www.youtube.com/watch?v=IUtdJnWZSVg" target="_blank"
+               class="btn btn-block btn-lg btn-primary">{{ "How to install"|trans }} <i
+                  class="fas fa-external-link-alt"></i></a>
+          </div>
         </div>
-        <div class="col-md-3">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="overlay"></div>
-                            <img src="{{ asset('apps/Ragnarock-Streamer-bot.jpg') }}">
-                            <h2>{{ "Ragnarock-Streamer.bot" }}</h2>
-                        </div>
-                        <div class="card-body">
-                            <p>{{ "Ragnarock Streamer.bot integration. Helpful Streamer.bot actions and commands for streaming Ragnarock.<br/>Made by Brolly."}}</p>
-                            <a href="https://github.com/Brollyy/Ragnarock-Streamer.bot" target ="_blank" class="btn btn-block btn-lg btn-primary">{{ "How to install"|trans }} <i class="fas fa-external-link-alt"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="overlay"></div>
+            <img src="{{ asset('apps/Ragnarock-Streamer-bot.jpg') }}">
+            <h2>{{ "Ragnarock-Streamer.bot" }}</h2>
+          </div>
+          <div class="card-body">
+            <p>{{ "Ragnarock Streamer.bot integration. Helpful Streamer.bot actions and commands for streaming Ragnarock.<br/>Made by Brolly." }}</p>
+            <a href="https://github.com/Brollyy/Ragnarock-Streamer.bot" target="_blank"
+               class="btn btn-block btn-lg btn-primary">{{ "How to install"|trans }} <i
+                  class="fas fa-external-link-alt"></i></a>
+          </div>
+        </div>
+      </div>
     </div>
-    </div>
+  </div>
 {% endblock %}
 
 {% block title %}
-    Ragnarock VR custom song applications
+  Ragnarock VR custom song applications
 {% endblock %}
 
