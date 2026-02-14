@@ -41,9 +41,11 @@
           </form>
         </div>
         <div class="col-md-4 text-center pt-35">
+          {% if not is_granted('ROLE_PREMIUM_LVL1') %}
           <a class="pt-2" href="https://www.patreon.com/bePatron?u=6877976" target="_blank">
             <img src="{{ patreonImage }}" class="img-fluid">
           </a>
+          {% endif %}
         </div>
       </div>
       {% if is_granted('ROLE_USER') %}
