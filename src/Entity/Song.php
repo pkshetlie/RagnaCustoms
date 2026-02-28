@@ -4,9 +4,6 @@ namespace App\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use App\Controller\SongsController;
 use App\Repository\SongRepository;
 use App\Service\StatisticService;
 use DateTime;
@@ -18,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: SongRepository::class)]
 #[ORM\Index(
@@ -438,7 +435,7 @@ class Song
         return $this->version;
     }
 
-    public function setVersion(string $version = null): self
+    public function setVersion(?string $version = null): self
     {
         $this->version = $version;
 
@@ -503,7 +500,7 @@ class Song
         return $this;
     }
 
-    public function getVoteAverage()
+    public function getVoteAverage(): float|int
     {
         return $this->countVotes == 0 ? 0.00 : $this->getTotalVotes() / $this->getCountVotes();
     }

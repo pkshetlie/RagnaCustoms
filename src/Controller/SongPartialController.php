@@ -2,18 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\Score;
-use App\Entity\ScoreHistory;
-use App\Entity\Song;
-use App\Repository\ScoreHistoryRepository;
-use App\Repository\ScoreRepository;
 use App\Repository\SongRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 
 class SongPartialController extends AbstractController
 {
@@ -27,7 +21,7 @@ class SongPartialController extends AbstractController
             ->addOrderBy("s.createdAt", 'DESC')
             ->where('s.isDeleted != true')
             ->andWhere('(s.programmationDate <= :now )')
-            ->setParameter('now',(new \DateTime()))
+            ->setParameter('now', (new DateTime()))
             ->andWhere('s.wip != true')
             ->andWhere('s.active = true')
             ->setMaxResults($this->count)
@@ -35,18 +29,19 @@ class SongPartialController extends AbstractController
             ->getQuery()->getResult();
 
         return $this->render('song_partial/index.html.twig', [
-            'songs' => $songs
+            'songs' => $songs,
         ]);
     }
 
-    public function lastPlayed(ScoreRepository $scoreRepository,SongRepository $songRepository, EntityManagerInterface $em): Response
+    public function lastPlayed(SongRepository $songRepository, EntityManagerInterface $em): Response
     {
 
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('id', 'id');
 
-        $q = $em->createNativeQuery('
+        $q = $em->createNativeQuery(
+            '
         SELECT s.id
 FROM score AS sc
 JOIN song_difficulty AS sd ON sc.song_difficulty_id = sd.id
@@ -67,14 +62,18 @@ AND s.programmation_date <= NOW()
 AND s.wip != 1
 AND s.active = 1
 ORDER BY sc.played_at DESC
-LIMIT 8', $rsm);
+LIMIT 8',
+            $rsm
+        );
 
-$scores = $q->getArrayResult();
+        $scores = $q->getArrayResult();
 
-        $songs = array_map(function(array $score) use($songRepository){return $songRepository->find($score['id']);}, $scores);
+        $songs = array_map(function(array $score) use ($songRepository) {
+            return $songRepository->find($score['id']);
+        }, $scores);
 
         return $this->render('song_partial/index.html.twig', [
-            'songs' => $songs
+            'songs' => $songs,
         ]);
     }
 
@@ -82,22 +81,22 @@ $scores = $q->getArrayResult();
     {
         $songs = $songRepository->createQueryBuilder("s")
             ->addSelect('s, SUM(IF(v.votes_indc IS NULL,0,IF(v.votes_indc = 0,-1,1))) AS HIDDEN sum_votes')
-            ->leftJoin("s.voteCounters",'v')
+            ->leftJoin("s.voteCounters", 'v')
             ->orderBy("sum_votes", 'DESC')
             ->where('s.isDeleted != true')
             ->andWhere('s.isPrivate != true')
             ->andWhere('s.wip != true')
             ->andWhere('s.active = true')
             ->andWhere('s.programmationDate BETWEEN :date AND :now')
-            ->setParameter('date',(new \DateTime())->modify('-'.$lastXDays." days"))
-            ->setParameter('now',(new \DateTime()))
+            ->setParameter('date', (new DateTime())->modify('-'.$lastXDays." days"))
+            ->setParameter('now', (new DateTime()))
             ->groupBy('s.id')
             ->setMaxResults($this->count)
             ->setFirstResult(0)
             ->getQuery()->getResult();
 
         return $this->render('song_partial/index.html.twig', [
-            'songs' => $songs
+            'songs' => $songs,
         ]);
     }
 }

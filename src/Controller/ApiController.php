@@ -42,10 +42,10 @@ class ApiController extends AbstractController
         UserPasswordHasherInterface $hasher
     ): Response {
         /** @var Utilisateur $user */
-        $user = $utilisateurRepository->findOneBy(['username' => $request->get('username')]);
+        $user = $utilisateurRepository->findOneBy(['username' => $request->request->get('username')]);
         if ($user !== null) {
 
-            if ($hasher->isPasswordValid($user, $request->get('password'))) {
+            if ($hasher->isPasswordValid($user, $request->request->get('password'))) {
                 // $user->setCountApiAttempt(0);
                 // $user->setLastApiAttempt(null);
                 $utilisateurRepository->add($user);
@@ -64,7 +64,7 @@ class ApiController extends AbstractController
     }
 
     #[Route(path: '/api/song/check-updates', name: 'api_song_check_updates')]
-    public function checkUpdates(Request $request, SongRepository $songRepository): Response
+    public function checkUpdates(SongRepository $songRepository): Response
     {
 
         /**
@@ -91,7 +91,7 @@ class ApiController extends AbstractController
 
 
     #[Route(path: '/api/search/{term}', name: 'api_search')]
-    public function index(Request $request, string $term = null, SongRepository $songRepository): Response
+    public function index(SongRepository $songRepository, ?string $term = null,): Response
     {
         $qb = $songRepository
             ->createQueryBuilder('s')->where('(s.programmationDate <= :now  )')

@@ -24,3 +24,5 @@ framework:
         log: true
     profiler:
         collect_serializer_data: true
+    property_info:
+        with_constructor_extractor: true

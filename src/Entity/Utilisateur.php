@@ -510,7 +510,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->mapper_discord;
     }
 
-    public function setMapperDiscord(string $mapper_discord = null): self
+    public function setMapperDiscord(?string $mapper_discord = null): self
     {
         $this->mapper_discord = $mapper_discord;
 

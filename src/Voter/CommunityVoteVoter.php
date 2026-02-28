@@ -7,6 +7,7 @@ use App\Entity\Song;
 use App\Entity\SongDifficulty;
 use App\Entity\Utilisateur;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -30,13 +31,13 @@ class CommunityVoteVoter extends Voter
         return true;
     }
 
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $user = $token->getUser();
 
         if (!$user instanceof UserInterface) {
             // the user must be logged in; if not, deny access
-            // $vote?->addReason('The user is not logged in.');
+            $vote?->addReason('The user is not logged in.');
             return false;
         }
 
@@ -45,17 +46,18 @@ class CommunityVoteVoter extends Voter
         $songDifficulty = $subject;
 
         return match($attribute) {
-            self::VOTE => $this->canVote($songDifficulty, $user),
+            self::VOTE => $this->canVote($songDifficulty, $user, $vote),
             default => throw new \LogicException('This code should not be reached!')
         };
     }
 
-    private function canVote(SongDifficulty $songDifficulty, Utilisateur $user): bool
+    private function canVote(SongDifficulty $songDifficulty, Utilisateur $user, ?Vote $vote): bool
     {
         // Check if user is registered for more than 1 month
         $oneMonthAgo = new \DateTime('-1 month');
 
         if ($user->getCreatedAt() > $oneMonthAgo) {
+            $vote?->addReason('You must be registered for at least 1 month.');
             return false;
         }
 
@@ -65,6 +67,7 @@ class CommunityVoteVoter extends Voter
         })->count();
 
         if ($playedDifficulty < 1) {
+            $vote?->addReason('You must have played this difficulty.');
             return false;
         }
 
@@ -84,6 +87,7 @@ class CommunityVoteVoter extends Voter
         $playedSongsCount = count($playedSongsCount);
 
         if ($playedDifficultiesCount < 6 || $playedSongsCount < 6) {
+            $vote?->addReason('You must have played at least 6 songs and 6 difficulties.');
             return false;
         }
 

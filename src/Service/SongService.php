@@ -956,7 +956,7 @@ readonly class SongService
         return md5($str);
     }
 
-    private function coverOptimisation(Song $song = null)
+    private function coverOptimisation(?Song $song = null)
     {
         if ($song != null) {
             try {

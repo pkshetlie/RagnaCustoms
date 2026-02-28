@@ -40,7 +40,7 @@ class ScoreController extends AbstractController
         ScoreService $scoreService,
         RankedScoresRepository $rankedScoresRepository
     ): Response {
-        if ($request->get('findme', null)) {
+        if ($request->query->get('findme')) {
             $score = null;
 
             if ($this->isGranted('ROLE_USER') && $this->getUser()->getCountry()->getId() == $country->getId()) {
@@ -112,7 +112,7 @@ class ScoreController extends AbstractController
         RankedScoresRepository $rankedScoresRepository,
         FriendRepository $friendRepository
     ): Response {
-        if ($request->get('findme', null)) {
+        if ($request->query->get('findme')) {
             $score = $scoreService->getGeneralLeaderboardPosition($this->getUser());
             if ($score == null) {
                 $this->addFlash("danger", "No score found");
@@ -145,7 +145,7 @@ class ScoreController extends AbstractController
 
         $scores = $pagination->setDefaults(25)->process($qb, $request);
 
-        if ($request->get('findme_flat', null)) {
+        if ($request->query->get('findme_flat', null)) {
             $scoreFlat = $scoreService->getGeneralLeaderboardPosition($this->getUser(), null, false);
             if ($scoreFlat == null) {
                 $this->addFlash("danger", "No score found");
@@ -171,7 +171,7 @@ class ScoreController extends AbstractController
 
         $scoresFlat = $pagination->setDefaults(25)->process($qb, $request);
 
-        if ($request->get('findme_flat_okodo', null)) {
+        if ($request->query->get('findme_flat_okodo', null)) {
             $scoreFlat = $scoreService->getGeneralLeaderboardPosition($this->getUser(), null, false);
             if ($scoreFlat == null) {
                 $this->addFlash("danger", "No score found");

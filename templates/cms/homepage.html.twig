@@ -31,7 +31,7 @@
                 <option class="dropdown-item" value='genre' href="#">Genre</option>
               </select>
 
-              <input type="text" value="{{ app.request.get('search') }}"
+              <input type="text" value="{{ app.request.query.get('search') }}"
                      class="form-control form-control-lg"
                      placeholder="{{ "Enter your search ... "|trans }}" name="search"
                      id="search">
