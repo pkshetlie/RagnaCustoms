@@ -44,7 +44,7 @@ Recently played {{ parent() }}
 
                     <div class="form-group">
                         <label for="search">{{ "Title, artist or mapper"|trans }}</label>
-                        <input type="text" value="{{ app.request.get('search') }}"
+                        <input type="text" value="{{ app.request.query.get('search') }}"
                                class="form-control form-control-sm"
                                placeholder="" name="search"
                                id="search">
@@ -57,11 +57,11 @@ Recently played {{ parent() }}
                                 class="form-control form-control-sm">
                             <option
                                     value="">{{ "Any time"|trans }}</option>
-                            <option {% if  app.request.get('downloads_submitted_date') == 1 %}selected="selected"{% endif %}
+                            <option {% if  app.request.query.get('downloads_submitted_date') == 1 %}selected="selected"{% endif %}
                                     value="1">{{ "Last 7 days"|trans }}</option>
-                            <option {% if  app.request.get('downloads_submitted_date') == 2 %}selected="selected"{% endif %}
+                            <option {% if  app.request.query.get('downloads_submitted_date') == 2 %}selected="selected"{% endif %}
                                     value="2">{{ "Last 15 days"|trans }}</option>
-                            <option {% if  app.request.get('downloads_submitted_date') == 2 %}selected="selected"{% endif %}
+                            <option {% if  app.request.query.get('downloads_submitted_date') == 2 %}selected="selected"{% endif %}
                                     value="3">{{ "Last 45 days"|trans }}</option>
                         </select>
                     </div>
@@ -71,13 +71,13 @@ Recently played {{ parent() }}
                         <select id="downloads-filter-category" name="downloads_filter_difficulties"
                                 class="form-control form-control-sm">
                             <option value="">{{ "All"|trans }}</option>
-                            <option {% if app.request.get('downloads_filter_difficulties') == 1 %}selected="selected"{% endif %}
+                            <option {% if app.request.query.get('downloads_filter_difficulties') == 1 %}selected="selected"{% endif %}
                                     value="1">{{ "1-3"|trans }}</option>
-                            <option {% if app.request.get('downloads_filter_difficulties') == 2 %}selected="selected"{% endif %}
+                            <option {% if app.request.query.get('downloads_filter_difficulties') == 2 %}selected="selected"{% endif %}
                                     value="2">{{ "4-7"|trans }}</option>
-                            <option {% if app.request.get('downloads_filter_difficulties') == 3 %}selected="selected"{% endif %}
+                            <option {% if app.request.query.get('downloads_filter_difficulties') == 3 %}selected="selected"{% endif %}
                                     value="3">{{ "8-10"|trans }}</option>
-                            <option {% if app.request.get('downloads_filter_difficulties') == 6 %}selected="selected"{% endif %}
+                            <option {% if app.request.query.get('downloads_filter_difficulties') == 6 %}selected="selected"{% endif %}
                                     value="6">{{ "10+"|trans }}</option>
 
 
@@ -90,7 +90,7 @@ Recently played {{ parent() }}
                                 data-tags="false" name="downloads_filter_categories[]"
                                 class="form-control form-control-sm tom-select" multiple="true">
                             {% for category in categories %}
-                                <option {% if category.id in app.request.get('downloads_filter_categories') %}selected="selected"{% endif %}
+                                <option {% if category.id in app.request.query.get('downloads_filter_categories') %}selected="selected"{% endif %}
                                         value="{{ category.id }}">{{ category.label }}</option>
                             {% endfor %}
                         </select>
@@ -101,9 +101,9 @@ Recently played {{ parent() }}
                         <select id="downloads-filter-converted" name="converted_maps"
                                 class="form-control form-control-sm">
                             <option value="">{{ "With"|trans }}</option>
-                            <option {% if app.request.get('converted_maps') == 1 %}selected="selected"{% endif %}
+                            <option {% if app.request.query.get('converted_maps') == 1 %}selected="selected"{% endif %}
                                     value="1">{{ "Without"|trans }}</option>
-                            <option {% if app.request.get('converted_maps') == 2 %}selected="selected"{% endif %}
+                            <option {% if app.request.query.get('converted_maps') == 2 %}selected="selected"{% endif %}
                                     value="2">{{ "Only converted"|trans }}</option>
                         </select>
                     </div>
@@ -112,30 +112,30 @@ Recently played {{ parent() }}
                         <select id="downloads-filter-converted" name="wip_maps"
                                 class="form-control form-control-sm">
                             <option value="">{{ "Without"|trans }}</option>
-                            <option {% if app.request.get('wip_maps') == 1 %}selected="selected"{% endif %}
+                            <option {% if app.request.query.get('wip_maps') == 1 %}selected="selected"{% endif %}
                                     value="1">{{ "With"|trans }}</option>
-                            <option {% if app.request.get('wip_maps') == 2 %}selected="selected"{% endif %}
+                            <option {% if app.request.query.get('wip_maps') == 2 %}selected="selected"{% endif %}
                                     value="2">{{ "Only W.I.P."|trans }}</option>
                         </select>
                     </div>
                     <div class="form-group">
                         {% if is_granted('ROLE_USER') %}
                             <div class="form-check">
-                                <input class="form-check-input" {% if app.request.get("not_downloaded") == 1%}checked="checked"{% endif%} type="checkbox" value="1" name="not_downloaded" id="flexCheckDefault">
+                                <input class="form-check-input" {% if app.request.query.get("not_downloaded") == 1%}checked="checked"{% endif%} type="checkbox" value="1" name="not_downloaded" id="flexCheckDefault">
                                 <label class="form-check-label" for="flexCheckDefault">
                                     {{ "Not downloaded"|trans }}
                                 </label>
                             </div>
                         {% endif %}
                         <div class="form-check">
-                            <input class="form-check-input" {% if app.request.get("only_ranked") == 1%}checked="checked"{% endif%} type="checkbox" value="1" name="only_ranked" id="only_ranked">
+                            <input class="form-check-input" {% if app.request.query.get("only_ranked") == 1%}checked="checked"{% endif%} type="checkbox" value="1" name="only_ranked" id="only_ranked">
                             <label class="form-check-label" for="only_ranked">
                                 {{ "Only ranked"|trans }}
                             </label>
                         </div>
                         {% if is_granted('ROLE_USER') %}
                             <div class="form-check">
-                                <input class="form-check-input" {% if app.request.get("alreadyplayed") == 1%}checked="checked"{% endif%} type="checkbox" value="1" name="alreadyplayed" id="alreadyplayed">
+                                <input class="form-check-input" {% if app.request.query.get("alreadyplayed") == 1%}checked="checked"{% endif%} type="checkbox" value="1" name="alreadyplayed" id="alreadyplayed">
                                 <label class="form-check-label" for="alreadyplayed">
                                     {{ "Disable played difficulties"|trans }}
                                 </label>

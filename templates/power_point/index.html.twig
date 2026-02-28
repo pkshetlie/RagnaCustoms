@@ -10,7 +10,7 @@
                 {% include 'user/partial/_left_part_user.html.twig' %}
             </div>
             <div class="col-md-5">
-                {% if app.request.get('vr') is null and app.request.get('vot') is null %}
+                {% if app.request.query.get('vr') is null and app.request.query.get('vot') is null %}
                     <a class="btn btn-info" href="?vr=1">Look for VR</a> or
                     <a class="btn btn-info" href="?vot=1">Look for VoT</a>
 
@@ -30,7 +30,7 @@
                         </tr>
                         {% for diff in played %}
                             {% set song = diff.song %}
-                            {% set score = scoreService.getScore(diff, user, app.request.get('vr',false)) %}
+                            {% set score = scoreService.getScore(diff, user, app.request.query.get('vr',false)) %}
                             <tr>
                                 <td>
                                     <div class="d-flex ">
@@ -70,7 +70,7 @@
                 {% endif %}
             </div>
             <div class="col-md-5">
-                {% if app.request.get('vr') or app.request.get('vot') %}
+                {% if app.request.query.get('vr') or app.request.query.get('vot') %}
                     <h2>Ranked difficulty not played</h2>
                     <small>PP are estimated with the ass, need work on it</small>
                     <table class="table songs recently-played table-sm">
@@ -86,7 +86,7 @@
                         </tr>
                         {% for diff in notPlayed %}
                             {% set song = diff.song %}
-                            {% set score = rankingScoreService.imagine(diff, user, app.request.get('vr',false)) %}
+                            {% set score = rankingScoreService.imagine(diff, user, app.request.query.get('vr',false)) %}
                             <tr>
                                 <td>
                                     <div class="d-flex ">

@@ -37,7 +37,7 @@
                     <label for="order">{{ "Order by"|trans }}</label>
                     <select id="order" name="order" class="form-control form-control-sm">
                         <option value="">{{ "Last added"|trans }}</option>
-                        <option {% if app.request.get('order') == 1 %}selected="selected"{% endif %}
+                        <option {% if app.request.query.get('order') == 1 %}selected="selected"{% endif %}
                                 value="1">{{ "Most wanted"|trans }}</option>
 
                     </select>
