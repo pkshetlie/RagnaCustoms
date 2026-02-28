@@ -27,7 +27,7 @@ class MapperController extends AbstractController
             ->orderBy('count_song', 'desc')
             ->groupBy("u.id");
 
-        $mappers = $paginationService->setDefaults(50)->process($qb,$request);
+        $mappers = $paginationService->setDefaults(50)->process($qb, $request->query);
         return $this->render('mapper/index.html.twig', [
             'mappers' => $mappers,
         ]);

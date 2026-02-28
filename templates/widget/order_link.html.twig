@@ -5,8 +5,8 @@
         | merge(app.request.query.all)
         | merge({(orderByParam): property, (orderSortParam): app.request.get(orderSortParam, 'asc') == 'asc' ? 'desc' : 'asc'})
     ) }}"
-   class="{% if app.request.get(orderByParam) == property %}active{% endif %} 
-          {% if app.request.get(orderSortParam, 'asc') == 'asc' and app.request.get(orderByParam) == property %}sort-asc{% else %}sort-desc{% endif %}">
+   class="{% if app.request.query.get(orderByParam) == property %}active{% endif %}
+          {% if app.request.query.get(orderSortParam, 'asc') == 'asc' and app.request.query.get(orderByParam) == property %}sort-asc{% else %}sort-desc{% endif %}">
     {{ text|trans }}
 </a>
 {%- endmacro %}
