@@ -52,7 +52,7 @@ class Tournament
     /**
      * @var Collection<int, TournamentScore>
      */
-    #[ORM\OneToMany(mappedBy: 'Tournament', targetEntity: TournamentScore::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'tournament', targetEntity: TournamentScore::class, orphanRemoval: true)]
     private Collection $tournamentScores;
 
   
@@ -67,10 +67,9 @@ class Tournament
      * @var Collection<int, SongDifficulty>
      */
     #[ORM\ManyToMany(targetEntity: SongDifficulty::class, mappedBy: 'tournaments', cascade: ['persist', 'remove'])]
-    #[ORM\Column(nullable: true)]
     private Collection $songDifficulties;
 
-    #[ORM\ManyToOne(inversedBy: 'ownedTournaments')]
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'ownedTournaments')]
     private ?Utilisateur $owner = null;
 
     /**

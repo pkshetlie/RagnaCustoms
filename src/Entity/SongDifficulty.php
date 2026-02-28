@@ -83,17 +83,17 @@ class SongDifficulty
     #[ORM\OneToMany(mappedBy: 'songDifficulty', targetEntity: SongDifficultyNotation::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private Collection $songDifficultyNotations;
 
-    // /**
-    //  * @var Collection<int, Tournament>
-    //  */
-    // #[ORM\ManyToMany(targetEntity: Tournament::class, inversedBy: 'songDifficulties')]
-    // private Collection $tournaments;
+    /**
+     * @var Collection<int, Tournament>
+     */
+    #[ORM\ManyToMany(targetEntity: Tournament::class, inversedBy: 'songDifficulties')]
+    private Collection $tournaments;
 
     public function __construct()
     {
         $this->scores = new ArrayCollection();
         $this->scoreHistories = new ArrayCollection();
-        // $this->tournaments = new ArrayCollection();
+        $this->tournaments = new ArrayCollection();
         $this->songDifficultyNotations = new ArrayCollection();
     }
 

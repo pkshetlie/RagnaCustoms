@@ -20,21 +20,11 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource(
-    operations: [
-        new Get(
-            uriTemplate: 'public/songs/stats',
-            controller: SongsController::class,
-            normalizationContext: ['groups' => ['song:get']],
-            read: false, name: 'api_song_stats'
-        )
-    ],
-    normalizationContext: ['groups' => ['song:get']],
-    denormalizationContext: ['groups' => ['song:get']],
-
-
-)]
 #[ORM\Entity(repositoryClass: SongRepository::class)]
+#[ORM\Index(
+    columns: ["active", "wip", "is_deleted", "programmation_date"],
+    name: "idx_song_visibility"
+)]
 class Song
 {
     use TimestampableEntity;

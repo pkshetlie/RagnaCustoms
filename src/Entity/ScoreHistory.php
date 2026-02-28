@@ -71,10 +71,10 @@ class ScoreHistory
     #[Groups(['song:get'])]
     private ?string $plateform;
     #[ORM\Column(type: 'decimal', precision: 8, scale: 2, nullable: true)]
-    private ?float $rawPP;
+    private ?string $rawPP;
     #[ORM\Column(type: 'integer')]
     #[Groups(['song:get'])]
-    private float $score;
+    private int $score;
     #[ORM\Column(type: 'string', length:40, nullable: true)]
     private ?string $session;
     #[ORM\ManyToOne(targetEntity: SongDifficulty::class, inversedBy: 'scoreHistories')]
@@ -139,10 +139,10 @@ class ScoreHistory
 
     public function getRawPP(): ?float
     {
-        return $this->rawPP;
+        return $this->rawPP ? (float) $this->rawPP : null;
     }
 
-    public function setRawPP(?float $rawPP): self
+    public function setRawPP(?string $rawPP): self
     {
         $this->rawPP = $rawPP;
 

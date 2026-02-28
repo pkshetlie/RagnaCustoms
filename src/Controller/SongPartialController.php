@@ -8,7 +8,9 @@ use App\Entity\Song;
 use App\Repository\ScoreHistoryRepository;
 use App\Repository\ScoreRepository;
 use App\Repository\SongRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -37,23 +39,37 @@ class SongPartialController extends AbstractController
         ]);
     }
 
-    public function lastPlayed(ScoreRepository $scoreRepository,SongRepository $songRepository): Response
+    public function lastPlayed(ScoreRepository $scoreRepository,SongRepository $songRepository, EntityManagerInterface $em): Response
     {
-        $scores = $scoreRepository->createQueryBuilder('score')
-            ->select('s.id')
-            ->leftJoin('score.songDifficulty','diff')
-            ->leftJoin('diff.song','s')
-            ->orderBy('score.playedAt', 'DESC')
-            ->where('s.isDeleted != true')
-            ->andWhere('(s.programmationDate <= :now)')
-            ->andWhere('s.wip != true')
-            ->setParameter('now',(new \DateTime()))
 
-            ->andWhere('s.active = true')
-            ->groupBy('diff.song, score.user')
-            ->setFirstResult(0)
-            ->setMaxResults($this->count)
-            ->getQuery()->getResult();
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('id', 'id');
+
+        $q = $em->createNativeQuery('
+        SELECT s.id
+FROM score AS sc
+JOIN song_difficulty AS sd ON sc.song_difficulty_id = sd.id
+JOIN song AS s ON sd.song_id = s.id
+JOIN (
+    SELECT 
+        user_id,
+        song_difficulty_id,
+        MAX(played_at) as max_played
+    FROM score
+    GROUP BY user_id, song_difficulty_id
+) latest 
+ON latest.user_id = sc.user_id
+AND latest.song_difficulty_id = sc.song_difficulty_id
+AND latest.max_played = sc.played_at
+WHERE s.is_deleted != 1
+AND s.programmation_date <= NOW()
+AND s.wip != 1
+AND s.active = 1
+ORDER BY sc.played_at DESC
+LIMIT 8', $rsm);
+
+$scores = $q->getArrayResult();
 
         $songs = array_map(function(array $score) use($songRepository){return $songRepository->find($score['id']);}, $scores);
 

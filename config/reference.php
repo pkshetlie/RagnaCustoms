@@ -472,7 +472,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     disallow_search_engine_index?: bool|Param, // Enabled by default when debug is enabled. // Default: true
  *     http_client?: bool|array{ // HTTP Client configuration
- *         enabled?: bool|Param, // Default: true
+ *         enabled?: bool|Param, // Default: false
  *         max_host_connections?: int|Param, // The maximum number of connections to a single host.
  *         default_options?: array{
  *             headers?: array<string, mixed>,
@@ -1652,30 +1652,39 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  * }
  * @psalm-type SentryConfig = array{
- *     dsn?: scalar|Param|null, // If this value is not provided, the SDK will try to read it from the SENTRY_DSN environment variable. If that variable also does not exist, the SDK will just not send any events.
+ *     dsn?: scalar|Param|null, // If this value is not provided, the SDK will try to read it from the SENTRY_DSN environment variable. If that variable also does not exist, the SDK will not send any events.
  *     register_error_listener?: bool|Param, // Default: true
  *     register_error_handler?: bool|Param, // Default: true
  *     logger?: scalar|Param|null, // The service ID of the PSR-3 logger used to log messages coming from the SDK client. Be aware that setting the same logger of the application may create a circular loop when an event fails to be sent. // Default: null
- *     transport_factory?: scalar|Param|null, // The service ID of the transport factory used by the default SDK client. // Default: "Sentry\\Transport\\TransportFactoryInterface"
  *     options?: array{
- *         integrations?: list<scalar|Param|null>,
+ *         integrations?: mixed, // Default: []
  *         default_integrations?: bool|Param,
- *         send_attempts?: int|Param,
  *         prefixes?: list<scalar|Param|null>,
  *         sample_rate?: float|Param, // The sampling factor to apply to events. A value of 0 will deny sending any event, and a value of 1 will send all events.
+ *         enable_tracing?: bool|Param,
  *         traces_sample_rate?: float|Param, // The sampling factor to apply to transactions. A value of 0 will deny sending any transaction, and a value of 1 will send all transactions.
- *         profiles_sample_rate?: float|Param, // The sampling factor to apply to profiles. A value of 0 will deny sending any profiles, and a value of 1 will send all profiles. Profiles are sampled in relation to traces_sample_rate
  *         traces_sampler?: scalar|Param|null,
- *         trace_propagation_targets?: mixed,
+ *         profiles_sample_rate?: float|Param, // The sampling factor to apply to profiles. A value of 0 will deny sending any profiles, and a value of 1 will send all profiles. Profiles are sampled in relation to traces_sample_rate
+ *         enable_logs?: bool|Param,
+ *         enable_metrics?: bool|Param, // Default: true
  *         attach_stacktrace?: bool|Param,
+ *         attach_metric_code_locations?: bool|Param,
  *         context_lines?: int|Param,
- *         enable_compression?: bool|Param,
  *         environment?: scalar|Param|null, // Default: "%kernel.environment%"
  *         logger?: scalar|Param|null,
+ *         spotlight?: bool|Param,
+ *         spotlight_url?: scalar|Param|null,
  *         release?: scalar|Param|null, // Default: "%env(default::SENTRY_RELEASE)%"
  *         server_name?: scalar|Param|null,
+ *         ignore_exceptions?: list<scalar|Param|null>,
+ *         ignore_transactions?: list<scalar|Param|null>,
  *         before_send?: scalar|Param|null,
  *         before_send_transaction?: scalar|Param|null,
+ *         before_send_check_in?: scalar|Param|null,
+ *         before_send_metrics?: scalar|Param|null,
+ *         before_send_log?: scalar|Param|null,
+ *         before_send_metric?: scalar|Param|null,
+ *         trace_propagation_targets?: mixed,
  *         tags?: array<string, scalar|Param|null>,
  *         error_types?: scalar|Param|null,
  *         max_breadcrumbs?: int|Param,
@@ -1684,18 +1693,22 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         in_app_include?: list<scalar|Param|null>,
  *         send_default_pii?: bool|Param,
  *         max_value_length?: int|Param,
+ *         transport?: scalar|Param|null,
+ *         http_client?: scalar|Param|null,
  *         http_proxy?: scalar|Param|null,
+ *         http_proxy_authentication?: scalar|Param|null,
  *         http_connect_timeout?: float|Param, // The maximum number of seconds to wait while trying to connect to a server. It works only when using the default transport.
  *         http_timeout?: float|Param, // The maximum execution time for the request+response as a whole. It works only when using the default transport.
+ *         http_ssl_verify_peer?: bool|Param,
+ *         http_compression?: bool|Param,
  *         capture_silenced_errors?: bool|Param,
- *         max_request_body_size?: "none"|"small"|"medium"|"always"|Param,
+ *         max_request_body_size?: "none"|"never"|"small"|"medium"|"always"|Param,
  *         class_serializers?: array<string, scalar|Param|null>,
- *         ignore_exceptions?: list<scalar|Param|null>,
- *         ignore_transactions?: list<scalar|Param|null>,
  *     },
  *     messenger?: bool|array{
  *         enabled?: bool|Param, // Default: false
  *         capture_soft_fails?: bool|Param, // Default: true
+ *         isolate_breadcrumbs_by_message?: bool|Param, // Default: false
  *     },
  *     tracing?: bool|array{
  *         enabled?: bool|Param, // Default: true
@@ -1710,7 +1723,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             enabled?: bool|Param, // Default: true
  *         },
  *         http_client?: bool|array{
- *             enabled?: bool|Param, // Default: true
+ *             enabled?: bool|Param, // Default: false
  *         },
  *         console?: array{
  *             excluded_commands?: list<scalar|Param|null>,
@@ -1765,18 +1778,14 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     description?: scalar|Param|null, // The description of the API. // Default: ""
  *     version?: scalar|Param|null, // The version of the API. // Default: "0.0.0"
  *     show_webby?: bool|Param, // If true, show Webby on the documentation page // Default: true
- *     event_listeners_backward_compatibility_layer?: bool|Param|null, // If true API Platform uses Symfony event listeners instead of providers and processors. // Default: null
- *     use_deprecated_json_schema_type_factory?: bool|Param|null, // Use the deprecated type factory, this option will be removed in 4.0. // Default: null
- *     use_symfony_listeners?: bool|Param|null, // Uses Symfony event listeners instead of the ApiPlatform\Symfony\Controller\MainController. // Default: null
+ *     use_symfony_listeners?: bool|Param, // Uses Symfony event listeners instead of the ApiPlatform\Symfony\Controller\MainController. // Default: false
  *     name_converter?: scalar|Param|null, // Specify a name converter to use. // Default: null
  *     asset_package?: scalar|Param|null, // Specify an asset package name to use. // Default: null
  *     path_segment_name_generator?: scalar|Param|null, // Specify a path name generator to use. // Default: "api_platform.metadata.path_segment_name_generator.underscore"
  *     inflector?: scalar|Param|null, // Specify an inflector to use. // Default: "api_platform.metadata.inflector"
  *     validator?: array{
  *         serialize_payload_fields?: mixed, // Set to null to serialize all payload fields when a validation error is thrown, or set the fields you want to include explicitly. // Default: []
- *         query_parameter_validation?: bool|Param, // Default: true
- *         legacy_validation_exception?: bool|Param, // Uses the legacy "%s" instead of "%s". // Default: true
- *         legacy_query_parameter_validation?: bool|Param, // Use the legacy query validation system. // Default: true
+ *         query_parameter_validation?: bool|Param, // Deprecated: Will be removed in API Platform 5.0. // Default: true
  *     },
  *     eager_loading?: bool|array{
  *         enabled?: bool|Param, // Default: true
@@ -1786,12 +1795,13 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     handle_symfony_errors?: bool|Param, // Allows to handle symfony exceptions. // Default: false
  *     enable_swagger?: bool|Param, // Enable the Swagger documentation and export. // Default: true
+ *     enable_json_streamer?: bool|Param, // Enable json streamer. // Default: false
  *     enable_swagger_ui?: bool|Param, // Enable Swagger UI // Default: true
  *     enable_re_doc?: bool|Param, // Enable ReDoc // Default: true
  *     enable_entrypoint?: bool|Param, // Enable the entrypoint // Default: true
  *     enable_docs?: bool|Param, // Enable the docs // Default: true
  *     enable_profiler?: bool|Param, // Enable the data collector and the WebProfilerBundle integration. // Default: true
- *     keep_legacy_inflector?: bool|Param, // Keep doctrine/inflector instead of symfony/string to generate plurals for routes. // Default: true
+ *     enable_phpdoc_parser?: bool|Param, // Enable resource metadata collector using PHPStan PhpDocParser. // Default: true
  *     enable_link_security?: bool|Param, // Enable security for Links (sub resources) // Default: false
  *     collection?: array{
  *         exists_parameter_name?: scalar|Param|null, // The name of the query parameter to filter on nullable field values. // Default: "exists"
@@ -1807,11 +1817,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         },
  *     },
  *     mapping?: array{
+ *         imports?: list<scalar|Param|null>,
  *         paths?: list<scalar|Param|null>,
  *     },
  *     resource_class_directories?: list<scalar|Param|null>,
  *     serializer?: array{
- *         hydra_prefix?: bool|Param|null, // Use the "hydra:" prefix. // Default: null
+ *         hydra_prefix?: bool|Param, // Use the "hydra:" prefix. // Default: false
  *     },
  *     doctrine?: bool|array{
  *         enabled?: bool|Param, // Default: true
@@ -1837,12 +1848,14 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         graphiql?: bool|array{
  *             enabled?: bool|Param, // Default: false
  *         },
- *         graphql_playground?: bool|array{
- *             enabled?: bool|Param, // Default: false
- *         },
  *         introspection?: bool|array{
  *             enabled?: bool|Param, // Default: true
  *         },
+ *         max_query_depth?: int|Param, // Default: 20
+ *         graphql_playground?: bool|array{ // Deprecated: The "graphql_playground" configuration is deprecated and will be ignored.
+ *             enabled?: bool|Param, // Default: false
+ *         },
+ *         max_query_complexity?: int|Param, // Default: 500
  *         nesting_separator?: scalar|Param|null, // The separator to use to filter nested fields. // Default: "_"
  *         collection?: array{
  *             pagination?: bool|array{
@@ -1851,10 +1864,15 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         },
  *     },
  *     swagger?: array{
+ *         persist_authorization?: bool|Param, // Persist the SwaggerUI Authorization in the localStorage. // Default: false
  *         versions?: list<scalar|Param|null>,
  *         api_keys?: array<string, array{ // Default: []
  *             name?: scalar|Param|null, // The name of the header or query parameter containing the api key.
  *             type?: "query"|"header"|Param, // Whether the api key should be a query parameter or a header.
+ *         }>,
+ *         http_auth?: array<string, array{ // Default: []
+ *             scheme?: scalar|Param|null, // The OpenAPI HTTP auth scheme, for example "bearer"
+ *             bearerFormat?: scalar|Param|null, // The OpenAPI HTTP bearer format
  *         }>,
  *         swagger_ui_extra_configuration?: mixed, // To pass extra configuration to Swagger UI, like docExpansion or filter. // Default: []
  *     },
@@ -1884,10 +1902,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     elasticsearch?: bool|array{
  *         enabled?: bool|Param, // Default: false
  *         hosts?: list<scalar|Param|null>,
- *         mapping?: array<string, array{ // Default: []
- *             index?: scalar|Param|null, // Default: null
- *             type?: scalar|Param|null, // Default: "_doc"
- *         }>,
  *     },
  *     openapi?: array{
  *         contact?: array{
@@ -1896,24 +1910,31 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             email?: scalar|Param|null, // The email address of the contact person/organization. MUST be in the format of an email address. // Default: null
  *         },
  *         termsOfService?: scalar|Param|null, // A URL to the Terms of Service for the API. MUST be in the format of a URL. // Default: null
+ *         tags?: list<array{ // Default: []
+ *             name?: scalar|Param|null,
+ *             description?: scalar|Param|null, // Default: null
+ *         }>,
  *         license?: array{
  *             name?: scalar|Param|null, // The license name used for the API. // Default: null
  *             url?: scalar|Param|null, // URL to the license used for the API. MUST be in the format of a URL. // Default: null
+ *             identifier?: scalar|Param|null, // An SPDX license expression for the API. The identifier field is mutually exclusive of the url field. // Default: null
  *         },
  *         swagger_ui_extra_configuration?: mixed, // To pass extra configuration to Swagger UI, like docExpansion or filter. // Default: []
  *         overrideResponses?: bool|Param, // Whether API Platform adds automatic responses to the OpenAPI documentation. // Default: true
+ *         error_resource_class?: scalar|Param|null, // The class used to represent errors in the OpenAPI documentation. // Default: null
+ *         validation_error_resource_class?: scalar|Param|null, // The class used to represent validation errors in the OpenAPI documentation. // Default: null
  *     },
  *     maker?: bool|array{
  *         enabled?: bool|Param, // Default: true
  *     },
  *     exception_to_status?: array<string, int|Param>,
- *     formats?: array<string, array{ // Default: []
+ *     formats?: array<string, array{ // Default: {"jsonld":{"mime_types":["application/ld+json"]}}
  *         mime_types?: list<scalar|Param|null>,
  *     }>,
  *     patch_formats?: array<string, array{ // Default: {"json":{"mime_types":["application/merge-patch+json"]}}
  *         mime_types?: list<scalar|Param|null>,
  *     }>,
- *     docs_formats?: array<string, array{ // Default: {"jsonopenapi":{"mime_types":["application/vnd.openapi+json"]},"yamlopenapi":{"mime_types":["application/vnd.openapi+yaml"]},"json":{"mime_types":["application/json"]},"jsonld":{"mime_types":["application/ld+json"]},"html":{"mime_types":["text/html"]}}
+ *     docs_formats?: array<string, array{ // Default: {"jsonld":{"mime_types":["application/ld+json"]},"jsonopenapi":{"mime_types":["application/vnd.openapi+json"]},"html":{"mime_types":["text/html"]},"yamlopenapi":{"mime_types":["application/vnd.openapi+yaml"]}}
  *         mime_types?: list<scalar|Param|null>,
  *     }>,
  *     error_formats?: array<string, array{ // Default: {"jsonld":{"mime_types":["application/ld+json"]},"jsonproblem":{"mime_types":["application/problem+json"]},"json":{"mime_types":["application/problem+json","application/json"]}}
@@ -1951,11 +1972,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         denormalization_context?: mixed,
  *         collect_denormalization_errors?: mixed,
  *         hydra_context?: mixed,
- *         openapi_context?: mixed,
  *         openapi?: mixed,
  *         validation_context?: mixed,
  *         filters?: mixed,
- *         elasticsearch?: mixed,
  *         mercure?: mixed,
  *         messenger?: mixed,
  *         input?: mixed,
@@ -1988,8 +2007,15 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         provider?: mixed,
  *         processor?: mixed,
  *         state_options?: mixed,
+ *         rules?: mixed,
+ *         policy?: mixed,
+ *         middleware?: mixed,
  *         parameters?: mixed,
+ *         strict_query_parameter_validation?: mixed,
+ *         hide_hydra_operation?: mixed,
+ *         json_stream?: mixed,
  *         extra_properties?: mixed,
+ *         map?: mixed,
  *         route_name?: mixed,
  *         errors?: mixed,
  *         read?: mixed,

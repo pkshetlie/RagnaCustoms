@@ -22,3 +22,5 @@ framework:
     #fragments: true
     php_errors:
         log: true
+    profiler:
+        collect_serializer_data: true

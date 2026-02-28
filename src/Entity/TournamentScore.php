@@ -17,47 +17,47 @@ class TournamentScore
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'tournamentScore')]
+    #[ORM\ManyToOne(targetEntity: Tournament::class, inversedBy: 'tournamentScores')]
     private ?Tournament $tournament = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $comboBlue;
+    private ?int $comboBlue;
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $comboYellow;
+    private ?int $comboYellow;
     #[ORM\Column(type: 'text', nullable: true)]
-    private $country;
+    private ?string $country;
     #[ORM\Column(type: 'text', nullable: true)]
-    private $dateRagnarock;
+    private ?string $dateRagnarock;
     #[ORM\Column(type: 'text', nullable: true)]
-    private $extra;
+    private ?string $extra;
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $hit;
+    private ?int $hit;
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $hitDeltaAverage;
+    private ?int $hitDeltaAverage;
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $hitPercentage;
+    private ?int $hitPercentage;
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $missed;
+    private ?int $missed;
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $percentageOfPerfects;
+    private ?int $percentageOfPerfects;
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
-    private $plateform;
+    private ?string $plateform;
     #[ORM\Column(type: 'float', nullable: true)]
-    private $rawPP;
+    private ?float $rawPP;
     #[ORM\Column(type: 'float')]
-    private $score;
+    private ?float $score;
     #[ORM\Column(type: 'text', nullable: true)]
-    private $session;
+    private ?string $session;
     #[ORM\ManyToOne(targetEntity: SongDifficulty::class, inversedBy: 'scores')]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
-    private $songDifficulty;
+    private SongDifficulty $songDifficulty;
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'scores')]
     #[ORM\JoinColumn(nullable: false)]
-    private $user;
+    private Utilisateur $user;
     #[ORM\Column(type: 'text', nullable: true)]
-    private $userRagnarock;
+    private ?string $userRagnarock;
     #[ORM\Column(type: 'float', nullable: true)]
-    private $weightedPP;
+    private ?float $weightedPP;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $playedAt = null;

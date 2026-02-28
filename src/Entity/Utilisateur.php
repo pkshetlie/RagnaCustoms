@@ -185,14 +185,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Tournament>
      */
-    #[ORM\ManyToMany(targetEntity: Tournament::class, mappedBy: 'players')]
-    private Collection $participatingEvents;
-
-    /**
-     * @var Collection<int, Tournament>
-     */
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Tournament::class)]
-    private Collection $ownedEvents;
+    private Collection $ownedTournaments;
 
     /**
      * @var Collection<int, TournamentPlayer>
@@ -224,7 +218,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->songsMapped = new ArrayCollection();
         $this->changelogs = new ArrayCollection();
         $this->participatingEvents = new ArrayCollection();
-        $this->ownedEvents = new ArrayCollection();
+        $this->ownedTournaments = new ArrayCollection();
         $this->tournamentPlayers = new ArrayCollection();
         $this->songDifficultyNotations = new ArrayCollection();
     }
@@ -1602,15 +1596,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Tournament>
      */
-    public function getOwnedEvents(): Collection
+    public function getOwnedTournaments(): Collection
     {
-        return $this->ownedEvents;
+        return $this->ownedTournaments;
     }
 
     public function addOwnedEvent(Tournament $ownedEvent): static
     {
-        if (!$this->ownedEvents->contains($ownedEvent)) {
-            $this->ownedEvents->add($ownedEvent);
+        if (!$this->ownedTournaments->contains($ownedEvent)) {
+            $this->ownedTournaments->add($ownedEvent);
             $ownedEvent->setOwner($this);
         }
 
@@ -1619,7 +1613,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeOwnedEvent(Tournament $ownedEvent): static
     {
-        if ($this->ownedEvents->removeElement($ownedEvent)) {
+        if ($this->ownedTournaments->removeElement($ownedEvent)) {
             // set the owning side to null (unless already changed)
             if ($ownedEvent->getOwner() === $this) {
                 $ownedEvent->setOwner(null);

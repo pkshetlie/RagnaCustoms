@@ -160,7 +160,7 @@ class SongsController extends AbstractController
 
         $filters = $searchService->baseSearchQb($qb, $request);
 
-        if ($request->get('oneclick_dl')) {
+        if ($request->query->get('oneclick_dl')) {
             $songs = $qb->getQuery()->getResult();
             $list = new SongTemporaryList();
 
