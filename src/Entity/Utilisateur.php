@@ -738,6 +738,28 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->scores;
     }
 
+    public function getAvgPerfectRanked(?int $lvl = null): ?int
+    {
+        $scores = $this->getScores();
+        $sum = 0;
+
+        if ($lvl) {
+            $scores = $scores->filter(function (Score $score) use ($lvl) {
+                return $score->getSongDifficulty()->getDifficultyRank()->getId() == $lvl && $score->getSongDifficulty()->isRanked();
+            });
+        }
+
+        if ($scores->count() === 0) {
+            return null;
+        }
+
+        foreach ($scores as $score) {
+            $sum += $score->getPercentageOfPerfects();
+        }
+
+        return (int)($sum / $scores->count());
+    }
+
     public function getAvgPerfect(?int $lvl = null): ?int
     {
         $scores = $this->getScores();

@@ -146,12 +146,22 @@
                 </div>
             </div>
             <hr/>
-            <h4 class="mt-3">Average perfects / diff</h4>
+            <h4 class="mt-3">Average perfects / diff (Global)</h4>
             <div class="d-flex justify-content-around">
                 {% for i in 1..10 %}
                     <div class="text-center" style="width:75px">
                         <div class="level-{{ i }}">lvl {{ i }}</div>
                         <div>{{ user.avgPerfect(i)?? "-" }}%</div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <h4 class="mt-3">Average perfects / diff (Ranked)</h4>
+            <div class="d-flex justify-content-around">
+                {% for i in 1..10 %}
+                    <div class="text-center" style="width:75px">
+                        <div class="level-{{ i }}">lvl {{ i }}</div>
+                        <div>{{ user.avgPerfectRanked(i)?? "-" }}%</div>
                     </div>
                 {% endfor %}
             </div>
