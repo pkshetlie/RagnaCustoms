@@ -6,16 +6,17 @@
         </div>
 
         <div class="text-center  col-md-12 pagination-rhokapa">
-            <a class="no-decoration ml-3 {% if app.request.query.get("ppage"~pagination.identifier,1) == 1 %}disabled{% endif %}" href="{{ url(app.request.query.get('_route'),app.request.query.get('_route_params')|merge(app.request.query.all)|merge({("ppage"~pagination.identifier):1})) }}">{{ "First"|trans }}</a>
-            <a class="no-decoration ml-3 {% if app.request.query.get("ppage"~pagination.identifier,1) == 1 %}disabled{% endif %}" href="{{ url(app.request.query.get('_route'),app.request.query.get('_route_params')|merge(app.request.query.all)|merge({("ppage"~pagination.identifier):pagination.current-1})) }}">{{ "Prev"|trans }}</a>
+
+            <a class="no-decoration ml-3 {% if app.request.query.get("ppage"~pagination.identifier,1) == 1 %}disabled{% endif %}" href="{{ url(app.request.attributes.get('_route'),app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge({("ppage"~pagination.identifier):1})) }}">{{ "First"|trans }}</a>
+            <a class="no-decoration ml-3 {% if app.request.query.get("ppage"~pagination.identifier,1) == 1 %}disabled{% endif %}" href="{{ url(app.request.attributes.get('_route'),app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge({("ppage"~pagination.identifier):pagination.current-1})) }}">{{ "Prev"|trans }}</a>
 
             {#            {% endif %}#}
 
 
             &nbsp;{{ macro_pagination.paginate(pagination,false) }}
 
-           <a class="no-decoration ml-3 {% if app.request.query.get("ppage"~pagination.identifier,1) >= pagination.pages %}disabled{% endif %}" href="{{ url(app.request.query.get('_route'),app.request.query.get('_route_params')|merge(app.request.query.all)|merge({("ppage"~pagination.identifier):pagination.current+1})) }}">{{ "Next"|trans }}</a>
-            <a class="no-decoration ml-3 {% if app.request.query.get("ppage"~pagination.identifier,1) >= pagination.pages %}disabled{% endif %}" href="{{ url(app.request.query.get('_route'),app.request.query.get('_route_params')|merge(app.request.query.all)|merge({("ppage"~pagination.identifier):pagination.pages})) }}">{{ "Last"|trans }}</a>
+           <a class="no-decoration ml-3 {% if app.request.query.get("ppage"~pagination.identifier,1) >= pagination.pages %}disabled{% endif %}" href="{{ url(app.request.attributes.get('_route'),app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge({("ppage"~pagination.identifier):pagination.current+1})) }}">{{ "Next"|trans }}</a>
+            <a class="no-decoration ml-3 {% if app.request.query.get("ppage"~pagination.identifier,1) >= pagination.pages %}disabled{% endif %}" href="{{ url(app.request.attributes.get('_route'),app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge({("ppage"~pagination.identifier):pagination.pages})) }}">{{ "Last"|trans }}</a>
 {#            {% endif %}#}
         </div>
     {% endif %}
