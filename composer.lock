@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "674351db1bdd4d48e0578804701dfeb0",
+    "content-hash": "85d420ba4448a4ae67bf25dad32ee2b5",
     "packages": [
         {
             "name": "api-platform/core",
@@ -3991,16 +3991,16 @@
         },
         {
             "name": "pkshetlie/pagination-bundle",
-            "version": "v2.0.14",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pkshetlie/pagination-bundle.git",
-                "reference": "88480860279cb3a490aab28fef45e08aa0d829c9"
+                "reference": "d58105388921d44c2054e5615addc238deeb034e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pkshetlie/pagination-bundle/zipball/88480860279cb3a490aab28fef45e08aa0d829c9",
-                "reference": "88480860279cb3a490aab28fef45e08aa0d829c9",
+                "url": "https://api.github.com/repos/pkshetlie/pagination-bundle/zipball/d58105388921d44c2054e5615addc238deeb034e",
+                "reference": "d58105388921d44c2054e5615addc238deeb034e",
                 "shasum": ""
             },
             "require": {
@@ -4036,9 +4036,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pkshetlie/pagination-bundle/issues",
-                "source": "https://github.com/pkshetlie/pagination-bundle/tree/v2.0.14"
+                "source": "https://github.com/pkshetlie/pagination-bundle/tree/3.0.0"
             },
-            "time": "2024-01-22T21:06:03+00:00"
+            "time": "2026-02-28T13:30:00+00:00"
         },
         {
             "name": "pkshetlie/phpfcrc",

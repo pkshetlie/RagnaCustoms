@@ -140,7 +140,7 @@ class FriendRequestController extends AbstractController
             ->andWhere($qb->expr()->orX('user.id = :user', 'friend.id  = :user'))
             ->setParameter('user', $user)
             ->orderBy('IF(user.id = :user, friend.username, user.username)', 'ASC');
-        $friends = $paginationService->setDefaults(50)->process($qb, $request);
+        $friends = $paginationService->setDefaults(50)->process($qb, $request->query);
 
         return $this->render('friend_request/index.html.twig', [
             'friends' => $friends,

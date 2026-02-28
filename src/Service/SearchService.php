@@ -5,17 +5,16 @@ namespace App\Service;
 use DateTime;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\InputBag;
 
 
 readonly class SearchService
 {
     public function __construct(private Security $security)
     {
-
     }
 
-    public function baseSearchQb(QueryBuilder $qb, Request $request): array
+    public function baseSearchQb(QueryBuilder $qb, InputBag $inputBag): array
     {
         $appliedFilters = [];
 
@@ -23,15 +22,15 @@ readonly class SearchService
             ->leftJoin('song.mappers', 'mapper')
             ->leftJoin('song.categoryTags', 'tag');
 
-        if ($request->get('only_ranked')) {
+        if ($inputBag->get('only_ranked')) {
             $qb->andWhere('song_difficulties.isRanked = true');
             $appliedFilters[] = 'only ranked';
         }
 
-        if ($request->get('downloads_filter_difficulties')) {
+        if ($inputBag->get('downloads_filter_difficulties')) {
             $qb->leftJoin('song_difficulties.difficultyRank', 'rank');
 
-            switch ($request->get('downloads_filter_difficulties')) {
+            switch ($inputBag->get('downloads_filter_difficulties')) {
                 case 1:
                     $qb->andWhere($qb->expr()->between('rank.level', 1, 3));
                     $appliedFilters[] = 'lvl 1 to 3';
@@ -52,7 +51,7 @@ readonly class SearchService
             }
         }
 
-        $categories = $request->get('downloads_filter_categories');
+        $categories = $inputBag->get('downloads_filter_categories');
 
         if ($categories != null) {
             foreach ($categories as $k => $v) {
@@ -63,8 +62,8 @@ readonly class SearchService
             $appliedFilters[] = 'categories spécifiques';
         }
 
-        if ($request->get('converted_maps')) {
-            switch ($request->get('converted_maps')) {
+        if ($inputBag->get('converted_maps')) {
+            switch ($inputBag->get('converted_maps')) {
                 case 1:
                     $qb->andWhere('(song.converted = false OR song.converted IS NULL)');
                     $appliedFilters[] = 'hide converted';
@@ -77,8 +76,8 @@ readonly class SearchService
             }
         }
 
-        if ($request->get('wip_maps')) {
-            switch ($request->get('wip_maps')) {
+        if ($inputBag->get('wip_maps')) {
+            switch ($inputBag->get('wip_maps')) {
                 case 1:
                     //with
                     $appliedFilters[] = 'display W.I.P.';
@@ -96,8 +95,8 @@ readonly class SearchService
             $qb->andWhere('song.wip != true');
         }
 
-        if ($request->get('downloads_submitted_date')) {
-            switch ($request->get('downloads_submitted_date')) {
+        if ($inputBag->get('downloads_submitted_date')) {
+            switch ($inputBag->get('downloads_submitted_date')) {
                 case 1:
                     $qb
                         ->andWhere('song.lastDateUpload >= :last7days')
@@ -119,8 +118,8 @@ readonly class SearchService
             }
         }
 
-        if ($request->get('mapped_for')) {
-            switch ($request->get('mapped_for')) {
+        if ($inputBag->get('mapped_for')) {
+            switch ($inputBag->get('mapped_for')) {
                 case 2:
                     $qb
                         ->andWhere('(song.bestPlatform LIKE :platform)')
@@ -136,7 +135,7 @@ readonly class SearchService
             }
         }
 
-        if ($request->get('not_downloaded', 0) > 0 && $this->security->isGranted('ROLE_USER')) {
+        if ($inputBag->get('not_downloaded', 0) > 0 && $this->security->isGranted('ROLE_USER')) {
             $qb->leftJoin('song.downloadCounters', 'download_counters')
                 ->addSelect('SUM(IF(download_counters.user = :user,1,0)) AS HIDDEN count_download_user')
                 ->andHaving('count_download_user = 0')
@@ -149,21 +148,21 @@ readonly class SearchService
             ->andWhere('(song.programmationDate <= :now AND song.programmationDate IS NOT NULL)')
             ->setParameter('now', new DateTime());
         //get the 'type' param (added for ajax search)
-        $type = $request->get('type');
+        $type = $inputBag->get('type');
         //check if this is an ajax request
         $ajaxRequest = $type == 'ajax';
         //remove the 'type' parameter so pagination does not break
         if ($ajaxRequest) {
-            $request->query->remove('type');
+            $inputBag->remove('type');
         }
 
-        if ($request->get('search')) {
-            $exp = explode(':', $request->get('search'));
+        if ($inputBag->get('search')) {
+            $exp = explode(':', $inputBag->get('search'));
 
             if (count($exp) == 1) {
-                if ($request->get('searchBy')) {
+                if ($inputBag->get('searchBy')) {
                     $exp[1] = $exp[0];
-                    $exp[0] = $request->get('searchBy');
+                    $exp[0] = $inputBag->get('searchBy');
                 }
             }
 
@@ -212,7 +211,7 @@ readonly class SearchService
                     }
                     break;
                 default:
-                    $searchString = explode(' ', $request->get('search'));
+                    $searchString = explode(' ', $inputBag->get('search'));
                     foreach ($searchString as $key => $search) {
                         $qb
                             ->andWhere(
@@ -231,8 +230,8 @@ readonly class SearchService
 
         $qb->andWhere('song.isDeleted != true');
 
-        $order = $request->get('order_sort', 'asc') == 'asc' ? 'asc' : 'desc';
-        switch ($request->get('order_by')) {
+        $order = $inputBag->get('order_sort', 'asc') == 'asc' ? 'asc' : 'desc';
+        switch ($inputBag->get('order_by')) {
             case 'downloads':
                 $qb->orderBy('song.downloads', $order);
                 break;

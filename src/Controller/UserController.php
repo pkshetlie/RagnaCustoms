@@ -148,7 +148,7 @@ class UserController extends AbstractController
             ->where('score.user = :user')
             ->setParameter('user', $user);
 
-        $filters = $searchService->baseSearchQb($qb, $request);
+        $filters = $searchService->baseSearchQb($qb, $request->query);
 
         switch ($request->get('order_by')) {
             case 'score':
@@ -162,7 +162,7 @@ class UserController extends AbstractController
                 break;
         }
 
-        $pagination = $paginationService->setDefaults(65)->process($qb, $request);
+        $pagination = $paginationService->setDefaults(65)->process($qb, $request->query);
 
         return $this->render('user/recently_played.html.twig', [
             'pagination' => $pagination,
@@ -200,7 +200,7 @@ class UserController extends AbstractController
                 break;
         }
 
-        $pagination = $paginationService->setDefaults(15)->process($qb, $request);
+        $pagination = $paginationService->setDefaults(15)->process($qb, $request->query);
 
         return $this->render('user/partial/song_played.html.twig', [
             'pagination' => $pagination,
@@ -280,7 +280,7 @@ class UserController extends AbstractController
             ->groupBy("song.id");
         $qb->leftJoin('song.songDifficulties', 'song_difficulties');
 
-        $searchService->baseSearchQb($qb, $request);
+        $searchService->baseSearchQb($qb, $request->query);
 
         if ($request->get('oneclick_dl')) {
             $songs = $qb->getQuery()->getResult();
@@ -296,7 +296,7 @@ class UserController extends AbstractController
             return $this->redirect("ragnac://list/".$list->getId());
         }
 
-        $songs = $pagination->setDefaults(15)->process($qb, $request);
+        $songs = $pagination->setDefaults(15)->process($qb, $request->query);
         $categories = $categoryRepository
             ->createQueryBuilder("c")
             ->leftJoin("c.songs", 's')
@@ -539,7 +539,7 @@ class UserController extends AbstractController
             'user',
             $user
         )->orderBy('s.playedAt', "desc");
-        $pagination = $paginationService->setDefaults(10)->process($qb, $request);
+        $pagination = $paginationService->setDefaults(10)->process($qb, $request->query);
 
         return $this->render('user/index.html.twig', [
             'controller_name' => 'UserController',
@@ -560,7 +560,7 @@ class UserController extends AbstractController
             ->where('d.user = :user')
             ->setParameter('user', $this->getUser())
             ->orderBy('d.updatedAt', "desc");
-        $pagination = $paginationService->setDefaults(50)->process($qb, $request);
+        $pagination = $paginationService->setDefaults(50)->process($qb, $request->query);
 
         return $this->render('user/downloads.html.twig', [
             'controller_name' => 'UserController',
@@ -708,7 +708,7 @@ class UserController extends AbstractController
                 break;
         }
 
-        $paginationNotPlayed = $paginationService->setDefaults(15)->process($qb, $request);
+        $paginationNotPlayed = $paginationService->setDefaults(15)->process($qb, $request->query);
 
         return $this->render('user/partial/ranking_stats.html.twig', [
             'paginationPlayed' => $paginationPlayed,

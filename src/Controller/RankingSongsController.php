@@ -42,8 +42,8 @@ class RankingSongsController extends AbstractController
 
         $qb->leftJoin('song.songDifficulties', 'song_difficulties');
 
-        $filters = $searchService->baseSearchQb($qb, $request);
-        $pagination = $paginationService->setDefaults($this->paginate)->process($qb, $request);
+        $filters = $searchService->baseSearchQb($qb, $request->query);
+        $pagination = $paginationService->setDefaults($this->paginate)->process($qb, $request->query);
 
         $categories = $categoryRepository
             ->createQueryBuilder("c")

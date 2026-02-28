@@ -68,7 +68,7 @@ class ScoreController extends AbstractController
             ->andWhere('rs.plateform = :vr')
             ->setParameter('vr', 'vr')
             ->orderBy("rs.totalPPScore", "DESC");
-        $scores = $pagination->setDefaults(25)->process($qb, $request);
+        $scores = $pagination->setDefaults(25)->process($qb, $request->query);
 
         $qb = $rankedScoresRepository->createQueryBuilder('rs')->leftJoin('rs.user', 'u')
             ->leftJoin('u.country', 'c')
@@ -77,7 +77,7 @@ class ScoreController extends AbstractController
             ->andWhere('rs.plateform = :flat')
             ->setParameter('flat', 'flat')
             ->orderBy("rs.totalPPScore", "DESC");
-        $scoresFlat = $pagination->setDefaults(25)->process($qb, $request);
+        $scoresFlat = $pagination->setDefaults(25)->process($qb, $request->query);
 
         $qb = $rankedScoresRepository->createQueryBuilder('rs')->leftJoin('rs.user', 'u')
             ->leftJoin('u.country', 'c')
@@ -86,7 +86,7 @@ class ScoreController extends AbstractController
             ->andWhere('rs.plateform = :flat')
             ->setParameter('flat', 'flat_okod')
             ->orderBy("rs.totalPPScore", "DESC");
-        $scoresFlatOkodo = $pagination->setDefaults(25)->process($qb, $request);
+        $scoresFlatOkodo = $pagination->setDefaults(25)->process($qb, $request->query);
 
         return $this->render('score/global_ranking.html.twig', [
             'scores' => $scores,
@@ -143,7 +143,7 @@ class ScoreController extends AbstractController
                 ->setParameter('friends', $friends);
         }
 
-        $scores = $pagination->setDefaults(25)->process($qb, $request);
+        $scores = $pagination->setDefaults(25)->process($qb, $request->query);
 
         if ($request->query->get('findme_flat', null)) {
             $scoreFlat = $scoreService->getGeneralLeaderboardPosition($this->getUser(), null, false);
@@ -169,7 +169,7 @@ class ScoreController extends AbstractController
                 ->setParameter('friends', $friends);
         }
 
-        $scoresFlat = $pagination->setDefaults(25)->process($qb, $request);
+        $scoresFlat = $pagination->setDefaults(25)->process($qb, $request->query);
 
         if ($request->query->get('findme_flat_okodo', null)) {
             $scoreFlat = $scoreService->getGeneralLeaderboardPosition($this->getUser(), null, false);
@@ -195,7 +195,7 @@ class ScoreController extends AbstractController
                 ->setParameter('friends', $friends);
         }
 
-        $scoresFlatOkodo = $pagination->setDefaults(25)->process($qb, $request);
+        $scoresFlatOkodo = $pagination->setDefaults(25)->process($qb, $request->query);
 
         return $this->render('score/global_ranking.html.twig', [
             'scores' => $scores,

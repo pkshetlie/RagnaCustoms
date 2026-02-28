@@ -37,7 +37,7 @@ class NotificationController extends AbstractController
             $this->getUser()
         )->orderBy('n.createdAt', 'DESC');
 
-        $notifications = $paginationService->process($qb, $request);
+        $notifications = $paginationService->process($qb, $request->query);
 
         return $this->render('notification/index.html.twig', [
             'notifications' => $notifications,

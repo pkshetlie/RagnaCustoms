@@ -80,7 +80,7 @@ class PlaylistController extends AbstractController
             );
         }
 
-        $songs = $paginationService->setDefaults(72)->process($qb, $request);
+        $songs = $paginationService->setDefaults(72)->process($qb, $request->query);
 
         return $this->render('playlist/show.html.twig', [
             'playlist' => $playlist,
@@ -158,7 +158,7 @@ class PlaylistController extends AbstractController
             );
         }
 
-        $songs = $paginationService->setDefaults(72)->process($qb, $request);
+        $songs = $paginationService->setDefaults(72)->process($qb, $request->query);
 
         return $this->render('playlist/edit.html.twig', [
             'form' => $form->createView(),

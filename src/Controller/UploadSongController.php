@@ -469,7 +469,7 @@ class UploadSongController extends AbstractController
             $qb->orderBy("IF(s.programmationDate IS NULL,s.createdAt,s.programmationDate)", "desc");
         }
 
-        $pagination = $paginationService->setDefaults(30)->process($qb, $request);
+        $pagination = $paginationService->setDefaults(30)->process($qb, $request->query);
 
         if ($pagination->isPartial()) {
             return $this->render('upload_song/partial/uploaded_song_row.html.twig', [

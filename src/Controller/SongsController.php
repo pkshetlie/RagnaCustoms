@@ -158,7 +158,7 @@ class SongsController extends AbstractController
 
         $qb->leftJoin('song.songDifficulties', 'song_difficulties');
 
-        $filters = $searchService->baseSearchQb($qb, $request);
+        $filters = $searchService->baseSearchQb($qb, $request->query);
 
         if ($request->query->get('oneclick_dl')) {
             $songs = $qb->getQuery()->getResult();
@@ -174,7 +174,7 @@ class SongsController extends AbstractController
             return $this->redirect("ragnac://list/".$list->getId());
         }
 
-        $pagination = $paginationService->setDefaults($this->paginate)->process($qb, $request);
+        $pagination = $paginationService->setDefaults($this->paginate)->process($qb, $request->query);
 
         $categories = $categoryRepository
             ->createQueryBuilder("c")
@@ -820,9 +820,9 @@ class SongsController extends AbstractController
             $scoresOKOD->andWhere('s.plateform IN (:type)')
                 ->setParameter('type', WanadevApiController::OKOD_PLATEFORM);
 
-            $pagination = $paginationService->setDefaults(30)->process($scores, $request);
-            $paginationFlat = $paginationService->setDefaults(30)->process($scoresFlat, $request);
-            $paginationOKOD = $paginationService->setDefaults(30)->process($scoresOKOD, $request);
+            $pagination = $paginationService->setDefaults(30)->process($scores, $request->query);
+            $paginationFlat = $paginationService->setDefaults(30)->process($scoresFlat, $request->query);
+            $paginationOKOD = $paginationService->setDefaults(30)->process($scoresOKOD, $request->query);
 
             $levels [] = [
                 "level" => $level,
