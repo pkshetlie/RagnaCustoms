@@ -398,7 +398,7 @@ class UserController extends AbstractController
         Request $request,
         TranslatorInterface $translator,
         EntityManagerInterface $entityManager,
-
+        MailerInterface $mailer
     ): Response {
         if (!$this->isGranted('ROLE_USER')) {
             $this->addFlash('danger', $translator->trans("You need an account!"));
@@ -493,8 +493,26 @@ class UserController extends AbstractController
             ->execute();
 
         // Delete user
+        $deletedUsername = $user->getUsername();
+        $deletedEmail = $user->getEmail();
         $entityManager->remove($user);
         $entityManager->flush();
+
+        // Send notification email to admin
+        $adminEmail = (new Email())
+            ->from('no-reply@ragnacustoms.com')
+            ->to('pierrick.pobelle@gmail.com')
+            ->subject('RagnaCustoms - User Account Deleted')
+            ->html(
+                sprintf(
+                    '<p>A user account has been deleted:</p><p>Username: %s<br>Email: %s<br>Date: %s</p>',
+                    htmlspecialchars($deletedUsername),
+                    htmlspecialchars($deletedEmail),
+                    date('Y-m-d H:i:s')
+                )
+            );
+
+        $mailer->send($adminEmail);
 
         // Logout user
         $request->getSession()->invalidate();
