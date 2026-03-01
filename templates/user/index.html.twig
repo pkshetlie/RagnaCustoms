@@ -80,6 +80,18 @@
               </div>
 
             </div>
+
+            <div class="mt-4">
+              <a href="#"
+                 data-username="{{ app.user.userIdentifier }}"
+                 data-delete-url="{{ url('user_delete') }}"
+                 id="delete-account"
+                 class="btn btn-danger btn-xxl"
+                 onclick="event.preventDefault();
+                     ">
+                <i class="fa fa-trash"></i> {{ "Delete account"|trans }}
+              </a>
+            </div>
           </div>
           <div class="col-md-4">
             <div id="public_informations">
@@ -106,4 +118,6 @@
     </div>
 
   </div>
+  
+  
 {% endblock %}

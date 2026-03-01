@@ -1,6 +1,6 @@
 {%- for author in authors -%}
   {%- if loop.index > 1 -%},&nbsp;{%- endif -%}
-  <a href="{{ url('song_library') }}?search=artist%3A{{ author|trim|url_encode }}">
+  <a href="{{ url('song_library') }}?search=artist%3A{{ author|trim|url_encode }}" {% if style is defined %}style="{{ style }}"{% endif %}>
     {{- author|trim -}}
   </a>
 {%- endfor -%}

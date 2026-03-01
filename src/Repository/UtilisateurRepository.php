@@ -45,7 +45,7 @@ class UtilisateurRepository extends AbstractEntityRepositoryWithTools implements
         }
 
         $user->setPassword($newHashedPassword);
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
     }
 }

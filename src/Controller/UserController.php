@@ -32,6 +32,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -390,6 +392,157 @@ class UserController extends AbstractController
             $this->addFlash('error', $e->getMessage());
         }
     }
+
+    #[Route(path: '/account/delete/finish', name: 'user_delete_email')]
+    public function deleteLastStep(
+        Request $request,
+        TranslatorInterface $translator,
+        EntityManagerInterface $entityManager,
+
+    ): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            $this->addFlash('danger', $translator->trans("You need an account!"));
+
+            return $this->redirectToRoute('home');
+        }
+
+        /** @var Utilisateur $user */
+        $user = $this->getUser();
+
+        if ($user->getSongsMapped()->count() > 0) {
+            if ($request->isMethod('POST')) {
+                $songs = $user->getSongsMapped()->filter(function(Song $song) use ($user) {
+                    return $song->getMappers()->count() == 1 && $song->getMappers()->first()->getId() == $user->getId();
+                });
+
+                if ($request->request->get('mapper_action') == 'keep') {
+                    $newMapperName = $request->request->get('mapper_name', $user->getMapperName());
+
+                    foreach ($songs as $song) {
+                        $song->setLevelAuthorName($newMapperName);
+                        $entityManager->persist($song);
+                    }
+
+                    $entityManager->flush();
+                } elseif ($request->request->get('mapper_action') == 'delete') {
+                    foreach ($songs as $song) {
+                        $entityManager->remove($song);
+                    }
+
+                    $entityManager->flush();
+                }
+            } else {
+                return $this->render('user/delete_account.html.twig', []);
+            }
+        }
+
+        // Delete all user-related data
+        // Delete notifications
+        $entityManager->createQuery('DELETE FROM App\Entity\Notification n WHERE n.user = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete scores
+        $entityManager->createQuery('DELETE FROM App\Entity\Score s WHERE s.user = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete score history
+        $entityManager->createQuery('DELETE FROM App\Entity\ScoreHistory sh WHERE sh.user = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete download counters
+        $entityManager->createQuery('DELETE FROM App\Entity\DownloadCounter dc WHERE dc.user = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete follow mapper relationships (as follower)
+        $entityManager->createQuery('DELETE FROM App\Entity\FollowMapper fm WHERE fm.user = :user OR fm.mapper = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete friend relationships (as user)
+        $entityManager->createQuery('DELETE FROM App\Entity\Friend f WHERE f.user = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete friend relationships (as friend)
+        $entityManager->createQuery('DELETE FROM App\Entity\Friend f WHERE f.friend = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete playlists
+        $entityManager->createQuery('DELETE FROM App\Entity\Playlist p WHERE p.user = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete ranked scores
+        $entityManager->createQuery('DELETE FROM App\Entity\RankedScores rs WHERE rs.user = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete votes
+        $entityManager->createQuery('DELETE FROM App\Entity\Vote v WHERE v.user = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete vote counters
+        $entityManager->createQuery('DELETE FROM App\Entity\VoteCounter vc WHERE vc.user = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        // Delete user
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        // Logout user
+        $request->getSession()->invalidate();
+        $this->addFlash('success', $translator->trans("Your account has been successfully deleted."));
+
+        return $this->redirectToRoute('home');
+
+
+    }
+
+    #[Route(path: '/account/delete', name: 'user_delete')]
+    public function delete(MailerInterface $mailer, TranslatorInterface $translator): Response
+    {
+        if (!$this->isGranted('ROLE_USER')) {
+            $this->addFlash('danger', $translator->trans("You need an account!"));
+
+            return $this->redirectToRoute('home');
+        }
+
+        /** @var Utilisateur $user */
+        $user = $this->getUser();
+
+        $deletionUrl = $this->generateUrl(
+            'user_delete_email',
+            ['token' => sha1($user->getApiKey())],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $email = (new Email())
+            ->from('no-reply@ragnacustoms.com')
+            ->to($user->getEmail())
+            ->subject('RagnaCustoms - Account Deletion Confirmation')
+            ->html(
+                $this->renderView('emails/contents/delete_account.html.twig', [
+                    'user' => $user,
+                    'confirmationUrl' => $deletionUrl,
+                    'year' => date('Y'),
+                    'title' => 'RagnaCustoms - Account Deletion',
+                ])
+            );
+
+        $mailer->send($email);
+
+        $this->addFlash('success', $translator->trans('An email has been sent to confirm your account deletion.'));
+
+        return $this->redirectToRoute('user');
+    }
+
 
     #[Route(path: '/account', name: 'user')]
     public function index(

@@ -90,7 +90,7 @@ Recently played {{ parent() }}
                                 data-tags="false" name="downloads_filter_categories[]"
                                 class="form-control form-control-sm tom-select" multiple="true">
                             {% for category in categories %}
-                                <option {% if category.id in app.request.query.get('downloads_filter_categories') %}selected="selected"{% endif %}
+                                <option {% if category.id in app.request.query.all('downloads_filter_categories') %}selected="selected"{% endif %}
                                         value="{{ category.id }}">{{ category.label }}</option>
                             {% endfor %}
                         </select>

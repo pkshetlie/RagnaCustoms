@@ -3,9 +3,13 @@
 namespace App\Controller;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Repository\SongRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
 
@@ -19,5 +23,4 @@ class HomePageController extends AbstractController
             'controller_name' => 'HomePageController',
         ]);
     }
-
 }

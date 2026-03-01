@@ -1,10 +1,10 @@
 <div class="mapper">
     {% for mapper in song.mappers %}
         {%- if loop.index > 1 -%},&nbsp;{%- endif -%}
-        <a href="{{ url('mapper_profile', {username:mapper.username}) }}">
+        <a href="{{ url('mapper_profile', {username:mapper.username}) }}" {% if style is defined %}style="{{ style }}"{% endif %}>
             {{- membershipService.displayMappername(mapper, false)|raw -}}
         </a>
     {%- else -%}
-            {{ song.levelAuthorName }}
+            <span>{{ song.levelAuthorName }}</span>
     {%- endfor %}
 </div>

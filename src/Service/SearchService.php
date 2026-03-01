@@ -51,7 +51,7 @@ readonly class SearchService
             }
         }
 
-        $categories = $inputBag->get('downloads_filter_categories');
+        $categories = $inputBag->all('downloads_filter_categories');
 
         if ($categories != null) {
             foreach ($categories as $k => $v) {

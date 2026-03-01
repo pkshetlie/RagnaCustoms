@@ -1,0 +1,144 @@
+{%  extends 'emails/base.html.twig' %}
+
+{% block content %}
+  <!-- INTRO -->
+  <tr>
+    <td align="center" style="padding:40px 30px;">
+      <h2 style="color:#ffffff;margin:0 0 10px 0;font-size:22px;">
+        This Week's Featured Tracks
+      </h2>
+      <p style="color:#c7c7e0;font-size:15px;line-height:1.6;margin:0;">
+        These are the songs created by our community of mappers this week.<br>
+        Download them now and bring new rhythm to your next raid!
+      </p>
+    </td>
+  </tr>
+
+  <!-- SONG LIST -->
+
+  <tr>
+    <td style="padding:0 30px 30px 30px;">
+
+      <table width="100%" cellpadding="0" cellspacing="0">
+        {% for song in songs %}
+          <tr>
+            <td style="padding:8px 0;border-bottom:1px solid #2a2a3d;">
+
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="13%" valign="top">
+                    <a href="https://ragnacustoms.com{{ path('song_detail',{slug:song.slug}) }}">
+                      <img src="https://ragnacustoms.com{{ song.cover }}"
+                           width="60"
+                           height="60"
+                           style="border-radius:6px;display:block;" />
+                    </a>
+                  </td>
+
+                  <!-- SONG INFOS -->
+
+                  <td valign="top" width="47%" >
+
+                    <!-- TITLE -->
+
+                    <p style="margin:0;font-size:12px;color:#ffffff;font-weight:bold;padding-left:0;">
+                      <a href="https://ragnacustoms.com{{ path('song_detail',{slug:song.slug}) }}" style="color:#ffc107;text-decoration:none;">
+                        {{ song|raw }}
+                      </a>
+                    </p>
+
+                    <!-- ARTISTS -->
+
+                    <p style="margin:4px 0 0 0;font-size:10px;color:#a0a0c0;">
+                      {% include 'songs/partial/artists.html.twig' with {song : song, style: 'color:#fff;font-size:12px;'} %}
+                    </p>
+                  </td>
+                  <td width="25%" >
+                    <!-- MAPPERS -->
+                    {% include 'songs/partial/mappers.html.twig' with {song:song, style:'font-size:11px;'} %}
+
+
+                    <!-- LEVELS -->
+
+                    <table cellpadding="0" cellspacing="0" style="margin-top:3px;">
+                      <tr>
+                        {% for diff in song.songDifficulties %}
+                          <td style="padding-right:4px;">
+
+                            <table width="15" height="15" cellpadding="0" cellspacing="0"
+                                   style="border-radius:50%;background:#{{ diff.difficultyRank.color }};text-align:center;">
+                              <tr>
+                                <td style="font-size:10px;color:#ffffff;font-weight:bold;line-height:15px;">
+                                  {{ diff.difficultyRank.level }}
+                                </td>
+                              </tr>
+                            </table>
+
+                          </td>
+                        {% endfor %}
+                      </tr>
+                    </table>
+
+                  </td>
+
+                  <!-- DOWNLOAD BUTTON -->
+
+                  <td width="15%" align="right" valign="middle">
+                    <a href="ragnac://install/{{ song.id }}"
+                       style="
+background:#32b027;
+color:#ffffff;
+text-decoration:none;
+padding:4px 6px;
+border-radius:5px;
+font-size:11px;
+display:inline-block;
+">
+                      1 click</a>
+                    <a href="https://ragnacustoms.com{{ path('song_direct_download',{id:song.id}) }}"
+                       style="
+background:#4b9ce2;
+color:#ffffff;
+text-decoration:none;
+padding:4px 6px;
+border-radius:5px;
+font-size:11px;
+display:inline-block;
+">
+                      zip </a>
+                  </td>
+
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+        {% endfor %}
+
+
+      </table>
+
+    </td>
+  </tr>
+
+  <!-- CTA -->
+
+  <tr>
+    <td align="center" style="padding:10px 30px 40px 30px;">
+      <a href="https://ragnacustoms.com{{ path('song_library') }}"
+         style="
+background:#6c5ce7;
+color:#ffffff;
+text-decoration:none;
+padding:14px 28px;
+border-radius:6px;
+display:inline-block;
+font-size:15px;
+font-weight:bold;
+">
+        Browse All Songs
+      </a>
+    </td>
+  </tr>
+{% endblock %}

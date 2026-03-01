@@ -28,6 +28,7 @@ class MapperController extends AbstractController
             ->groupBy("u.id");
 
         $mappers = $paginationService->setDefaults(50)->process($qb, $request->query);
+
         return $this->render('mapper/index.html.twig', [
             'mappers' => $mappers,
         ]);
@@ -45,9 +46,11 @@ class MapperController extends AbstractController
     public function changeLocale(Request $request, string $locale, SessionInterface $session)
     {
         $session->set('_locale', $locale);
+
         if ($request->headers->get('referer') == null) {
             return $this->redirectToRoute('home');
         }
+
         return $this->redirect($request->headers->get('referer'));
     }
 }

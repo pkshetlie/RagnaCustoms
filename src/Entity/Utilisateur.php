@@ -36,7 +36,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $emailPreference = null;
     #[ORM\Column(type: 'text', nullable: true)]
-    private $NotificationPreference;
+    private $notificationPreference;
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $apiKey;
     #[ORM\Column(type: 'boolean', nullable: true)]
@@ -1024,12 +1024,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getNotificationPreference(): ?string
     {
-        return $this->NotificationPreference;
+        return $this->notificationPreference;
     }
 
-    public function setNotificationPreference(string $NotificationPreference): self
+    public function setNotificationPreference(string $notificationPreference): self
     {
-        $this->NotificationPreference = $NotificationPreference;
+        $this->notificationPreference = $notificationPreference;
 
         return $this;
     }
@@ -1071,7 +1071,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->notifications;
     }
 
-    public function hasEmailPreference(ENotification $event): bool
+    public function hasEmailPreference(EEmail $event): bool
     {
         return in_array($event, $this->getEmailPreferences());
     }

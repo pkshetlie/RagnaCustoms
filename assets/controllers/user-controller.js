@@ -3,6 +3,7 @@ import {average} from 'color.js'
 import 'jquery'
 import Chart from 'chart.js/auto';
 import {getRelativePosition} from 'chart.js/helpers';
+const Swal = require('sweetalert2/dist/sweetalert2.js');
 
 require('../js/base');
 require('../js/plugins/ajax_link');
@@ -21,6 +22,38 @@ export default class extends Controller {
                 //$("body").attr('style', " background: radial-gradient(100% 100% at 0% 0%, rgba(" + color[0] + ", " + color[1] + ", " + color[2] + ", 0.2) 0%, rgba(0, 0, 0, 0) 100%), #2B2B2B;");
             });
         }
+
+        $("#delete-account").on('click', function (e) {
+            const username = $(this).data('username');
+            const deleteUrl = $(this).data('delete-url');
+
+            e.preventDefault();
+            Swal.fire({
+                title: 'Delete Account',
+                html: 'Please enter your username to confirm<br><br><small class="small"><span style="color: #982525;">⚠️ You will receive an email with a link to finalize the account deletion.</span></small>',
+                input: 'text',
+                inputPlaceholder: username,
+                showCancelButton: true,
+                confirmButtonText: 'Send Email',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#ff0000',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to enter your username';
+                    }
+
+                    if (value !== username) {
+                        return 'Username does not match';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = deleteUrl;
+                }
+            });
+
+        })
+
         $("#utilisateur_usernameColor").on('input', function () {
             $(".username span").css({"color": $(this).val()});
         });
