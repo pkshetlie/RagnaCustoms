@@ -11,10 +11,6 @@
 
 {% block body %}
   <div {{ stimulus_controller('leaderboard') }} id="leaderboard" class="container">
-    <div id="countdown-banner" class="alert alert-warning text-center mt-3" role="alert">
-      <strong>⚠️ Score Reset Notice:</strong> PP scores were reset on March 1st, 2026.
-    </div>
-
     <div class="text-center mt-4 mb-3">
       <a href="{{ url('song_library', {only_ranked: 1}) }}" class="btn btn-primary btn-lg">
         <i class="fas fa-trophy"></i> {{ "View Ranked Songs"|trans }}
@@ -177,7 +173,6 @@
                     {% endfor %}
                 </table>
                 {% include 'widget/paginate.html.twig' with {pagination:scoresFlatOkodo} %}
-
             </div>
         </div>
         <div class="row mt-5">
@@ -185,6 +180,9 @@
                 Leaderboards show standings of all RangaCustoms players that have <a href="{{ url('getting_started') }}#howToUploadScores" target="_blank">enabled sending scores</a> and played at least one Ranked map.
                 You can find the details of how the ranking system works on the <a href="{{ url('ranking_system') }}" target="_blank">Ranking system</a> page.
             </div>
+          <div>
+            <strong>⚠️ Score Reset Notice:</strong> PP scores were reset on March 1st, 2026.
+          </div>
         </div>
     </div>
 {% endblock %}
