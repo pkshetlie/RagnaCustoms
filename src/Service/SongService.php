@@ -287,11 +287,10 @@ readonly class SongService
             ->andWhere('s.authorName = :authorName')
             ->andWhere('m.id IN (:users)')
             ->setMaxResults(1)
-            ->setParameters(new ArrayCollection([
-                'name' => $songName,
-                'authorName' => $authorName,
-                'users' => $song->getMappers(),
-            ]))->getQuery()->getOneOrNullResult();
+            ->setParameter('name', $songName)
+            ->setParameter('authorName', $authorName)
+            ->setParameter('users', $song->getMappers())
+           ->getQuery()->getOneOrNullResult();
 
         if ($existingSong != null && $existingSong->getId() !== $song->getId() && $new === true) {
             throw new Exception("You already uploaded this song, please edit the last upload.");
