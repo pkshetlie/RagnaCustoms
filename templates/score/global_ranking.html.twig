@@ -14,6 +14,14 @@
     <div id="countdown-banner" class="alert alert-warning text-center mt-3" role="alert">
       <strong>⚠️ Score Reset Notice:</strong> PP scores were reset on March 1st, 2026.
     </div>
+
+    <div class="text-center mt-4 mb-3">
+      <a href="{{ url('song_library', {only_ranked: 1}) }}" class="btn btn-primary btn-lg">
+        <i class="fas fa-trophy"></i> {{ "View Ranked Songs"|trans }}
+      </a>
+    </div>
+
+
     <div class="row mt-5">
             <div class="col-lg-4">
                 {% if is_granted('ROLE_USER') %}

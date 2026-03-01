@@ -519,8 +519,6 @@ class UserController extends AbstractController
         $this->addFlash('success', $translator->trans("Your account has been successfully deleted."));
 
         return $this->redirectToRoute('home');
-
-
     }
 
     #[Route(path: '/account/delete', name: 'user_delete')]
