@@ -23,6 +23,6 @@ framework:
     php_errors:
         log: true
     profiler:
-        collect_serializer_data: true
+        collect_serializer_data: false
     property_info:
         with_constructor_extractor: true
