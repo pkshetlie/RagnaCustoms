@@ -73,11 +73,13 @@ class EmailWeeklySongsSenderCommand extends Command
             $users = $this->utilisateurRepository->createQueryBuilder('u')
                 ->orderBy('u.id', 'ASC')
                 ->where('u.isVerified = true')
+                ->andWhere('u.roles LIKE \'%ROLE_PREMIUM_%\'')
                 ->setFirstResult($page * $count)
                 ->setMaxResults($count)->getQuery()->getResult();
 
             if ($users) {
                 $emailsSent = 0;
+
                 foreach ($users as $user) {
                     if ($user->hasEmailPreference(EEmail::General_new_map)) {
                         $email = new Email()
