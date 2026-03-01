@@ -73,6 +73,7 @@ class RankingScoreService
             ->leftJoin('score.songDifficulty', 'diff')
             ->where('score.user = :user')
             ->andWhere('diff.isRanked = true')
+            ->andWhere('score.rawPP IS NOT NULL')
             ->setParameter('user', $user)
             ->andWhere('score.plateform IS NOT NULL');
 
