@@ -40,6 +40,14 @@ class EmailWeeklySongsSenderCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        // Only send emails on Sunday
+        if ((new DateTime())->format('w') !== '0') {
+            $output->writeln('Not Sunday, skipping email send.');
+
+            return Command::SUCCESS;
+        }
+
+
         $emailBody = $this->twig->render('emails/contents/weekly.html.twig', [
             'songs' => $this->songRepository->createQueryBuilder('s')
                 ->where('s.isDeleted != true')
