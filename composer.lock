@@ -3991,16 +3991,16 @@
         },
         {
             "name": "pkshetlie/pagination-bundle",
-            "version": "3.0.0",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pkshetlie/pagination-bundle.git",
-                "reference": "d58105388921d44c2054e5615addc238deeb034e"
+                "reference": "51233d95eb76b9ded40df2c730dc3044b342398c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pkshetlie/pagination-bundle/zipball/d58105388921d44c2054e5615addc238deeb034e",
-                "reference": "d58105388921d44c2054e5615addc238deeb034e",
+                "url": "https://api.github.com/repos/pkshetlie/pagination-bundle/zipball/51233d95eb76b9ded40df2c730dc3044b342398c",
+                "reference": "51233d95eb76b9ded40df2c730dc3044b342398c",
                 "shasum": ""
             },
             "require": {
@@ -4036,9 +4036,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pkshetlie/pagination-bundle/issues",
-                "source": "https://github.com/pkshetlie/pagination-bundle/tree/3.0.0"
+                "source": "https://github.com/pkshetlie/pagination-bundle/tree/3.0.1"
             },
-            "time": "2026-02-28T13:30:00+00:00"
+            "time": "2026-02-28T18:43:22+00:00"
         },
         {
             "name": "pkshetlie/phpfcrc",
@@ -11904,11 +11904,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.12.32",
+            "version": "1.12.33",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/2770dcdf5078d0b0d53f94317e06affe88419aa8",
-                "reference": "2770dcdf5078d0b0d53f94317e06affe88419aa8",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/37982d6fc7cbb746dda7773530cda557cdf119e1",
+                "reference": "37982d6fc7cbb746dda7773530cda557cdf119e1",
                 "shasum": ""
             },
             "require": {
@@ -11953,7 +11953,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-30T10:16:31+00:00"
+            "time": "2026-02-28T20:30:03+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
