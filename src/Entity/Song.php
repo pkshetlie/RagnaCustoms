@@ -817,9 +817,11 @@ class Song
     public function hasCover(): bool
     {
         $cover = "/covers/".$this->getId().'.webp';
+
         if (!file_exists(__DIR__."/../../public/".$cover)) {
             return false;
         }
+
         return true;
     }
 
@@ -831,14 +833,22 @@ class Song
     public function getCover(): string
     {
         $cover = "/covers/".$this->getId().".webp";
+
         if (!file_exists(__DIR__."/../../public/".$cover)) {
             $cover = $this->getPlaceholder();
         }
+
         return $cover;
     }
 
     public function getPlaceholder(): string
     {
+        $cover = "/covers/".$this->getCoverImageFileName();
+
+        if (!file_exists(__DIR__."/../../public/".$cover)) {
+            return $cover;
+        }
+
         return "/apps/logo.webp";
     }
 

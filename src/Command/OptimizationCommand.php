@@ -21,6 +21,7 @@ class OptimizationCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $cdir = scandir($this->kernel->getProjectDir()."/public/covers");
+
         foreach ($cdir as $key => $value) {
             if ($value == "." || $value == "..") {
                 continue;
