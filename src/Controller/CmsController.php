@@ -54,4 +54,11 @@ class CmsController extends AbstractController
         ]);
     }
 
+    #[Route(path: '/ranking/form', name: 'ranking_form')]
+    public function rankingForm(): Response
+    {
+        return $this->render('cms/ranking_form.html.twig', [
+        ]);
+    }
+
 }

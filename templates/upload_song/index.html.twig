@@ -8,6 +8,8 @@
 
 {% block body %}
     <div {{ stimulus_controller('song-upload') }}  class="container-fluid">
+
+
         <div id="song-list" class="row mt-3">
             <div class="col-md-2">
                 {% include 'user/partial/_left_part_user.html.twig' %}
@@ -16,6 +18,9 @@
                 <h2 class="">
                     {{ "Uploads"|trans }}
                 </h2>
+                <div class="p-2 text-center mt-3" style="border: 2px solid #FFF;">
+                    Don't hesitate to submit your map for the ranking by using the following <a href="{{ path('ranking_form') }}" class="alert-link">form</a>
+                </div>
                 <table class="featured-table-lg table table-sm">
                     <tr>
                         <th><a href="{{ url(app.request.attributes.get('_route'),app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge({"order_by":"s.name", "order_sort":app.request.query.get('order_sort', 'asc') == 'asc'? 'desc':'asc'})) }}"
