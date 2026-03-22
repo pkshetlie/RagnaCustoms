@@ -257,18 +257,25 @@ readonly class SearchService
     public function baseSearchQb(QueryBuilder $qb, InputBag $inputBag): array
     {
         $appliedFilters = [];
-        $qb->leftJoin('song.songDifficulties', 'song_difficulties');
 
-        $qb
-            ->leftJoin('song.mappers', 'mapper')
-            ->leftJoin('song.categoryTags', 'tag');
+
+
+        $joinDiff = false;
+        $joinMapper = false;
+        $joinTag = false;
 
         if ($inputBag->get('only_ranked')) {
+            $qb->leftJoin('song.songDifficulties', 'song_difficulties');
+            $joinDiff = true;
             $qb->andWhere('song_difficulties.isRanked = true');
             $appliedFilters[] = 'only ranked';
         }
 
         if ($inputBag->get('downloads_filter_difficulties')) {
+            if (!$joinDiff) {
+                $qb->leftJoin('song.songDifficulties', 'song_difficulties');
+            }
+
             $qb->leftJoin('song_difficulties.difficultyRank', 'rank');
 
             switch ($inputBag->get('downloads_filter_difficulties')) {
@@ -295,6 +302,10 @@ readonly class SearchService
         $categories = $inputBag->all('downloads_filter_categories');
 
         if ($categories != null) {
+            $qb
+                ->leftJoin('song.categoryTags', 'tag');
+            $joinTag = true;
+
             foreach ($categories as $k => $v) {
                 $qb
                     ->andWhere('tag.id = :tag'.$k)
@@ -413,6 +424,8 @@ readonly class SearchService
                 case 'mapper':
                     if (count($exp) >= 2) {
                         $qb
+                            ->leftJoin('song.mappers', 'mapper');
+                        $qb
                             ->andWhere('(mapper.mapper_name LIKE :search_string)')
                             ->setParameter('search_string', '%'.$exp[1].'%');
                     }
@@ -425,6 +438,12 @@ readonly class SearchService
 //                    break;
                 case 'genre':
                     if (count($exp) >= 2) {
+                        if(!$joinTag) {
+                            $qb
+                                ->leftJoin('song.categoryTags', 'tag');
+                            $joinTag = true;
+                        }
+
                         $qb
                             ->andWhere('(tag.label LIKE :search_string)')
                             ->setParameter('search_string', '%'.$exp[1].'%');
@@ -453,6 +472,17 @@ readonly class SearchService
                     break;
                 default:
                     $searchString = explode(' ', $inputBag->get('search'));
+                    if ($joinMapper == false) {
+                        $qb
+                            ->leftJoin('song.mappers', 'mapper');
+                    }
+
+                    if(!$joinTag) {
+                        $qb
+                            ->leftJoin('song.categoryTags', 'tag');
+                        $joinTag = true;
+                    }
+
                     foreach ($searchString as $key => $search) {
                         $qb
                             ->andWhere(
