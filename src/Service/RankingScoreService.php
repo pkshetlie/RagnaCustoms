@@ -157,8 +157,7 @@ class RankingScoreService
             ->where('s.user = :user')
             ->andWhere('s.rawPP IS NOT NULL')
             ->andWhere('s.rawPP != 0')
-            ->setParameter('user', $user)
-            ->groupBy('s.user');
+            ->setParameter('user', $user);
 
         if ($isVr) {
             $qb->andWhere('s.plateform IN (:vr)')
