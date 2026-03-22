@@ -93,6 +93,10 @@ class ApiController extends AbstractController
     #[Route(path: '/api/search/{term}', name: 'api_search')]
     public function index(SongRepository $songRepository, ?string $term = null,): Response
     {
+        if (strlen($term) < 3) {
+            return new Response("Search term is too short", 400);
+        }
+
         $qb = $songRepository
             ->createQueryBuilder('s')->where('(s.programmationDate <= :now  )')
             ->setParameter('now', (new \DateTime()))

@@ -35,8 +35,6 @@ class SongPartialController extends AbstractController
 
     public function lastPlayed(SongRepository $songRepository, EntityManagerInterface $em): Response
     {
-
-
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('id', 'id');
 
