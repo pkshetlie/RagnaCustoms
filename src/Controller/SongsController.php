@@ -153,7 +153,6 @@ class SongsController extends AbstractController
         $qb = $doctrine
             ->getRepository(Song::class)
             ->createQueryBuilder('song')
-            ->addSelect('song.voteUp - song.voteDown AS HIDDEN rating')
             ->groupBy("song.id");
 
         // $qb->leftJoin('song.songDifficulties', 'song_difficulties');

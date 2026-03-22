@@ -31,9 +31,7 @@
                         <th>{{ "Difficulties"|trans }}</th>
                         <th></th>
                         <th>{{ "Mapper"|trans }}</th>
-                        <th><a href="{{ url(app.request.attributes.get('_route'),app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge({"order_by":"rating", "order_sort":app.request.query.get('order_sort', 'asc') == 'asc'? 'desc':'asc'})) }}"
-                               class="{% if app.request.query.get('order_by') == "rating" %}active{% endif %} {% if app.request.query.get('order_sort', 'asc') == "asc" %}sort-asc{% else %}sort-desc{% endif %}">
-                                {{ "Votes"|trans }}</a></th>
+                        <th>{{ "Votes"|trans }</th>
                         <th>{{ "Rating"|trans }}</th>
                         <th class="text-right">
                             <a href="{{ url(app.request.attributes.get('_route'),app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge({"order_by":"s.lastDateUpload", "order_sort":app.request.query.get('order_sort', 'asc') == 'asc'? 'desc':'asc'})) }}"

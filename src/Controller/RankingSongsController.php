@@ -37,7 +37,6 @@ class RankingSongsController extends AbstractController
         $qb = $doctrine
             ->getRepository(Song::class)
             ->createQueryBuilder('song')
-            ->addSelect('song.voteUp - song.voteDown AS HIDDEN rating')
             ->groupBy("song.id");
 
         $filters = $searchService->baseSearchQb($qb, $request->query);

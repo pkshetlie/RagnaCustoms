@@ -278,7 +278,6 @@ class UserController extends AbstractController
             ->andWhere('mapper.id = :user')
             ->setParameter('now', new DateTime())
             ->setParameter('user', $utilisateur)
-            ->addSelect('song.voteUp - song.voteDown AS HIDDEN rating')
             ->groupBy("song.id");
 
         $searchService->baseSearchQb($qb, $request->query);

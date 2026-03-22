@@ -245,9 +245,6 @@ readonly class SearchService
             case 'bpm':
                 $qb->orderBy('song.beatsPerMinute', $order);
                 break;
-            case 'rating':
-                $qb->orderBy('rating', $order);
-                break;
             default:
                 $qb->orderBy('song.lastDateUpload', 'DESC');
                 break;
@@ -258,7 +255,6 @@ readonly class SearchService
 
     public function baseSearchQb(QueryBuilder $qb, InputBag $inputBag): array
     {
-        return [];
         $appliedFilters = [];
         $qb->leftJoin('song.songDifficulties', 'song_difficulties');
 
@@ -488,9 +484,6 @@ readonly class SearchService
                 break;
             case 'bpm':
                 $qb->orderBy('song.beatsPerMinute', $order);
-                break;
-            case 'rating':
-                $qb->orderBy('rating', $order);
                 break;
             default:
                 $qb->orderBy('song.lastDateUpload', 'DESC');

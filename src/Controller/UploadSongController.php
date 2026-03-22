@@ -452,7 +452,6 @@ class UploadSongController extends AbstractController
 
         if ($request->get('order_by') && in_array($request->get('order_by'), [
                 's.programmationDate',
-                'rating',
                 's.downloads',
                 's.name',
             ], true)) {
