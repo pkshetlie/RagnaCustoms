@@ -67,7 +67,7 @@ class ScoreController extends AbstractController
             ->setParameter('country', $country)
             ->andWhere('rs.plateform = :vr')
             ->setParameter('vr', 'vr')
-            ->orderBy("rs.totalPPScore", "DESC");
+            ->orderBy("rs.totalPpScore", "DESC");
         $scores = $pagination->setDefaults(25)->process($qb, $request->query);
 
         $qb = $rankedScoresRepository->createQueryBuilder('rs')->leftJoin('rs.user', 'u')
@@ -76,7 +76,7 @@ class ScoreController extends AbstractController
             ->setParameter('country', $country)
             ->andWhere('rs.plateform = :flat')
             ->setParameter('flat', 'flat')
-            ->orderBy("rs.totalPPScore", "DESC");
+            ->orderBy("rs.totalPpScore", "DESC");
         $scoresFlat = $pagination->setDefaults(25)->process($qb, $request->query);
 
         $qb = $rankedScoresRepository->createQueryBuilder('rs')->leftJoin('rs.user', 'u')
@@ -85,7 +85,7 @@ class ScoreController extends AbstractController
             ->setParameter('country', $country)
             ->andWhere('rs.plateform = :flat')
             ->setParameter('flat', 'flat_okod')
-            ->orderBy("rs.totalPPScore", "DESC");
+            ->orderBy("rs.totalPpScore", "DESC");
         $scoresFlatOkodo = $pagination->setDefaults(25)->process($qb, $request->query);
 
         return $this->render('score/global_ranking.html.twig', [
@@ -140,7 +140,7 @@ class ScoreController extends AbstractController
         $qb = $rankedScoresRepository->createQueryBuilder('rs')
             ->where('rs.plateform = :vr')
             ->setParameter("vr", 'vr')
-            ->orderBy("rs.totalPPScore", "DESC");
+            ->orderBy("rs.totalPpScore", "DESC");
 
         if ($request->query->get('only_friend_of_mine') && $this->getUser()) {
             $qb->andWhere('rs.user IN (:friends)')
@@ -166,7 +166,7 @@ class ScoreController extends AbstractController
         $qb = $rankedScoresRepository->createQueryBuilder('rs')
             ->where('rs.plateform = :flat')
             ->setParameter('flat', 'flat')
-            ->orderBy('rs.totalPPScore', 'DESC');
+            ->orderBy('rs.totalPpScore', 'DESC');
 
         if ($request->query->get('only_friend_of_mine') && $this->getUser()) {
             $qb->andWhere('rs.user IN (:friends)')
@@ -192,7 +192,7 @@ class ScoreController extends AbstractController
         $qb = $rankedScoresRepository->createQueryBuilder('rs')
             ->where('rs.plateform = :flat')
             ->setParameter('flat', 'flat_okod')
-            ->orderBy('rs.totalPPScore', 'DESC');
+            ->orderBy('rs.totalPpScore', 'DESC');
 
         if ($request->query->get('only_friend_of_mine')) {
             $qb->andWhere('rs.user IN (:friends)')

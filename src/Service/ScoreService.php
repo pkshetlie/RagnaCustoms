@@ -116,7 +116,7 @@ class ScoreService
             }
         }
 
-        $qb->orderBy('r.totalPPScore', 'Desc');
+        $qb->orderBy('r.totalPpScore', 'Desc');
         $mine = $qb->getQuery()
             ->setFirstResult(0)
             ->setMaxResults(1)
@@ -128,7 +128,7 @@ class ScoreService
         $qb2 = $this->em->getRepository(RankedScores::class)
             ->createQueryBuilder('s')
             ->select('s.id')
-            ->where('s.totalPPScore > :my_score')
+            ->where('s.totalPpScore > :my_score')
             ->andWhere('s.user != :me')
             ->setParameter('my_score', $mine->getTotalPPScore())
             ->setParameter('me', $user)

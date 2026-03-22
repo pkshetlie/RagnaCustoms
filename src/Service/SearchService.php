@@ -243,6 +243,7 @@ readonly class SearchService
                 $qb->orderBy('song.name', $order);
                 break;
             case 'bpm':
+
                 $qb->orderBy('song.beatsPerMinute', $order);
                 break;
             default:
