@@ -126,11 +126,15 @@ class ScoreController extends AbstractController
             }
         }
 
-        $friends = [$this->getUser()];
-        $friendRequests = $friendRepository->getMine($this->getUser());
+        $friends = [];
 
-        foreach ($friendRequests as $friendRequest) {
-            $friends[] = $friendRequest->getOther($this->getUser());
+        if ($this->getUser()) {
+            $friends = [$this->getUser()];
+            $friendRequests = $friendRepository->getMine($this->getUser());
+
+            foreach ($friendRequests as $friendRequest) {
+                $friends[] = $friendRequest->getOther($this->getUser());
+            }
         }
 
         $qb = $rankedScoresRepository->createQueryBuilder('rs')
@@ -138,14 +142,14 @@ class ScoreController extends AbstractController
             ->setParameter("vr", 'vr')
             ->orderBy("rs.totalPPScore", "DESC");
 
-        if ($request->query->get('only_friend_of_mine')) {
+        if ($request->query->get('only_friend_of_mine') && $this->getUser()) {
             $qb->andWhere('rs.user IN (:friends)')
                 ->setParameter('friends', $friends);
         }
 
         $scores = $pagination->setDefaults(25)->process($qb, $request->query);
 
-        if ($request->query->get('findme_flat', null)) {
+        if ($request->query->get('findme_flat', null) && $this->getUser()) {
             $scoreFlat = $scoreService->getGeneralLeaderboardPosition($this->getUser(), null, false);
             if ($scoreFlat == null) {
                 $this->addFlash("danger", "No score found");
@@ -164,14 +168,14 @@ class ScoreController extends AbstractController
             ->setParameter('flat', 'flat')
             ->orderBy('rs.totalPPScore', 'DESC');
 
-        if ($request->query->get('only_friend_of_mine')) {
+        if ($request->query->get('only_friend_of_mine') && $this->getUser()) {
             $qb->andWhere('rs.user IN (:friends)')
                 ->setParameter('friends', $friends);
         }
 
         $scoresFlat = $pagination->setDefaults(25)->process($qb, $request->query);
 
-        if ($request->query->get('findme_flat_okodo', null)) {
+        if ($request->query->get('findme_flat_okodo', null) && $this->getUser()) {
             $scoreFlat = $scoreService->getGeneralLeaderboardPosition($this->getUser(), null, false);
             if ($scoreFlat == null) {
                 $this->addFlash("danger", "No score found");

@@ -9,15 +9,9 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Service\StatisticService;
 
-#[ApiResource(
-    collectionOperations: [
-        "get",
-//        "post" => ["security" => "is_granted('ROLE_ADMIN')"],
-    ],
-    itemOperations: [
-        "get",
-//        "put" => ["security" => "is_granted('ROLE_ADMIN') or object.owner == user"],
-    ])]
+#[ORM\Index(name: 'idx_ranked_scores_platform_score', columns: ['plateform', 'total_pp_score'])]
+#[ORM\Index(name: 'idx_ranked_scores_platform_user', columns: ['plateform', 'user_id'])]
+#[ORM\Index(name: 'idx_ranked_scores_user', columns: ['user_id'])]
 #[ORM\Entity(repositoryClass: RankedScoresRepository::class)]
 class RankedScores
 {
@@ -25,14 +19,14 @@ class RankedScores
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id;
 
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'rankedScores')]
     #[ORM\JoinColumn(nullable: false)]
-    private $user;
+    private Utilisateur $user;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    private $totalPPScore;
+    private float $totalPpScore;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $plateform = null;
@@ -54,14 +48,14 @@ class RankedScores
         return $this;
     }
 
-    public function getTotalPPScore(): ?float
+    public function getTotalPpScore(): ?float
     {
-        return $this->totalPPScore;
+        return $this->totalPpScore;
     }
 
-    public function setTotalPPScore(?float $totalPPScore): self
+    public function setTotalPpScore(?float $totalPPScore): self
     {
-        $this->totalPPScore = $totalPPScore;
+        $this->totalPpScore = $totalPPScore;
 
         return $this;
     }

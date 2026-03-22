@@ -145,7 +145,7 @@ class RankingScoreService
             $rankedScore->setPlateform($isVr ? 'vr' : ($isOkod ? 'flat_okod' : 'flat'));
         }
 
-        $rankedScore->setTotalPPScore($totalPondPPScore);
+        $rankedScore->setTotalPpScore($totalPondPPScore);
         $this->rankedScoresRepository->add($rankedScore);
         unset($rankedScore);
     }
