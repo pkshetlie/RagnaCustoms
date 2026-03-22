@@ -160,19 +160,19 @@ class SongsController extends AbstractController
 
         $filters = $searchService->baseSearchQb($qb, $request->query);
 
-        if ($request->query->get('oneclick_dl')) {
-            $songs = $qb->getQuery()->getResult();
-            $list = new SongTemporaryList();
-
-            $em = $doctrine->getManager();
-            foreach ($songs as $song) {
-                $list->addSong($song);
-            }
-            $em->persist($list);
-            $em->flush();
-
-            return $this->redirect("ragnac://list/".$list->getId());
-        }
+        // if ($request->query->get('oneclick_dl')) {
+        //     $songs = $qb->getQuery()->getResult();
+        //     $list = new SongTemporaryList();
+        //
+        //     $em = $doctrine->getManager();
+        //     foreach ($songs as $song) {
+        //         $list->addSong($song);
+        //     }
+        //     $em->persist($list);
+        //     $em->flush();
+        //
+        //     return $this->redirect("ragnac://list/".$list->getId());
+        // }
 
         $pagination = $paginationService->setDefaults($this->paginate)->process($qb, $request->query);
 
