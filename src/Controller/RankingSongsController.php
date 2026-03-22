@@ -40,8 +40,6 @@ class RankingSongsController extends AbstractController
             ->addSelect('song.voteUp - song.voteDown AS HIDDEN rating')
             ->groupBy("song.id");
 
-        $qb->leftJoin('song.songDifficulties', 'song_difficulties');
-
         $filters = $searchService->baseSearchQb($qb, $request->query);
         $pagination = $paginationService->setDefaults($this->paginate)->process($qb, $request->query);
 

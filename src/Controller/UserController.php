@@ -150,7 +150,7 @@ class UserController extends AbstractController
             ->where('score.user = :user')
             ->setParameter('user', $user);
 
-        $filters = $searchService->baseSearchQb($qb, $request->query);
+        $filters = $searchService->baseSearchQb2($qb, $request->query);
 
         switch ($request->get('order_by')) {
             case 'score':
@@ -280,7 +280,6 @@ class UserController extends AbstractController
             ->setParameter('user', $utilisateur)
             ->addSelect('song.voteUp - song.voteDown AS HIDDEN rating')
             ->groupBy("song.id");
-        $qb->leftJoin('song.songDifficulties', 'song_difficulties');
 
         $searchService->baseSearchQb($qb, $request->query);
 
