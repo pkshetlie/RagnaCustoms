@@ -117,7 +117,10 @@
 
                             </td>
                             <td class="text-right">{{ score.totalPpScore|round(2) }} PP</td>
-                            <td class="text-right"><span>{{ rankingScoreService.countRanked(score.user, false) }}</span></td>
+                            <td class="text-right">
+                              off
+{#                              <span>{{ rankingScoreService.countRanked(score.user, false) }}</span>#}
+                            </td>
                             <td class="text-right"><span>{{ score.timeAgoShort() }}</span></td>
 {#                            <td class=""><a title="{{ "Show ranking stats"|trans }}" class="fa fas fa-chart-simple" href="{{ url('ranking_stats',{username:score.user.username,leaderboard:'flat'}) }}" /></td>#}
                         </tr>
@@ -169,7 +172,10 @@
 
                             </td>
                             <td class="text-right">{{ score.totalPpScore|round(2) }} PP</td>
-                            <td class="text-right"><span>{{ rankingScoreService.countRanked(score.user, false, true) }}</span></td>
+                            <td class="text-right">
+                              off
+{#                              <span>{{ rankingScoreService.countRanked(score.user, false, true) }}</span>#}
+                            </td>
                             <td class="text-right"><span>{{ score.timeAgoShort() }}</span></td>
 {#                            <td class=""><a title="{{ "Show ranking stats"|trans }}" class="fa fas fa-chart-simple" href="{{ url('ranking_stats',{username:score.user.username,leaderboard:'okod'}) }}" /></td>#}
                         </tr>
