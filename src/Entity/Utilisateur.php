@@ -619,7 +619,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getAvgRating()
+    public function getAvgRating(): string
     {
         $songsRating = [];
         foreach ($this->getSongsMapped() as $song) {
@@ -628,7 +628,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
             }
         }
 
-        return count($songsRating) > 0 ? number_format(array_sum($songsRating) / count($songsRating), 2) : "No rating!";
+        return count($songsRating) > 0 ? number_format(array_sum($songsRating) / count($songsRating), 2) : "0";
     }
 
     /**
@@ -659,7 +659,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         });
     }
 
-    public function getPreferedGenre($top = 3)
+    public function getPreferedGenre($top = 3): array
     {
         $genres = [];
         foreach ($this->getSongsMapped() as $song) {
@@ -675,7 +675,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $real_genres = array_keys($genres);
         $real_genres = array_slice($real_genres, 0, $top);
 
-        return implode(", ", $real_genres);
+        if (empty($real_genres)) {
+            return ['Other'];
+        }
+
+        return $real_genres;
     }
 
     public function getCredits(): ?int

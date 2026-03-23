@@ -25,5 +25,7 @@ doctrine:
                 GROUP_CONCAT: DoctrineExtensions\Query\Mysql\GroupConcat
                 MD5: DoctrineExtensions\Query\Mysql\Md5
                 RAND: DoctrineExtensions\Query\Mysql\Rand
+                ROUND: DoctrineExtensions\Query\Mysql\Round
+#                AVG: DoctrineExtensions\Query\Mysql\Avg
                 NOW: DoctrineExtensions\Query\Mysql\Now
                 IF: DoctrineExtensions\Query\Mysql\IfElse

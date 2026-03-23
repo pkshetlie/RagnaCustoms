@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Utilisateur;
+use App\Repository\MapperRepository;
 use App\Repository\UtilisateurRepository;
 use Pkshetlie\PaginationBundle\Service\PaginationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,17 +16,9 @@ class MapperController extends AbstractController
 {
 
     #[Route(path: '/mappers', name: 'mappers')]
-    public function list(Request $request,UtilisateurRepository $utilisateurRepository, PaginationService $paginationService): Response
+    public function list(Request $request, MapperRepository $mappersRepository, PaginationService $paginationService): Response
     {
-        /** @var Utilisateur[] $mappers */
-        $qb = $utilisateurRepository->createQueryBuilder("u")
-            ->leftJoin('u.songsMapped', 's')
-            ->select('u,COUNT(s) AS HIDDEN count_song')
-            ->where('u.isMapper = 1')
-            ->andWhere('s.id IS NOT NULL')
-            ->where('s.isDeleted = 0')
-            ->orderBy('count_song', 'desc')
-            ->groupBy("u.id");
+        $qb = $mappersRepository->createQueryBuilder('m')->orderBy('m.mapCount', 'desc');
 
         $mappers = $paginationService->setDefaults(50)->process($qb, $request->query);
 

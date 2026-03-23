@@ -18,10 +18,13 @@
 {#                   class="btn btn-warning btn-lg float-right ml-2">{{ "Open song requests"|trans }}</a>#}
                 <a href="https://discord.gg/2vCAAGuwsR" target="_blank"
                    class="btn btn-warning btn-bg-empty btn-lg float-right">{{ "Learn how to map"|trans }} <i class="fab fa-discord"></i></a>
+                <div class="d-flex">
                 <h1>{{ "Mappers"|trans }}</h1>
+                    <small> <i class="fas fa-info-circle" data-toggle="tooltips" title="refreshed every 30 minutes"></i></small>
+                </div>
                 <table class="table table-sm">
                     <tr>
-                        <th></th>
+{#                        <th></th>#}
                         <th>{{ "User"|trans }}</th>
                         <th class="">{{ "Follows"|trans }}</th>
                         <th class="">{{ "Maps"|trans }}</th>
@@ -32,25 +35,25 @@
                     </tr>
                     {% for mapper in mappers.entities %}
                         <tr>
-                            <td id="follow_{{ mapper.id }}">
-                               {% include 'follower/partial/buttons.html.twig' with {mapper:mapper} %}
-                            </td>
+{#                            <td id="follow_{{ mapper.id }}">#}
+{#                               {% include 'follower/partial/buttons.html.twig' with {mapper:mapper} %}#}
+{#                            </td>#}
 
                             <td>
-                                <a href="{{ url("mapper_profile",{username:mapper.username}) }}">{{ mapper.username }}</a>
+                                <a href="{{ url("mapper_profile",{username:mapper.name}) }}">{{ mapper.name }}</a>
                             </td>
                             <td>
-                                {{ mapper.followers|length }}
+                                {{ mapper.follows }}
                             </td>
-                            <td class="">{{ mapper.songsAvailable|length }}</td>
+                            <td class="">{{ mapper.mapCount }}</td>
                             <td class="">
                                 <div class="song-votes" style="font-size:14px;">
-                                    <i class="fas fa-arrow-up text-success"></i> {{ mapperService.totalUpperVotes(mapper) }}
-                                    <i class="fas fa-arrow-down text-danger"></i> {{ mapperService.totalLowerVotes(mapper) }}
+                                    <i class="fas fa-arrow-up text-success"></i> {{ mapper.votesUp }}
+                                    <i class="fas fa-arrow-down text-danger"></i> {{ mapper.votesDown }}
                                 </div>
                             </td>
                             <td class="">{{ mapper.avgRating }}</td>
-                            <td class="light-grey small">{{ mapper.preferedGenre(3) }}</td>
+                            <td class="light-grey small">{{ mapper.categories|join(', ') }}</td>
                             {#                        <td class="text-right">{{ mapper.songAverage }}</td> #}
                         </tr>
                     {% endfor %}
