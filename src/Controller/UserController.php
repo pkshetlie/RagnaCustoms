@@ -275,12 +275,13 @@ class UserController extends AbstractController
     ): Response {
         $qb = $doctrine->getRepository(Song::class)
             ->createQueryBuilder("song")
+            ->leftJoin("song.mappers", "mapper")
             ->andWhere('mapper.id = :user')
             ->setParameter('now', new DateTime())
             ->setParameter('user', $utilisateur)
             ->groupBy("song.id");
 
-        $searchService->baseSearchQb($qb, $request->query);
+        $searchService->baseSearchQb($qb, $request->query, joinMapper: true);
 
         if ($request->get('oneclick_dl')) {
             $songs = $qb->getQuery()->getResult();

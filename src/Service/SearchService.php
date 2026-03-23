@@ -254,14 +254,11 @@ readonly class SearchService
         return $appliedFilters;
     }
 
-    public function baseSearchQb(QueryBuilder $qb, InputBag $inputBag): array
+    public function baseSearchQb(QueryBuilder $qb, InputBag $inputBag, bool $joinMapper = false): array
     {
         $appliedFilters = [];
 
-
-
         $joinDiff = false;
-        $joinMapper = false;
         $joinTag = false;
 
         if ($inputBag->get('only_ranked')) {
