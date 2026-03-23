@@ -31,7 +31,7 @@
                         <th>{{ "Difficulties"|trans }}</th>
                         <th></th>
                         <th>{{ "Mapper"|trans }}</th>
-                        <th>{{ "Votes"|trans }</th>
+                        <th>{{ "Votes"|trans }}</th>
                         <th>{{ "Rating"|trans }}</th>
                         <th class="text-right">
                             <a href="{{ url(app.request.attributes.get('_route'),app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge({"order_by":"s.lastDateUpload", "order_sort":app.request.query.get('order_sort', 'asc') == 'asc'? 'desc':'asc'})) }}"
