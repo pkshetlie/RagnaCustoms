@@ -44,7 +44,6 @@ class ApiController extends AbstractController
         /** @var Utilisateur $user */
         $user = $utilisateurRepository->findOneBy(['username' => $request->query->get('username')]);
         if ($user !== null) {
-
             if ($hasher->isPasswordValid($user, $request->query->get('password','wrong'))) {
                 // $user->setCountApiAttempt(0);
                 // $user->setLastApiAttempt(null);

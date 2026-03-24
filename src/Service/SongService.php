@@ -1459,5 +1459,10 @@ readonly class SongService
 
         return round($taille, 2).' '.$unites[$i];
     }
+
+    public function hasPlayed(Utilisateur $user, mixed $diff): bool
+    {
+        return $this->scoreRepository->findOneBy(['user' => $user, 'songDifficulty' => $diff]) != null;
+    }
 }
 

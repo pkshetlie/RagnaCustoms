@@ -15,6 +15,7 @@ class VoteService
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly VoteCounterRepository $voteCounterRepository,
+        private readonly SongService $songService
     ) {
 
     }
@@ -169,7 +170,7 @@ class VoteService
     {
         if ($user) {
             foreach ($song->getSongDifficulties() as $diff) {
-                if ($user->hasPlayed($diff)) {
+                if ($this->songService->hasPlayed($user, $diff)) {
                     return true;
                 }
             }
@@ -182,7 +183,7 @@ class VoteService
     {
         if ($user) {
             foreach ($song->getSongDifficulties() as $diff) {
-                if ($user->hasPlayed($diff)) {
+                if ($this->songService->hasPlayed($user, $diff)) {
                     return true;
                 }
             }

@@ -706,17 +706,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getLastScoreHistory()
-    {
-        return $this->getScoreHistories()->first();
-    }
-
     /**
      * @return Collection|ScoreHistory[]
      */
     public function getScoreHistories(): Collection
     {
-        return $this->scoreHistories;
+        return new ArrayCollection();//$this->scoreHistories;
     }
 
     public function getScoresRanked()
@@ -822,17 +817,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $scores->first()->getTotalPPScore();
-    }
-
-    public function hasPlayed(SongDifficulty $difficulty)
-    {
-        foreach ($this->getScoreHistories() as $scoreHistory) {
-            if ($scoreHistory->getSongDifficulty() === $difficulty) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public function playedPlateform(SongDifficulty $difficulty, bool $vr = true)
