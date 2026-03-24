@@ -42,10 +42,10 @@ class ApiController extends AbstractController
         UserPasswordHasherInterface $hasher
     ): Response {
         /** @var Utilisateur $user */
-        $user = $utilisateurRepository->findOneBy(['username' => $request->request->get('username')]);
+        $user = $utilisateurRepository->findOneBy(['username' => $request->query->get('username')]);
         if ($user !== null) {
 
-            if ($hasher->isPasswordValid($user, $request->request->get('password'))) {
+            if ($hasher->isPasswordValid($user, $request->query->get('password','wrong'))) {
                 // $user->setCountApiAttempt(0);
                 // $user->setLastApiAttempt(null);
                 $utilisateurRepository->add($user);
