@@ -8,9 +8,11 @@ use App\Entity\SongDifficulty;
 use App\Entity\SongDifficultyNotation;
 use App\Form\MultipleSongDifficultyNotationType;
 use App\Repository\ChangelogRepository;
+use App\Repository\ScoreHistoryRepository;
 use App\Service\SongDifficultyNotationService;
 use App\Voter\CommunityVoteVoter;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,7 +37,7 @@ final class SongDifficultyNotationController extends AbstractController
     }
 
     #[Route('/song-difficulty/notation/detail/{id}', name: 'app_song_difficulty_notation_details')]
-    public function detail(SongDifficulty $songDifficulty, Request $request): Response
+    public function detail(SongDifficulty $songDifficulty, ScoreHistoryRepository $scoreHistoryRepository): Response
     {
 
         $oneMonthAgo = new DateTime('-1 month');
@@ -61,31 +63,22 @@ final class SongDifficultyNotationController extends AbstractController
                 ];
             }
 
+            $playerHistory = new ArrayCollection($scoreHistoryRepository->findBy(['user' => $this->getUser(), 'songDifficulty' => $songDifficulty]));
 
             // Check if user has played this difficulty
-            $playedDifficulty = $this->getUser()->getScoreHistories()->filter(
-                function(ScoreHistory $sh) use ($songDifficulty) {
-                    return $sh->getSongDifficulty()->getId() === $songDifficulty->getId();
-                }
-            )->count();
+            $playedDifficulty = $playerHistory->count();
+
+            $playerHistorySameLevel = new ArrayCollection(
+                $scoreHistoryRepository->findByUserAndDifficulty($this->getUser(),$songDifficulty)
+            );
 
             // Check if user has played more than 5 different difficulties
-            $playedDifficultiesCount = $this->getUser()->getScoreHistories()->filter(
-                function(ScoreHistory $sh) use ($songDifficulty) {
-                    return $sh->getSongDifficulty()->getLevel() === $songDifficulty->getLevel();
-                }
-            )->count();
+            $playedDifficultiesCount = $playerHistorySameLevel->count();
 
             //on 5 different songs
-            $playedSongsCount = $this->getUser()->getScoreHistories()->filter(
-                function(ScoreHistory $sh) use ($songDifficulty) {
-                    return $sh->getSongDifficulty()->getLevel() === $songDifficulty->getLevel();
-                }
-            )->toArray();
-
             $playedSongsCount = array_unique(array_map(function($sh) {
                 return $sh->getSongDifficulty()?->getSong()?->getId();
-            }, $playedSongsCount));
+            }, $playerHistorySameLevel->toArray()));
 
             $playedSongsCount = count($playedSongsCount);
         }
