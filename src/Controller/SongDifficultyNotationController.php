@@ -90,6 +90,10 @@ final class SongDifficultyNotationController extends AbstractController
             $playedDifficultiesCount >= 6 && $playedSongsCount >= 6,
         ];
 
+        if ($this->isGranted('ROLE_MODERATOR') && $songDifficulty->getSong()->getMappers()->contains($this->getUser())) {
+            $steps = [true, true, true, true];
+        }
+
         return new JsonResponse([
             "error" => false,
             "errorMessage" => false,
