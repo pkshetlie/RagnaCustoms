@@ -39,7 +39,6 @@ final class SongDifficultyNotationController extends AbstractController
     #[Route('/song-difficulty/notation/detail/{id}', name: 'app_song_difficulty_notation_details')]
     public function detail(SongDifficulty $songDifficulty, ScoreHistoryRepository $scoreHistoryRepository): Response
     {
-
         $oneMonthAgo = new DateTime('-1 month');
         $monthAgo = false;
         $playedDifficultiesCount = 0;
