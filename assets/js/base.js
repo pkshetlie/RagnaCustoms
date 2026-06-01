@@ -164,16 +164,6 @@ $(function () {
 
   preload();
   switchBg();
-
-  // setInterval(switchBg, 10000);
-  $(".alert").each(function () {
-    Swal.fire({
-      title: $(this).data('title'),
-      html: $(this).html(),
-      icon: $(this).data('type') === "danger" ? "error" : $(this).data('type'),
-      confirmButtonText: 'close'
-    });
-  });
 });
 
 $(document).on('click', '[data-confirm]', function () {

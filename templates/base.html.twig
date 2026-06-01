@@ -167,6 +167,44 @@
     <a data-no-swup='true' href="{{ url('random_song') }}" class="dices bg-info">
         <i class="fas fa-dice"></i>
     </a>
+    {% if is_granted('ROLE_USER') %}
+        <div id="site-alert" class="alert alert-danger alert-dismissible fade show m-3" role="alert"
+             style="display: none;">
+            <strong>Ragnacustoms Policy change - About IA maps:</strong><br>
+            From now on, maps made with IA generated songs won't be accepted anymore.
+            If we detect any map uploaded with IA song, it will be deleted without prior notice. <br>
+            Maps that are already released won't be deleted. It only applies to new maps
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="dismissAlert()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <script>
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            function setCookie(name, value, days) {
+                const d = new Date();
+                d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+                const expires = `expires=${d.toUTCString()}`;
+                document.cookie = `${name}=${value};${expires};path=/;SameSite=Lax`;
+            }
+
+            function dismissAlert() {
+                setCookie('site_alert_dismissed_ia_song', 'true', 365);
+                document.getElementById('site-alert').style.display = 'none';
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                if (!getCookie('site_alert_dismissed_ia_song')) {
+                    document.getElementById('site-alert').style.display = 'block';
+                }
+            });
+        </script>
+    {% endif %}
     {% for label, messages in app.flashes %}
         {% for message in messages %}
             <div class="alert d-none " data-type="{{ label }}" data-title="{{ label|capitalize }}">
